@@ -8825,12 +8825,12 @@ references:
   commentId: T:Mirage.OnlineOfflineScene
   fullName: Mirage.OnlineOfflineScene
   nameWithType: OnlineOfflineScene
-- uid: Mirage.OnlineOfflineScene.Client
-  name: Client
-  href: api/Mirage.OnlineOfflineScene.html#Mirage_OnlineOfflineScene_Client
-  commentId: F:Mirage.OnlineOfflineScene.Client
-  fullName: Mirage.OnlineOfflineScene.Client
-  nameWithType: OnlineOfflineScene.Client
+- uid: Mirage.OnlineOfflineScene.NetworkSceneManager
+  name: NetworkSceneManager
+  href: api/Mirage.OnlineOfflineScene.html#Mirage_OnlineOfflineScene_NetworkSceneManager
+  commentId: F:Mirage.OnlineOfflineScene.NetworkSceneManager
+  fullName: Mirage.OnlineOfflineScene.NetworkSceneManager
+  nameWithType: OnlineOfflineScene.NetworkSceneManager
 - uid: Mirage.OnlineOfflineScene.OfflineScene
   name: OfflineScene
   href: api/Mirage.OnlineOfflineScene.html#Mirage_OnlineOfflineScene_OfflineScene
