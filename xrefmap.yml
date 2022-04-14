@@ -9685,6 +9685,22 @@ references:
   fullName.vb: Mirage.Serialization.CollectionExtensions.ReadArray(Of T)(Mirage.Serialization.NetworkReader)
   nameWithType: CollectionExtensions.ReadArray<T>(NetworkReader)
   nameWithType.vb: CollectionExtensions.ReadArray(Of T)(NetworkReader)
+- uid: Mirage.Serialization.CollectionExtensions.ReadArraySegment*
+  name: ReadArraySegment
+  href: api/Mirage.Serialization.CollectionExtensions.html#Mirage_Serialization_CollectionExtensions_ReadArraySegment_
+  commentId: Overload:Mirage.Serialization.CollectionExtensions.ReadArraySegment
+  isSpec: "True"
+  fullName: Mirage.Serialization.CollectionExtensions.ReadArraySegment
+  nameWithType: CollectionExtensions.ReadArraySegment
+- uid: Mirage.Serialization.CollectionExtensions.ReadArraySegment``1(Mirage.Serialization.NetworkReader)
+  name: ReadArraySegment<T>(NetworkReader)
+  href: api/Mirage.Serialization.CollectionExtensions.html#Mirage_Serialization_CollectionExtensions_ReadArraySegment__1_Mirage_Serialization_NetworkReader_
+  commentId: M:Mirage.Serialization.CollectionExtensions.ReadArraySegment``1(Mirage.Serialization.NetworkReader)
+  name.vb: ReadArraySegment(Of T)(NetworkReader)
+  fullName: Mirage.Serialization.CollectionExtensions.ReadArraySegment<T>(Mirage.Serialization.NetworkReader)
+  fullName.vb: Mirage.Serialization.CollectionExtensions.ReadArraySegment(Of T)(Mirage.Serialization.NetworkReader)
+  nameWithType: CollectionExtensions.ReadArraySegment<T>(NetworkReader)
+  nameWithType.vb: CollectionExtensions.ReadArraySegment(Of T)(NetworkReader)
 - uid: Mirage.Serialization.CollectionExtensions.ReadBytes(Mirage.Serialization.NetworkReader,System.Int32)
   name: ReadBytes(NetworkReader, Int32)
   href: api/Mirage.Serialization.CollectionExtensions.html#Mirage_Serialization_CollectionExtensions_ReadBytes_Mirage_Serialization_NetworkReader_System_Int32_
