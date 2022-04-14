@@ -16164,6 +16164,42 @@ references:
   isSpec: "True"
   fullName: Mirage.StringHash.GetStableHashCode
   nameWithType: StringHash.GetStableHashCode
+- uid: Mirage.SyncHookType
+  name: SyncHookType
+  href: api/Mirage.SyncHookType.html
+  commentId: T:Mirage.SyncHookType
+  fullName: Mirage.SyncHookType
+  nameWithType: SyncHookType
+- uid: Mirage.SyncHookType.Automatic
+  name: Automatic
+  href: api/Mirage.SyncHookType.html#Mirage_SyncHookType_Automatic
+  commentId: F:Mirage.SyncHookType.Automatic
+  fullName: Mirage.SyncHookType.Automatic
+  nameWithType: SyncHookType.Automatic
+- uid: Mirage.SyncHookType.EventWith1Arg
+  name: EventWith1Arg
+  href: api/Mirage.SyncHookType.html#Mirage_SyncHookType_EventWith1Arg
+  commentId: F:Mirage.SyncHookType.EventWith1Arg
+  fullName: Mirage.SyncHookType.EventWith1Arg
+  nameWithType: SyncHookType.EventWith1Arg
+- uid: Mirage.SyncHookType.EventWith2Arg
+  name: EventWith2Arg
+  href: api/Mirage.SyncHookType.html#Mirage_SyncHookType_EventWith2Arg
+  commentId: F:Mirage.SyncHookType.EventWith2Arg
+  fullName: Mirage.SyncHookType.EventWith2Arg
+  nameWithType: SyncHookType.EventWith2Arg
+- uid: Mirage.SyncHookType.MethodWith1Arg
+  name: MethodWith1Arg
+  href: api/Mirage.SyncHookType.html#Mirage_SyncHookType_MethodWith1Arg
+  commentId: F:Mirage.SyncHookType.MethodWith1Arg
+  fullName: Mirage.SyncHookType.MethodWith1Arg
+  nameWithType: SyncHookType.MethodWith1Arg
+- uid: Mirage.SyncHookType.MethodWith2Arg
+  name: MethodWith2Arg
+  href: api/Mirage.SyncHookType.html#Mirage_SyncHookType_MethodWith2Arg
+  commentId: F:Mirage.SyncHookType.MethodWith2Arg
+  fullName: Mirage.SyncHookType.MethodWith2Arg
+  nameWithType: SyncHookType.MethodWith2Arg
 - uid: Mirage.SyncMode
   name: SyncMode
   href: api/Mirage.SyncMode.html
@@ -16194,6 +16230,12 @@ references:
   commentId: F:Mirage.SyncVarAttribute.hook
   fullName: Mirage.SyncVarAttribute.hook
   nameWithType: SyncVarAttribute.hook
+- uid: Mirage.SyncVarAttribute.hookType
+  name: hookType
+  href: api/Mirage.SyncVarAttribute.html#Mirage_SyncVarAttribute_hookType
+  commentId: F:Mirage.SyncVarAttribute.hookType
+  fullName: Mirage.SyncVarAttribute.hookType
+  nameWithType: SyncVarAttribute.hookType
 - uid: Mirage.SyncVarAttribute.initialOnly
   name: initialOnly
   href: api/Mirage.SyncVarAttribute.html#Mirage_SyncVarAttribute_initialOnly
