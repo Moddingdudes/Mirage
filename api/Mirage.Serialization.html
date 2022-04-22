@@ -138,11 +138,14 @@ NOTE: bits are truncated when using this, so signed values will lose their sign.
       <section></section>
       <h4><a class="xref" href="Mirage.Serialization.MessagePacker.html">MessagePacker</a></h4>
       <section></section>
+      <h4><a class="xref" href="Mirage.Serialization.MirageNetworkReader.html">MirageNetworkReader</a></h4>
+      <section><p>NetworkReader but has a ObjectLocator field that can be used by Reader functions to fetch NetworkIdentity</p>
+</section>
       <h4><a class="xref" href="Mirage.Serialization.MirageTypesExtensions.html">MirageTypesExtensions</a></h4>
       <section></section>
       <h4><a class="xref" href="Mirage.Serialization.NetworkReader.html">NetworkReader</a></h4>
       <section><p>Bit writer, writes values to a buffer on a bit level</p>
-<p>Use <a class="xref" href="Mirage.Serialization.NetworkReaderPool.html#Mirage_Serialization_NetworkReaderPool_GetReader_System_ArraySegment_System_Byte__">GetReader(ArraySegment&lt;Byte&gt;)</a> to reduce memory allocation</p>
+<p>Use <a class="xref" href="Mirage.Serialization.NetworkReaderPool.html#Mirage_Serialization_NetworkReaderPool_GetReader_System_ArraySegment_System_Byte__Mirage_IObjectLocator_">GetReader(ArraySegment&lt;Byte&gt;, IObjectLocator)</a> to reduce memory allocation</p>
 </section>
       <h4><a class="xref" href="Mirage.Serialization.NetworkReaderPool.html">NetworkReaderPool</a></h4>
       <section><p>Holds static reference to <a class="xref" href="Mirage.SocketLayer.Pool-1.html">Pool&lt;T&gt;</a> of <a class="xref" href="Mirage.Serialization.PooledNetworkReader.html">PooledNetworkReader</a></p>

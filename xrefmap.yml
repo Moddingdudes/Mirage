@@ -10510,6 +10510,15 @@ references:
   fullName.vb: Mirage.Serialization.MessagePacker.Unpack(Of T)(System.Byte())
   nameWithType: MessagePacker.Unpack<T>(Byte[])
   nameWithType.vb: MessagePacker.Unpack(Of T)(Byte())
+- uid: Mirage.Serialization.MessagePacker.Unpack``1(System.Byte[],Mirage.IObjectLocator)
+  name: Unpack<T>(Byte[], IObjectLocator)
+  href: api/Mirage.Serialization.MessagePacker.html#Mirage_Serialization_MessagePacker_Unpack__1_System_Byte___Mirage_IObjectLocator_
+  commentId: M:Mirage.Serialization.MessagePacker.Unpack``1(System.Byte[],Mirage.IObjectLocator)
+  name.vb: Unpack(Of T)(Byte(), IObjectLocator)
+  fullName: Mirage.Serialization.MessagePacker.Unpack<T>(System.Byte[], Mirage.IObjectLocator)
+  fullName.vb: Mirage.Serialization.MessagePacker.Unpack(Of T)(System.Byte(), Mirage.IObjectLocator)
+  nameWithType: MessagePacker.Unpack<T>(Byte[], IObjectLocator)
+  nameWithType.vb: MessagePacker.Unpack(Of T)(Byte(), IObjectLocator)
 - uid: Mirage.Serialization.MessagePacker.UnpackId(Mirage.Serialization.NetworkReader)
   name: UnpackId(NetworkReader)
   href: api/Mirage.Serialization.MessagePacker.html#Mirage_Serialization_MessagePacker_UnpackId_Mirage_Serialization_NetworkReader_
@@ -10523,6 +10532,25 @@ references:
   isSpec: "True"
   fullName: Mirage.Serialization.MessagePacker.UnpackId
   nameWithType: MessagePacker.UnpackId
+- uid: Mirage.Serialization.MirageNetworkReader
+  name: MirageNetworkReader
+  href: api/Mirage.Serialization.MirageNetworkReader.html
+  commentId: T:Mirage.Serialization.MirageNetworkReader
+  fullName: Mirage.Serialization.MirageNetworkReader
+  nameWithType: MirageNetworkReader
+- uid: Mirage.Serialization.MirageNetworkReader.ObjectLocator
+  name: ObjectLocator
+  href: api/Mirage.Serialization.MirageNetworkReader.html#Mirage_Serialization_MirageNetworkReader_ObjectLocator
+  commentId: P:Mirage.Serialization.MirageNetworkReader.ObjectLocator
+  fullName: Mirage.Serialization.MirageNetworkReader.ObjectLocator
+  nameWithType: MirageNetworkReader.ObjectLocator
+- uid: Mirage.Serialization.MirageNetworkReader.ObjectLocator*
+  name: ObjectLocator
+  href: api/Mirage.Serialization.MirageNetworkReader.html#Mirage_Serialization_MirageNetworkReader_ObjectLocator_
+  commentId: Overload:Mirage.Serialization.MirageNetworkReader.ObjectLocator
+  isSpec: "True"
+  fullName: Mirage.Serialization.MirageNetworkReader.ObjectLocator
+  nameWithType: MirageNetworkReader.ObjectLocator
 - uid: Mirage.Serialization.MirageTypesExtensions
   name: MirageTypesExtensions
   href: api/Mirage.Serialization.MirageTypesExtensions.html
@@ -10577,6 +10605,19 @@ references:
   isSpec: "True"
   fullName: Mirage.Serialization.MirageTypesExtensions.ReadNetworkIdentity
   nameWithType: MirageTypesExtensions.ReadNetworkIdentity
+- uid: Mirage.Serialization.MirageTypesExtensions.ToMirageReader(Mirage.Serialization.NetworkReader)
+  name: ToMirageReader(NetworkReader)
+  href: api/Mirage.Serialization.MirageTypesExtensions.html#Mirage_Serialization_MirageTypesExtensions_ToMirageReader_Mirage_Serialization_NetworkReader_
+  commentId: M:Mirage.Serialization.MirageTypesExtensions.ToMirageReader(Mirage.Serialization.NetworkReader)
+  fullName: Mirage.Serialization.MirageTypesExtensions.ToMirageReader(Mirage.Serialization.NetworkReader)
+  nameWithType: MirageTypesExtensions.ToMirageReader(NetworkReader)
+- uid: Mirage.Serialization.MirageTypesExtensions.ToMirageReader*
+  name: ToMirageReader
+  href: api/Mirage.Serialization.MirageTypesExtensions.html#Mirage_Serialization_MirageTypesExtensions_ToMirageReader_
+  commentId: Overload:Mirage.Serialization.MirageTypesExtensions.ToMirageReader
+  isSpec: "True"
+  fullName: Mirage.Serialization.MirageTypesExtensions.ToMirageReader
+  nameWithType: MirageTypesExtensions.ToMirageReader
 - uid: Mirage.Serialization.MirageTypesExtensions.WriteGameObject(Mirage.Serialization.NetworkWriter,UnityEngine.GameObject)
   name: WriteGameObject(NetworkWriter, GameObject)
   href: api/Mirage.Serialization.MirageTypesExtensions.html#Mirage_Serialization_MirageTypesExtensions_WriteGameObject_Mirage_Serialization_NetworkWriter_UnityEngine_GameObject_
@@ -10758,19 +10799,6 @@ references:
   isSpec: "True"
   fullName: Mirage.Serialization.NetworkReader.MoveBitPosition
   nameWithType: NetworkReader.MoveBitPosition
-- uid: Mirage.Serialization.NetworkReader.ObjectLocator
-  name: ObjectLocator
-  href: api/Mirage.Serialization.NetworkReader.html#Mirage_Serialization_NetworkReader_ObjectLocator
-  commentId: P:Mirage.Serialization.NetworkReader.ObjectLocator
-  fullName: Mirage.Serialization.NetworkReader.ObjectLocator
-  nameWithType: NetworkReader.ObjectLocator
-- uid: Mirage.Serialization.NetworkReader.ObjectLocator*
-  name: ObjectLocator
-  href: api/Mirage.Serialization.NetworkReader.html#Mirage_Serialization_NetworkReader_ObjectLocator_
-  commentId: Overload:Mirage.Serialization.NetworkReader.ObjectLocator
-  isSpec: "True"
-  fullName: Mirage.Serialization.NetworkReader.ObjectLocator
-  nameWithType: NetworkReader.ObjectLocator
 - uid: Mirage.Serialization.NetworkReader.PadAndCopy*
   name: PadAndCopy
   href: api/Mirage.Serialization.NetworkReader.html#Mirage_Serialization_NetworkReader_PadAndCopy_
@@ -11051,33 +11079,33 @@ references:
   isSpec: "True"
   fullName: Mirage.Serialization.NetworkReaderPool.Configure
   nameWithType: NetworkReaderPool.Configure
-- uid: Mirage.Serialization.NetworkReaderPool.GetReader(System.ArraySegment{System.Byte})
-  name: GetReader(ArraySegment<Byte>)
-  href: api/Mirage.Serialization.NetworkReaderPool.html#Mirage_Serialization_NetworkReaderPool_GetReader_System_ArraySegment_System_Byte__
-  commentId: M:Mirage.Serialization.NetworkReaderPool.GetReader(System.ArraySegment{System.Byte})
-  name.vb: GetReader(ArraySegment(Of Byte))
-  fullName: Mirage.Serialization.NetworkReaderPool.GetReader(System.ArraySegment<System.Byte>)
-  fullName.vb: Mirage.Serialization.NetworkReaderPool.GetReader(System.ArraySegment(Of System.Byte))
-  nameWithType: NetworkReaderPool.GetReader(ArraySegment<Byte>)
-  nameWithType.vb: NetworkReaderPool.GetReader(ArraySegment(Of Byte))
-- uid: Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte[])
-  name: GetReader(Byte[])
-  href: api/Mirage.Serialization.NetworkReaderPool.html#Mirage_Serialization_NetworkReaderPool_GetReader_System_Byte___
-  commentId: M:Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte[])
-  name.vb: GetReader(Byte())
-  fullName: Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte[])
-  fullName.vb: Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte())
-  nameWithType: NetworkReaderPool.GetReader(Byte[])
-  nameWithType.vb: NetworkReaderPool.GetReader(Byte())
-- uid: Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte[],System.Int32,System.Int32)
-  name: GetReader(Byte[], Int32, Int32)
-  href: api/Mirage.Serialization.NetworkReaderPool.html#Mirage_Serialization_NetworkReaderPool_GetReader_System_Byte___System_Int32_System_Int32_
-  commentId: M:Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte[],System.Int32,System.Int32)
-  name.vb: GetReader(Byte(), Int32, Int32)
-  fullName: Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte[], System.Int32, System.Int32)
-  fullName.vb: Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte(), System.Int32, System.Int32)
-  nameWithType: NetworkReaderPool.GetReader(Byte[], Int32, Int32)
-  nameWithType.vb: NetworkReaderPool.GetReader(Byte(), Int32, Int32)
+- uid: Mirage.Serialization.NetworkReaderPool.GetReader(System.ArraySegment{System.Byte},Mirage.IObjectLocator)
+  name: GetReader(ArraySegment<Byte>, IObjectLocator)
+  href: api/Mirage.Serialization.NetworkReaderPool.html#Mirage_Serialization_NetworkReaderPool_GetReader_System_ArraySegment_System_Byte__Mirage_IObjectLocator_
+  commentId: M:Mirage.Serialization.NetworkReaderPool.GetReader(System.ArraySegment{System.Byte},Mirage.IObjectLocator)
+  name.vb: GetReader(ArraySegment(Of Byte), IObjectLocator)
+  fullName: Mirage.Serialization.NetworkReaderPool.GetReader(System.ArraySegment<System.Byte>, Mirage.IObjectLocator)
+  fullName.vb: Mirage.Serialization.NetworkReaderPool.GetReader(System.ArraySegment(Of System.Byte), Mirage.IObjectLocator)
+  nameWithType: NetworkReaderPool.GetReader(ArraySegment<Byte>, IObjectLocator)
+  nameWithType.vb: NetworkReaderPool.GetReader(ArraySegment(Of Byte), IObjectLocator)
+- uid: Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte[],Mirage.IObjectLocator)
+  name: GetReader(Byte[], IObjectLocator)
+  href: api/Mirage.Serialization.NetworkReaderPool.html#Mirage_Serialization_NetworkReaderPool_GetReader_System_Byte___Mirage_IObjectLocator_
+  commentId: M:Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte[],Mirage.IObjectLocator)
+  name.vb: GetReader(Byte(), IObjectLocator)
+  fullName: Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte[], Mirage.IObjectLocator)
+  fullName.vb: Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte(), Mirage.IObjectLocator)
+  nameWithType: NetworkReaderPool.GetReader(Byte[], IObjectLocator)
+  nameWithType.vb: NetworkReaderPool.GetReader(Byte(), IObjectLocator)
+- uid: Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte[],System.Int32,System.Int32,Mirage.IObjectLocator)
+  name: GetReader(Byte[], Int32, Int32, IObjectLocator)
+  href: api/Mirage.Serialization.NetworkReaderPool.html#Mirage_Serialization_NetworkReaderPool_GetReader_System_Byte___System_Int32_System_Int32_Mirage_IObjectLocator_
+  commentId: M:Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte[],System.Int32,System.Int32,Mirage.IObjectLocator)
+  name.vb: GetReader(Byte(), Int32, Int32, IObjectLocator)
+  fullName: Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte[], System.Int32, System.Int32, Mirage.IObjectLocator)
+  fullName.vb: Mirage.Serialization.NetworkReaderPool.GetReader(System.Byte(), System.Int32, System.Int32, Mirage.IObjectLocator)
+  nameWithType: NetworkReaderPool.GetReader(Byte[], Int32, Int32, IObjectLocator)
+  nameWithType.vb: NetworkReaderPool.GetReader(Byte(), Int32, Int32, IObjectLocator)
 - uid: Mirage.Serialization.NetworkReaderPool.GetReader*
   name: GetReader
   href: api/Mirage.Serialization.NetworkReaderPool.html#Mirage_Serialization_NetworkReaderPool_GetReader_

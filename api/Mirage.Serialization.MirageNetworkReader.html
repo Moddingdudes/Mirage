@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class PooledNetworkReader
+    <title>Class MirageNetworkReader
    </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class PooledNetworkReader
+    <meta name="title" content="Class MirageNetworkReader
    ">
     <meta name="generator" content="docfx 2.56.6.0">
     
@@ -95,20 +95,20 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Mirage.Serialization.PooledNetworkReader">
+            <article class="content wrap" id="_content" data-uid="Mirage.Serialization.MirageNetworkReader">
   
   
-  <h1 id="Mirage_Serialization_PooledNetworkReader" data-uid="Mirage.Serialization.PooledNetworkReader" class="text-break">Class PooledNetworkReader
+  <h1 id="Mirage_Serialization_MirageNetworkReader" data-uid="Mirage.Serialization.MirageNetworkReader" class="text-break">Class MirageNetworkReader
   </h1>
-  <div class="markdown level0 summary"><p>NetworkReader to be used with <a class="xref" href="Mirage.Serialization.NetworkReaderPool.html">NetworkReaderPool</a></p>
+  <div class="markdown level0 summary"><p>NetworkReader but has a ObjectLocator field that can be used by Reader functions to fetch NetworkIdentity</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><a class="xref" href="Mirage.Serialization.NetworkReader.html">NetworkReader</a></div>
-    <div class="level2"><a class="xref" href="Mirage.Serialization.MirageNetworkReader.html">MirageNetworkReader</a></div>
-    <div class="level3"><span class="xref">PooledNetworkReader</span></div>
+    <div class="level2"><span class="xref">MirageNetworkReader</span></div>
+      <div class="level3"><a class="xref" href="Mirage.Serialization.PooledNetworkReader.html">PooledNetworkReader</a></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
@@ -117,9 +117,6 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="Mirage.Serialization.MirageNetworkReader.html#Mirage_Serialization_MirageNetworkReader_ObjectLocator">MirageNetworkReader.ObjectLocator</a>
-    </div>
-    <div>
       <a class="xref" href="Mirage.Serialization.NetworkReader.html#Mirage_Serialization_NetworkReader_BitLength">NetworkReader.BitLength</a>
     </div>
     <div>
@@ -127,6 +124,9 @@
     </div>
     <div>
       <a class="xref" href="Mirage.Serialization.NetworkReader.html#Mirage_Serialization_NetworkReader_BytePosition">NetworkReader.BytePosition</a>
+    </div>
+    <div>
+      <a class="xref" href="Mirage.Serialization.NetworkReader.html#Mirage_Serialization_NetworkReader_Dispose_System_Boolean_">NetworkReader.Dispose(Boolean)</a>
     </div>
     <div>
       <a class="xref" href="Mirage.Serialization.NetworkReader.html#Mirage_Serialization_NetworkReader_Dispose">NetworkReader.Dispose()</a>
@@ -227,131 +227,43 @@
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Mirage.Serialization.html">Mirage.Serialization</a></h6>
   <h6><strong>Assembly</strong>: Mirage.dll</h6>
-  <h5 id="Mirage_Serialization_PooledNetworkReader_syntax">Syntax</h5>
+  <h5 id="Mirage_Serialization_MirageNetworkReader_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class PooledNetworkReader : MirageNetworkReader, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public class MirageNetworkReader : NetworkReader, IDisposable</code></pre>
   </div>
-  <h3 id="methods">Methods
+  <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/MirageNet/Mirage/new/master/apiSpec/new?filename=Mirage_Serialization_PooledNetworkReader_CreateNew_System_Int32_Mirage_SocketLayer_Pool_Mirage_Serialization_PooledNetworkReader__.md&amp;value=---%0Auid%3A%20Mirage.Serialization.PooledNetworkReader.CreateNew(System.Int32%2CMirage.SocketLayer.Pool%7BMirage.Serialization.PooledNetworkReader%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/MirageNet/Mirage/new/master/apiSpec/new?filename=Mirage_Serialization_MirageNetworkReader_ObjectLocator.md&amp;value=---%0Auid%3A%20Mirage.Serialization.MirageNetworkReader.ObjectLocator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/MirageNet/Mirage/blob/8e9a298d415e8301ff969166b023a4a399214c2b/Assets/Mirage/Runtime/Serialization/NetworkReaderPool.cs/#L92">View Source</a>
+    <a href="https://github.com/MirageNet/Mirage/blob/8e9a298d415e8301ff969166b023a4a399214c2b/Assets/Mirage/Runtime/Serialization/NetworkReaderPool.cs/#L77">View Source</a>
   </span>
-  <a id="Mirage_Serialization_PooledNetworkReader_CreateNew_" data-uid="Mirage.Serialization.PooledNetworkReader.CreateNew*"></a>
-  <h4 id="Mirage_Serialization_PooledNetworkReader_CreateNew_System_Int32_Mirage_SocketLayer_Pool_Mirage_Serialization_PooledNetworkReader__" data-uid="Mirage.Serialization.PooledNetworkReader.CreateNew(System.Int32,Mirage.SocketLayer.Pool{Mirage.Serialization.PooledNetworkReader})">CreateNew(Int32, Pool&lt;PooledNetworkReader&gt;)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static PooledNetworkReader CreateNew(int _, Pool&lt;PooledNetworkReader&gt; pool)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">_</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="Mirage.SocketLayer.Pool-1.html">Pool</a>&lt;<a class="xref" href="Mirage.Serialization.PooledNetworkReader.html">PooledNetworkReader</a>&gt;</td>
-        <td><span class="parametername">pool</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="Mirage.Serialization.PooledNetworkReader.html">PooledNetworkReader</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/MirageNet/Mirage/new/master/apiSpec/new?filename=Mirage_Serialization_PooledNetworkReader_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20Mirage.Serialization.PooledNetworkReader.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/MirageNet/Mirage/blob/8e9a298d415e8301ff969166b023a4a399214c2b/Assets/Mirage/Runtime/Serialization/NetworkReaderPool.cs/#L106">View Source</a>
-  </span>
-  <a id="Mirage_Serialization_PooledNetworkReader_Dispose_" data-uid="Mirage.Serialization.PooledNetworkReader.Dispose*"></a>
-  <h4 id="Mirage_Serialization_PooledNetworkReader_Dispose_System_Boolean_" data-uid="Mirage.Serialization.PooledNetworkReader.Dispose(System.Boolean)">Dispose(Boolean)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">disposing</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="Mirage.Serialization.NetworkReader.html#Mirage_Serialization_NetworkReader_Dispose_System_Boolean_">NetworkReader.Dispose(Boolean)</a></div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/MirageNet/Mirage/new/master/apiSpec/new?filename=Mirage_Serialization_PooledNetworkReader_Release.md&amp;value=---%0Auid%3A%20Mirage.Serialization.PooledNetworkReader.Release%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/MirageNet/Mirage/blob/8e9a298d415e8301ff969166b023a4a399214c2b/Assets/Mirage/Runtime/Serialization/NetworkReaderPool.cs/#L100">View Source</a>
-  </span>
-  <a id="Mirage_Serialization_PooledNetworkReader_Release_" data-uid="Mirage.Serialization.PooledNetworkReader.Release*"></a>
-  <h4 id="Mirage_Serialization_PooledNetworkReader_Release" data-uid="Mirage.Serialization.PooledNetworkReader.Release">Release()</h4>
-  <div class="markdown level1 summary"><p>Puts object back in Pool</p>
+  <a id="Mirage_Serialization_MirageNetworkReader_ObjectLocator_" data-uid="Mirage.Serialization.MirageNetworkReader.ObjectLocator*"></a>
+  <h4 id="Mirage_Serialization_MirageNetworkReader_ObjectLocator" data-uid="Mirage.Serialization.MirageNetworkReader.ObjectLocator">ObjectLocator</h4>
+  <div class="markdown level1 summary"><p>Used to find objects by net id</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Release()</code></pre>
+    <pre><code class="lang-csharp hljs">public IObjectLocator ObjectLocator { get; set; }</code></pre>
   </div>
-  <h3 id="eii">Explicit Interface Implementations
-  </h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/MirageNet/Mirage/new/master/apiSpec/new?filename=Mirage_Serialization_PooledNetworkReader_System_IDisposable_Dispose.md&amp;value=---%0Auid%3A%20Mirage.Serialization.PooledNetworkReader.System%23IDisposable%23Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/MirageNet/Mirage/blob/8e9a298d415e8301ff969166b023a4a399214c2b/Assets/Mirage/Runtime/Serialization/NetworkReaderPool.cs/#L105">View Source</a>
-  </span>
-  <a id="Mirage_Serialization_PooledNetworkReader_System_IDisposable_Dispose_" data-uid="Mirage.Serialization.PooledNetworkReader.System#IDisposable#Dispose*"></a>
-  <h4 id="Mirage_Serialization_PooledNetworkReader_System_IDisposable_Dispose" data-uid="Mirage.Serialization.PooledNetworkReader.System#IDisposable#Dispose">IDisposable.Dispose()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void IDisposable.Dispose()</code></pre>
-  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Mirage.IObjectLocator.html">IObjectLocator</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
@@ -494,10 +406,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/MirageNet/Mirage/new/master/apiSpec/new?filename=Mirage_Serialization_PooledNetworkReader.md&amp;value=---%0Auid%3A%20Mirage.Serialization.PooledNetworkReader%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/MirageNet/Mirage/new/master/apiSpec/new?filename=Mirage_Serialization_MirageNetworkReader.md&amp;value=---%0Auid%3A%20Mirage.Serialization.MirageNetworkReader%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/MirageNet/Mirage/blob/8e9a298d415e8301ff969166b023a4a399214c2b/Assets/Mirage/Runtime/Serialization/NetworkReaderPool.cs/#L83" class="contribution-link">View Source</a>
+                    <a href="https://github.com/MirageNet/Mirage/blob/8e9a298d415e8301ff969166b023a4a399214c2b/Assets/Mirage/Runtime/Serialization/NetworkReaderPool.cs/#L72" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
