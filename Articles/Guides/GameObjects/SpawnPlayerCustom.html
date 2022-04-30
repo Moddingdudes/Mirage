@@ -96,11 +96,15 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="custom-character-spawning">Custom Character Spawning</h1>
 
+<div class="NOTE">
+<h5>Note</h5>
+<p>Full scripts for this page can be found in the SpawnCustomPlayer sample in the package manager or on [github]</p>
+</div>
 <p>Mirage comes with a CharacterSpawner which will automatically spawn a character object when a client connects.</p>
 <p>Many games need character customization. You may want to pick the color of the hair, eyes, skin, height, race, etc.</p>
-<p>In this case,  you will need to create your own CharacterSpawner.  Follow these steps:</p>
+<p>In this case, you will need to create your own CharacterSpawner.  Follow these steps:</p>
 <ol>
-<li>Create your player prefabs (as many as you need) and add them to the Spawnable Prefabs in your NetworkClient.</li>
+<li>Create your player prefabs (as many as you need) and add them to the Spawnable Prefabs in your ClientObjectManager.</li>
 <li>Create a message that describes your player. For example:</li>
 </ol>
 <pre><code class="lang-cs">public struct CreateMMOCharacterMessage
@@ -113,75 +117,124 @@
 
 public enum Race
 {
-    None,
+    Human,
     Elvish,
     Dwarvish,
-    Human
 }
 </code></pre>
 <ol start="3">
 <li>Create Player Spawner class and add it to some GameObject in your scene</li>
 </ol>
-<pre><code class="lang-cs">public class CharacterSpawner : MonoBehaviour
+<pre><code class="lang-cs">public class CustomCharacterSpawner : MonoBehaviour
 {
-    public NetworkSceneManager SceneManager;
-    public NetworkClient Client;
-    public NetworkServer Server;
+        [Header(&quot;References&quot;)]
+        public NetworkClient Client;
+        public NetworkServer Server;
+        public ClientObjectManager ClientObjectManager;
+        public ServerObjectManager ServerObjectManager;
+
+        [Header(&quot;Prefabs&quot;)]
+        // different prefabs based on the Race the player picks
+        public CustomCharacter HumanPrefab;
+        public CustomCharacter ElvishPrefab;
+        public CustomCharacter DwarvishPrefab;
 }
 </code></pre>
 <ol start="4">
 <li>Drag the NetworkClient and NetworkServer and Scene manager to the fields</li>
 <li>Hook into events:</li>
 </ol>
-<pre><code class="lang-cs">public virtual void Start()
+<pre><code class="lang-cs">public void Start()
 {
+    Client.Started.AddListener(OnClientStarted);
     Client.Authenticated.AddListener(OnClientAuthenticated);
-    Server.Authenticated.AddListener(OnServerStarted);
+    Server.Started.AddListener(OnServerStarted);
 }
-    ```
-6) Send your message with your character data when your client connects, or after the user submits his preferences.
-``` cs
-// you can send the message here if you already know
-// everything about the character at the time of player
-// or at a later time when the user submits his preferences
-private void OnClientAuthenticated(INetworkPlayer player)
+</code></pre>
+<ol start="6">
+<li>register the prefabs when the client starts</li>
+</ol>
+<pre><code class="lang-cs">void OnClientStarted()
 {
-    sceneManager.SetClientReady();
-
-    var mmoCharacter = new CreateMMOCharacterMessage {
-        // populare the message with your data
-    }
-    player.Send(mmoCharacter)
+    // make sure all prefabs are Register so mirage can spawn the character for this client and for other players
+    ClientObjectManager.RegisterPrefab(HumanPrefab.Identity);
+    ClientObjectManager.RegisterPrefab(ElvishPrefab.Identity);
+    ClientObjectManager.RegisterPrefab(DwarvishPrefab.Identity);
 }
 </code></pre>
 <ol start="7">
+<li>Send your message with your character data when your client connects, or after the user submits his preferences.</li>
+</ol>
+<pre><code class="lang-cs">// you can send the message here if you already know
+// everything about the character at the time of player
+// or at a later time when the user submits his preferences
+void OnClientAuthenticated(INetworkPlayer player)
+{
+    var mmoCharacter = new CreateMMOCharacterMessage
+    {
+        // populate the message with your data
+        name = &quot;player user name&quot;,
+        race = Race.Human,
+        eyeColor = Color.red,
+        hairColor = Color.black,
+    };
+    player.Send(mmoCharacter);
+}
+</code></pre>
+<ol start="8">
 <li>Receive your message in the server and spawn the player</li>
 </ol>
-<pre><code class="lang-cs">private void OnServerStarted()
+<pre><code class="lang-cs">void OnServerStarted()
 {
     // wait for client to send us an AddPlayerMessage
     Server.MessageHandler.RegisterHandler&lt;CreateMMOCharacterMessage&gt;(OnCreateCharacter);
 }
 
-void OnCreateCharacter(INetworkPlayer conn, CreateMMOCharacterMessage msg)
+void OnCreateCharacter(INetworkPlayer player, CreateMMOCharacterMessage msg)
 {
+    CustomCharacter prefab = GetPrefab(msg);
+
     // create your character object
     // use the data in msg to configure it
-    GameObject playerObject = ...;
+    CustomCharacter character = Instantiate(prefab);
+
+    // set syncVars before telling mirage to spawn character
+    // this will cause them to be sent to client in the spawn message
+    character.PlayerName = msg.name;
+    character.hairColor = msg.hairColor;
+    character.eyeColor = msg.eyeColor;
 
     // spawn it as the character object
-    server.AddCharacter(conn, playerObject);
+    ServerObjectManager.AddCharacter(player, character.Identity);
+}
+
+CustomCharacter GetPrefab(CreateMMOCharacterMessage msg)
+{
+    // get prefab based on race
+    CustomCharacter prefab;
+    switch (msg.race)
+    {
+        case Race.Human: prefab = HumanPrefab; break;
+        case Race.Elvish: prefab = ElvishPrefab; break;
+        case Race.Dwarvish: prefab = DwarvishPrefab; break;
+        // default case to check that client sent valid race.
+        // the only reason it should be invalid is if the client's code was modified by an attacker
+        // throw will cause the client to be kicked
+        default: throw new InvalidEnumArgumentException(&quot;Invalid race given&quot;);
+    }
+
+    return prefab;
 }
 </code></pre>
 <h2 id="ready-state">Ready State</h2>
 <p><em>This out of date and needs updating</em></p>
-<p>In addition to characters, player also have a “ready” state. The host sends clients that are ready information about spawned game objects and state synchronization updates; clients which are not ready are not sent these updates. When a client initially connects to a server, it is not ready. While in this non-ready state, the client can do things that don’t require real-time interactions with the game state on the server, such as loading Scenes, allowing the player to choose an avatar, or fill in log-in boxes. Once a client has completed all its pre-game work, and all its Assets are loaded, it can call <code>ClientScene.Ready</code> to enter the “ready” state. The simple example above demonstrates implementation of ready states; because adding a player with <code>ServerObjectManager.AddCharacter</code> also puts the client into the ready state if it is not already in that state.</p>
-<p>Clients can send and receive network messages without being ready, which also means they can do so without having an active player game object. So a client at a menu or selection screen can connect to the game and interact with it, even though they have no player game object. See documentation on <a href="../RemoteCalls/NetworkMessages.html">Network Messages</a> for more details about sending messages without using RPC calls.</p>
-<p>Note the ready state may be going away in the future.</p>
+<p>In addition to characters, player also have a “scene is ready” state. The server sends clients that are ready information about spawned game objects and state synchronization updates; clients which are not ready are not sent these updates.</p>
+<p>When a client initially connects to a server, their SceneIsReady property will be true. However initial spawning will not happen until a character has been added or you manually tell the server to send spawned objects.</p>
+<p>Once a client has completed all its pre-game setup, and all its Assets are loaded, it can send a character message. As seen in the example above this will tell the server to spawn the player's character using <code>ServerObjectManager.AddCharacter</code>. After the character is spawned mirage will automatically send spawn message for the other spawned object to the client.</p>
 <h2 id="switching-characters">Switching Characters</h2>
 <p>To replace the character game object for a player, use <code>ServerObjectManager.ReplaceCharacter</code>. This is useful having different game object for the player at different times, such as in game and a pregame lobby. The function takes the same arguments as <code>AddCharacter</code>, but allows there to already be a character for that player. The old character game object is not destroyed when ReplaceCharacter is called. The <code>NetworkRoomManager</code> uses this technique to switch from the <code>NetworkRoomPlayer</code> game object to a game play player game object when all the players in the room are ready.</p>
 <p>You can also use <code>ReplaceCharacter</code> to respawn a player or change the object that represents the player. In some cases it is better to just disable a game object and reset its game attributes on respawn. The following code sample demonstrates how to actually replace the player game object with a new game object:</p>
-<pre><code class="lang-cs">public class MyNetworkManager : MonoBehaviour
+<pre><code class="lang-cs">public class CustomCharacterSpawner : MonoBehaviour
 {
     public NetworkServer Server;
     public ServerObjectManager ServerObjectManager;
@@ -191,18 +244,25 @@ void OnCreateCharacter(INetworkPlayer conn, CreateMMOCharacterMessage msg)
         // Cache a reference to the current character object
         GameObject oldPlayer = player.Identity.gameObject;
 
+        var newCharacter = Instantiate(newPrefab);
+
         // Instantiate the new character object and broadcast to clients
-        ServerObjectManager.ReplaceCharacter(player, Instantiate(newPrefab));
+        // NOTE: here we can use `keepAuthority: true` because we are calling Destroy on the old prefab immediately after.
+        ServerObjectManager.ReplaceCharacter(player, newCharacter, keepAuthority: true);
 
         // Remove the previous character object that's now been replaced
         Server.Destroy(oldPlayer);
     }
 }
 </code></pre>
-<h2 id="destroyed-characters">Destroyed Characters</h2>
-<p>If the character game object for a player is destroyed, then that client cannot execute ServerRpc's. They can, however, still send network messages.</p>
-<p>To use <code>ReplaceCharacter</code> you must have the <code>NetworkPlayer</code> reference for the player’s client. This is usually the <code>Owner</code> property on the <code>NetworkBehaviour</code> class, but if the old player has already been destroyed, then that might not be readily available.</p>
-<p>To find the connection, there are some lists available. If using the <code>NetworkRoomManager</code>, then the room players are available in <code>roomSlots</code>. The <code>NetworkServer</code> also has lists of <code>connections</code>.</p>
+<h2 id="destroying-characters">Destroying Characters</h2>
+<p>Once the character is finished with (eg game over, or player died) you can remove the character using <code>ServerObjectManager.DestroyCharacter</code></p>
+<pre><code class="lang-cs">public void OnPlayerDeath(INetworkPlayer player)
+{
+    ServerObjectManager.DestroyCharacter(player);
+}
+</code></pre>
+<p>Alternatively you can use <code>ServerObjectManager.RemoveCharacter</code> to remove it as the player's character without destroying it</p>
 </article>
           </div>
           
