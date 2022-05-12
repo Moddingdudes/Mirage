@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class ReadOnlyInspectorAttribute
+    <title>Class WeaverReaderGeneratedAttribute
    </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class ReadOnlyInspectorAttribute
+    <meta name="title" content="Class WeaverReaderGeneratedAttribute
    ">
     <meta name="generator" content="docfx 2.56.6.0">
     
@@ -95,27 +95,25 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Mirage.ReadOnlyInspectorAttribute">
+            <article class="content wrap" id="_content" data-uid="Mirage.Serialization.Internal.Codegen.WeaverReaderGeneratedAttribute">
   
   
-  <h1 id="Mirage_ReadOnlyInspectorAttribute" data-uid="Mirage.ReadOnlyInspectorAttribute" class="text-break">Class ReadOnlyInspectorAttribute
+  <h1 id="Mirage_Serialization_Internal_Codegen_WeaverReaderGeneratedAttribute" data-uid="Mirage.Serialization.Internal.Codegen.WeaverReaderGeneratedAttribute" class="text-break">Class WeaverReaderGeneratedAttribute
   </h1>
-  <div class="markdown level0 summary"><p>Makes field readonly in inspector.</p>
-<p>This is useful for fields that are set by code, but are shown iin inpector for debuggiing</p>
+  <div class="markdown level0 summary"><p>Used by weaver</p>
+<p>
+Weavers Adds to types that have readers generared for them. Checked by other asmdefs so they dont generate their own readers
+</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.attribute">Attribute</a></div>
-    <div class="level2"><a class="xref" href="https://docs.unity3d.com/ScriptReference/PropertyAttribute.html">PropertyAttribute</a></div>
-    <div class="level3"><span class="xref">ReadOnlyInspectorAttribute</span></div>
+    <div class="level2"><span class="xref">WeaverReaderGeneratedAttribute</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.unity3d.com/ScriptReference/PropertyAttribute-order.html">PropertyAttribute.order</a>
-    </div>
     <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.attribute.equals#system-attribute-equals(system-object)">Attribute.Equals(Object)</a>
     </div>
@@ -243,12 +241,12 @@
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="Mirage.html">Mirage</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Mirage.Serialization.Internal.Codegen.html">Mirage.Serialization.Internal.Codegen</a></h6>
   <h6><strong>Assembly</strong>: Mirage.dll</h6>
-  <h5 id="Mirage_ReadOnlyInspectorAttribute_syntax">Syntax</h5>
+  <h5 id="Mirage_Serialization_Internal_Codegen_WeaverReaderGeneratedAttribute_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[AttributeUsage(AttributeTargets.Field)]
-public sealed class ReadOnlyInspectorAttribute : PropertyAttribute</code></pre>
+    <pre><code class="lang-csharp hljs">[AttributeUsage(AttributeTargets.Method)]
+public sealed class WeaverReaderGeneratedAttribute : Attribute</code></pre>
   </div>
 </article>
           </div>
@@ -258,10 +256,10 @@ public sealed class ReadOnlyInspectorAttribute : PropertyAttribute</code></pre>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/MirageNet/Mirage/new/master/apiSpec/new?filename=Mirage_ReadOnlyInspectorAttribute.md&amp;value=---%0Auid%3A%20Mirage.ReadOnlyInspectorAttribute%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/MirageNet/Mirage/new/master/apiSpec/new?filename=Mirage_Serialization_Internal_Codegen_WeaverReaderGeneratedAttribute.md&amp;value=---%0Auid%3A%20Mirage.Serialization.Internal.Codegen.WeaverReaderGeneratedAttribute%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/MirageNet/Mirage/blob/de6c97caf94138b86028edde4c425fda26bcc952/Assets/Mirage/Runtime/CustomAttributes.cs/#L191" class="contribution-link">View Source</a>
+                    <a href="https://github.com/MirageNet/Mirage/blob/de6c97caf94138b86028edde4c425fda26bcc952/Assets/Mirage/Runtime/Serialization/WeaverAttributes.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

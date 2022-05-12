@@ -10412,6 +10412,24 @@ references:
   fullName.vb: Mirage.Serialization.GenericTypesSerializationExtensions.Write(Of T)(Mirage.Serialization.NetworkWriter, T)
   nameWithType: GenericTypesSerializationExtensions.Write<T>(NetworkWriter, T)
   nameWithType.vb: GenericTypesSerializationExtensions.Write(Of T)(NetworkWriter, T)
+- uid: Mirage.Serialization.Internal.Codegen
+  name: Mirage.Serialization.Internal.Codegen
+  href: api/Mirage.Serialization.Internal.Codegen.html
+  commentId: N:Mirage.Serialization.Internal.Codegen
+  fullName: Mirage.Serialization.Internal.Codegen
+  nameWithType: Mirage.Serialization.Internal.Codegen
+- uid: Mirage.Serialization.Internal.Codegen.WeaverReaderGeneratedAttribute
+  name: WeaverReaderGeneratedAttribute
+  href: api/Mirage.Serialization.Internal.Codegen.WeaverReaderGeneratedAttribute.html
+  commentId: T:Mirage.Serialization.Internal.Codegen.WeaverReaderGeneratedAttribute
+  fullName: Mirage.Serialization.Internal.Codegen.WeaverReaderGeneratedAttribute
+  nameWithType: WeaverReaderGeneratedAttribute
+- uid: Mirage.Serialization.Internal.Codegen.WeaverWriterGeneratedAttribute
+  name: WeaverWriterGeneratedAttribute
+  href: api/Mirage.Serialization.Internal.Codegen.WeaverWriterGeneratedAttribute.html
+  commentId: T:Mirage.Serialization.Internal.Codegen.WeaverWriterGeneratedAttribute
+  fullName: Mirage.Serialization.Internal.Codegen.WeaverWriterGeneratedAttribute
+  nameWithType: WeaverWriterGeneratedAttribute
 - uid: Mirage.Serialization.MessagePacker
   name: MessagePacker
   href: api/Mirage.Serialization.MessagePacker.html
