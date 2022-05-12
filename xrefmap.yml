@@ -6582,6 +6582,19 @@ references:
   isSpec: "True"
   fullName: Mirage.NetworkIdentity.OnAuthorityChanged
   nameWithType: NetworkIdentity.OnAuthorityChanged
+- uid: Mirage.NetworkIdentity.OnOwnerChanged
+  name: OnOwnerChanged
+  href: api/Mirage.NetworkIdentity.html#Mirage_NetworkIdentity_OnOwnerChanged
+  commentId: P:Mirage.NetworkIdentity.OnOwnerChanged
+  fullName: Mirage.NetworkIdentity.OnOwnerChanged
+  nameWithType: NetworkIdentity.OnOwnerChanged
+- uid: Mirage.NetworkIdentity.OnOwnerChanged*
+  name: OnOwnerChanged
+  href: api/Mirage.NetworkIdentity.html#Mirage_NetworkIdentity_OnOwnerChanged_
+  commentId: Overload:Mirage.NetworkIdentity.OnOwnerChanged
+  isSpec: "True"
+  fullName: Mirage.NetworkIdentity.OnOwnerChanged
+  nameWithType: NetworkIdentity.OnOwnerChanged
 - uid: Mirage.NetworkIdentity.OnStartClient
   name: OnStartClient
   href: api/Mirage.NetworkIdentity.html#Mirage_NetworkIdentity_OnStartClient
