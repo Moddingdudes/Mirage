@@ -2,6 +2,7 @@ using System;
 using Mirage.Logging;
 using Mirage.SocketLayer;
 using Mirage.Sockets.Udp;
+using Unity.CodeEditor;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +10,13 @@ namespace Mirage
 {
     public static class NetworkMenu
     {
+        public static void CreateSolution()
+        {
+            //UnityEditor.SyncVS.Synchronizer.Sync;
+            //CodeEditor.Editor.Current.SyncAll();
+            CodeEditor.Editor.CurrentCodeEditor.SyncAll();
+        }
+
         /// <summary>
         /// Creates a new game object with NetworkManager and other network components attached, Including UdpSocketFactory
         /// </summary>

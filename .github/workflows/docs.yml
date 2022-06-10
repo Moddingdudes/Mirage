@@ -31,7 +31,7 @@ jobs:
           key: Library-Library-2021.3.4
 
       - name: Generate Solution
-        run: unity-editor -nographics -logFile /dev/stdout -customBuildName Mirage -projectPath . -executeMethod UnityEditor.SyncVS.SyncSolution -quit
+        run: unity-editor -nographics -logFile /dev/stdout -customBuildName Mirage -projectPath . -executeMethod Mirage.NetworkMenu.CreateSolution -quit
 
       - name: list
         run: ls -la
