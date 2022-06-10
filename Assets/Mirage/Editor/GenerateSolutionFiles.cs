@@ -1,6 +1,6 @@
 using System;
-using Microsoft.Unity.VisualStudio.Editor;
 using Unity.CodeEditor;
+using UnityEditor;
 using UnityEngine;
 
 namespace Mirage.EditorScripts
@@ -45,8 +45,12 @@ namespace Mirage.EditorScripts
             try
             {
                 Debug.Log($"VisualStudioEditor.SyncAll");
-                var vsEditor = new VisualStudioEditor();
-                vsEditor.SyncAll();
+                //var vsEditor = new VisualStudioEditor();
+                //vsEditor.SyncAll();
+
+                var projectGeneration = new Microsoft.Unity.VisualStudio.Editor.ProjectGeneration();
+                AssetDatabase.Refresh();
+                projectGeneration.Sync();
             }
             catch (Exception e)
             {
