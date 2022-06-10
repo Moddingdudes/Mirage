@@ -16,8 +16,8 @@ namespace Mirage.EditorScripts
             try
             {
                 Debug.Log($"UnityEditor.SyncVS.SyncSolution");
-                var syncVS = typeof(CodeEditor).Assembly.GetType("UnityEditor.SyncVS");
-                var syncSln = syncVS.GetMethod("SyncSolution", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+                Type syncVS = typeof(CodeEditor).Assembly.GetType("UnityEditor.SyncVS");
+                System.Reflection.MethodInfo syncSln = syncVS.GetMethod("SyncSolution", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
                 syncSln.Invoke(null, null);
             }
             catch (Exception e)
@@ -53,18 +53,31 @@ namespace Mirage.EditorScripts
                 Debug.LogException(e);
             }
 
-            Debug.Log($"CodeEditor.Editor {CodeEditor.Editor}");
-            Debug.Log($"CodeEditor.Editor typeof {CodeEditor.Editor.GetType()}");
-            Debug.Log($"CodeEditor.CurrentEditor {CodeEditor.CurrentEditor}");
-            Debug.Log($"CodeEditor.Editor.CurrentCodeEditor {CodeEditor.Editor.CurrentCodeEditor}");
-            Debug.Log($"CodeEditor.Editor.CurrentCodeEditor.Installations.Length {CodeEditor.Editor.CurrentCodeEditor.Installations.Length}");
-            for (int i = 0; i < CodeEditor.Editor.CurrentCodeEditor.Installations.Length; i++)
+            try
             {
-                Debug.Log($"CodeEditor.Editor.CurrentCodeEditor.Installations[{i}]: {CodeEditor.Editor.CurrentCodeEditor.Installations[i]}");
+                Debug.Log($"CodeEditor.Editor {CodeEditor.Editor}");
+                Debug.Log($"CodeEditor.Editor typeof {CodeEditor.Editor.GetType()}");
+                Debug.Log($"CodeEditor.CurrentEditor {CodeEditor.CurrentEditor}");
+                Debug.Log($"CodeEditor.Editor.CurrentCodeEditor {CodeEditor.Editor.CurrentCodeEditor}");
+                if (CodeEditor.Editor.CurrentCodeEditor.Installations == null)
+                {
+                    Debug.Log($"CodeEditor.Editor.CurrentCodeEditor.Installations NULL");
+                }
+                else
+                {
+                    Debug.Log($"CodeEditor.Editor.CurrentCodeEditor.Installations.Length {CodeEditor.Editor.CurrentCodeEditor.Installations.Length}");
+                    for (int i = 0; i < CodeEditor.Editor.CurrentCodeEditor.Installations.Length; i++)
+                    {
+                        Debug.Log($"CodeEditor.Editor.CurrentCodeEditor.Installations[{i}]: {CodeEditor.Editor.CurrentCodeEditor.Installations[i]}");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
             }
 
             Debug.Log($"CreateSolution End");
         }
-
     }
 }
