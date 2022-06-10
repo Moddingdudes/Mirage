@@ -27,10 +27,30 @@ namespace Mirage
 
             CodeEditor.Editor.CurrentCodeEditor.SyncAll();
             CodeEditor.CurrentEditor.SyncAll();
-            
+
+
+            try
+            {
+                Debug.Log($"UnityEditor.CodeEditorProjectSync");
+                AssetDatabase.Refresh();
+                CodeEditor.Editor.CurrentCodeEditor.SyncAll();
+                CodeEditor.Editor.CurrentCodeEditor.OpenProject("", -1, -1);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+
             Debug.Log($"CodeEditor.Editor {CodeEditor.Editor}");
+            Debug.Log($"CodeEditor.Editor typeof {CodeEditor.Editor.GetType()}");
             Debug.Log($"CodeEditor.CurrentEditor {CodeEditor.CurrentEditor}");
             Debug.Log($"CodeEditor.Editor.CurrentCodeEditor {CodeEditor.Editor.CurrentCodeEditor}");
+            Debug.Log($"CodeEditor.Editor.CurrentCodeEditor.Installations.Length {CodeEditor.Editor.CurrentCodeEditor.Installations.Length}");
+            for (int i = 0; i < CodeEditor.Editor.CurrentCodeEditor.Installations.Length; i++)
+            {
+                Debug.Log($"CodeEditor.Editor.CurrentCodeEditor.Installations[{i}]: {CodeEditor.Editor.CurrentCodeEditor.Installations[i]}");
+            }
 
             Debug.Log($"CreateSolution End");
         }
