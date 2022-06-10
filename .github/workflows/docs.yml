@@ -36,6 +36,13 @@ jobs:
       - name: list
         run: ls -la
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact
+          path: |
+            *.sln
+            *.csproj
+      
       # unity 2020.3 outputs <ReferenceOutputAssembly>false</ReferenceOutputAssembly> on linux
       # this breaks references to other csproj for docfx and sonar.
       # This step is a work around for this so docfx runs in correctly
