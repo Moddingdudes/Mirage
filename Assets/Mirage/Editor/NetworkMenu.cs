@@ -12,9 +12,27 @@ namespace Mirage
     {
         public static void CreateSolution()
         {
-            //UnityEditor.SyncVS.Synchronizer.Sync;
-            //CodeEditor.Editor.Current.SyncAll();
+            Debug.Log($"CreateSolution Start");
+            try
+            {
+                Debug.Log($"UnityEditor.SyncVS.SyncSolution");
+                var syncVS = typeof(CodeEditor).Assembly.GetType("UnityEditor.SyncVS");
+                var syncSln = syncVS.GetMethod("SyncSolution", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+                syncSln.Invoke(null, null);
+            }
+            catch(Exception e)
+            {
+                Debug.LogException(e);
+            }
+
             CodeEditor.Editor.CurrentCodeEditor.SyncAll();
+            CodeEditor.CurrentEditor.SyncAll();
+            
+            Debug.Log($"CodeEditor.Editor {CodeEditor.Editor}");
+            Debug.Log($"CodeEditor.CurrentEditor {CodeEditor.CurrentEditor}");
+            Debug.Log($"CodeEditor.Editor.CurrentCodeEditor {CodeEditor.Editor.CurrentCodeEditor}");
+
+            Debug.Log($"CreateSolution End");
         }
 
         /// <summary>
