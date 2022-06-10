@@ -1,6 +1,6 @@
 using System;
+using Microsoft.Unity.VisualStudio.Editor;
 using Unity.CodeEditor;
-using UnityEditor;
 using UnityEngine;
 
 namespace Mirage.EditorScripts
@@ -29,18 +29,29 @@ namespace Mirage.EditorScripts
             CodeEditor.CurrentEditor.SyncAll();
 
 
+            //try
+            //{
+            //    Debug.Log($"UnityEditor.CodeEditorProjectSync");
+            //    AssetDatabase.Refresh();
+            //    CodeEditor.Editor.CurrentCodeEditor.SyncAll();
+            //    CodeEditor.Editor.CurrentCodeEditor.OpenProject("", -1, -1);
+            //}
+            //catch (Exception e)
+            //{
+            //    Debug.LogException(e);
+            //}
+
+
             try
             {
-                Debug.Log($"UnityEditor.CodeEditorProjectSync");
-                AssetDatabase.Refresh();
-                CodeEditor.Editor.CurrentCodeEditor.SyncAll();
-                CodeEditor.Editor.CurrentCodeEditor.OpenProject("", -1, -1);
+                Debug.Log($"VisualStudioEditor.SyncAll");
+                var vsEditor = new VisualStudioEditor();
+                vsEditor.SyncAll();
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
             }
-
 
             Debug.Log($"CodeEditor.Editor {CodeEditor.Editor}");
             Debug.Log($"CodeEditor.Editor typeof {CodeEditor.Editor.GetType()}");
