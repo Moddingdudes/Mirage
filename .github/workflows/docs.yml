@@ -54,31 +54,35 @@ jobs:
       - name: apt update
         run: apt update
         
+      - name: Install mono
+        shell: bash
+        run: |
+          apt-get install -y gnupg ca-certificates
+          apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+          echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list
+          apt-get update
+          apt-get install -y mono-complete 
+      
+      - name: Install NuGet
+        shell: bash
+        run: |
+          wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+          mono nuget.exe install
+      
       - name: Install docfx
-        uses: MirageNet/setup-docfx@v1
-      
-      - name: Add dotnet package repo
+        shell: bash
         run: |
-          wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-          dpkg -i packages-microsoft-prod.deb
-          rm packages-microsoft-prod.deb
-      
-      - name: Install dotnet sdk
+          apt-get install -y unzip
+          wget https://github.com/dotnet/docfx/releases/download/v2.56.6/docfx.zip
+          unzip docfx.zip -d /usr/local/docfx
+          rm -rf docfx.zip
+      - name: Create script
+        shell: bash
         run: |
-          apt-get update;
-          apt-get install -y apt-transport-https
-          apt-get update
-          apt-get install -y dotnet-sdk-6.0
+          echo 'mono /usr/local/docfx/docfx.exe $@' | tee /usr/local/bin/docfx
+          chmod ugo+x /usr/local/bin/docfx
       
-      - name: Install dotnet runtime
-        run: |
-          apt-get update;
-          apt-get install -y apt-transport-https
-          apt-get update
-          apt-get install -y dotnet-runtime-6.0
-      
-      - name: Install nuget
-        run: apt install nuget
+
 
       # - run: apt-get -y install tree
       # - run: tree /opt/unity/Editor/data
