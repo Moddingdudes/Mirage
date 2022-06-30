@@ -5,7 +5,7 @@ on: [push]
 jobs:
   build_doc:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     # available list of containers here:
     # https://hub.docker.com/r/unityci/editor/tags?page=1&ordering=last_updated&name=ubuntu-2020.1.17f1-base
     container: unityci/editor:ubuntu-2021.3.4f1-base-1.0.1
@@ -56,9 +56,29 @@ jobs:
         
       - name: Install docfx
         uses: MirageNet/setup-docfx@v1
+      
+      - name: Add dotnet package repo
+        run: |
+          wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+          dpkg -i packages-microsoft-prod.deb
+          rm packages-microsoft-prod.deb
+      
+      - name: Install dotnet sdk
+        run: |
+          apt-get update;
+          apt-get install -y apt-transport-https
+          apt-get update
+          apt-get install -y dotnet-sdk-6.0
+      
+      - name: Install dotnet runtime
+        run: |
+          apt-get update;
+          apt-get install -y apt-transport-https
+          apt-get update
+          apt-get install -y dotnet-runtime-6.0
 
-      - run: apt-get -y install tree
-      - run: tree /opt/unity/Editor
+      # - run: apt-get -y install tree
+      # - run: tree /opt/unity/Editor/data
 
       - name: Generate API 
         run: docfx metadata --logLevel Warning --warningsAsErrors doc/docfx.json
