@@ -76,6 +76,9 @@ jobs:
           apt-get install -y apt-transport-https
           apt-get update
           apt-get install -y dotnet-runtime-6.0
+      
+      - name: Install nuget
+        run: sudo apt install nuget
 
       # - run: apt-get -y install tree
       # - run: tree /opt/unity/Editor/data
