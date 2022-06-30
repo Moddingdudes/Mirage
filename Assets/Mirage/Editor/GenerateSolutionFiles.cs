@@ -1,3 +1,4 @@
+#if UNITY_2021_3_OR_NEWER
 using System;
 using Unity.CodeEditor;
 using UnityEditor;
@@ -85,3 +86,4 @@ namespace Mirage.EditorScripts
         }
     }
 }
+#endif
