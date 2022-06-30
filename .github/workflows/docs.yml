@@ -83,7 +83,9 @@ jobs:
           chmod ugo+x /usr/local/bin/docfx
       
 
-
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+      - run: sleep 300s
       # - run: apt-get -y install tree
       # - run: tree /opt/unity/Editor/data
 
