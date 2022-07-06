@@ -4077,6 +4077,22 @@ references:
   isSpec: "True"
   fullName: Mirage.INetworkClient.Authenticated
   nameWithType: INetworkClient.Authenticated
+- uid: Mirage.INetworkClient.Connect(System.String,System.Nullable{System.UInt16})
+  name: Connect(String, Nullable<UInt16>)
+  href: api/Mirage.INetworkClient.html#Mirage_INetworkClient_Connect_System_String_System_Nullable_System_UInt16__
+  commentId: M:Mirage.INetworkClient.Connect(System.String,System.Nullable{System.UInt16})
+  name.vb: Connect(String, Nullable(Of UInt16))
+  fullName: Mirage.INetworkClient.Connect(System.String, System.Nullable<System.UInt16>)
+  fullName.vb: Mirage.INetworkClient.Connect(System.String, System.Nullable(Of System.UInt16))
+  nameWithType: INetworkClient.Connect(String, Nullable<UInt16>)
+  nameWithType.vb: INetworkClient.Connect(String, Nullable(Of UInt16))
+- uid: Mirage.INetworkClient.Connect*
+  name: Connect
+  href: api/Mirage.INetworkClient.html#Mirage_INetworkClient_Connect_
+  commentId: Overload:Mirage.INetworkClient.Connect
+  isSpec: "True"
+  fullName: Mirage.INetworkClient.Connect
+  nameWithType: INetworkClient.Connect
 - uid: Mirage.INetworkClient.Connected
   name: Connected
   href: api/Mirage.INetworkClient.html#Mirage_INetworkClient_Connected
@@ -4549,6 +4565,19 @@ references:
   isSpec: "True"
   fullName: Mirage.INetworkServer.Started
   nameWithType: INetworkServer.Started
+- uid: Mirage.INetworkServer.StartServer
+  name: StartServer()
+  href: api/Mirage.INetworkServer.html#Mirage_INetworkServer_StartServer
+  commentId: M:Mirage.INetworkServer.StartServer
+  fullName: Mirage.INetworkServer.StartServer()
+  nameWithType: INetworkServer.StartServer()
+- uid: Mirage.INetworkServer.StartServer*
+  name: StartServer
+  href: api/Mirage.INetworkServer.html#Mirage_INetworkServer_StartServer_
+  commentId: Overload:Mirage.INetworkServer.StartServer
+  isSpec: "True"
+  fullName: Mirage.INetworkServer.StartServer
+  nameWithType: INetworkServer.StartServer
 - uid: Mirage.INetworkServer.Stop
   name: Stop()
   href: api/Mirage.INetworkServer.html#Mirage_INetworkServer_Stop
@@ -6287,6 +6316,12 @@ references:
   isSpec: "True"
   fullName: Mirage.NetworkClient.Player
   nameWithType: NetworkClient.Player
+- uid: Mirage.NetworkClient.RunInBackground
+  name: RunInBackground
+  href: api/Mirage.NetworkClient.html#Mirage_NetworkClient_RunInBackground
+  commentId: F:Mirage.NetworkClient.RunInBackground
+  fullName: Mirage.NetworkClient.RunInBackground
+  nameWithType: NetworkClient.RunInBackground
 - uid: Mirage.NetworkClient.Send(System.ArraySegment{System.Byte},System.Int32)
   name: Send(ArraySegment<Byte>, Int32)
   href: api/Mirage.NetworkClient.html#Mirage_NetworkClient_Send_System_ArraySegment_System_Byte__System_Int32_
@@ -6371,6 +6406,19 @@ references:
   commentId: T:Mirage.NetworkDiagnostics.MessageInfo
   fullName: Mirage.NetworkDiagnostics.MessageInfo
   nameWithType: NetworkDiagnostics.MessageInfo
+- uid: Mirage.NetworkDiagnostics.MessageInfo.#ctor(System.Object,System.Int32,System.Int32)
+  name: MessageInfo(Object, Int32, Int32)
+  href: api/Mirage.NetworkDiagnostics.MessageInfo.html#Mirage_NetworkDiagnostics_MessageInfo__ctor_System_Object_System_Int32_System_Int32_
+  commentId: M:Mirage.NetworkDiagnostics.MessageInfo.#ctor(System.Object,System.Int32,System.Int32)
+  fullName: Mirage.NetworkDiagnostics.MessageInfo.MessageInfo(System.Object, System.Int32, System.Int32)
+  nameWithType: NetworkDiagnostics.MessageInfo.MessageInfo(Object, Int32, Int32)
+- uid: Mirage.NetworkDiagnostics.MessageInfo.#ctor*
+  name: MessageInfo
+  href: api/Mirage.NetworkDiagnostics.MessageInfo.html#Mirage_NetworkDiagnostics_MessageInfo__ctor_
+  commentId: Overload:Mirage.NetworkDiagnostics.MessageInfo.#ctor
+  isSpec: "True"
+  fullName: Mirage.NetworkDiagnostics.MessageInfo.MessageInfo
+  nameWithType: NetworkDiagnostics.MessageInfo.MessageInfo
 - uid: Mirage.NetworkDiagnostics.MessageInfo.bytes
   name: bytes
   href: api/Mirage.NetworkDiagnostics.MessageInfo.html#Mirage_NetworkDiagnostics_MessageInfo_bytes
@@ -8149,6 +8197,23 @@ references:
   commentId: F:Mirage.NetworkServer.MetricsSize
   fullName: Mirage.NetworkServer.MetricsSize
   nameWithType: NetworkServer.MetricsSize
+- uid: Mirage.NetworkServer.Mirage#INetworkServer#StartServer
+  name: INetworkServer.StartServer()
+  href: api/Mirage.NetworkServer.html#Mirage_NetworkServer_Mirage_INetworkServer_StartServer
+  commentId: M:Mirage.NetworkServer.Mirage#INetworkServer#StartServer
+  name.vb: Mirage.INetworkServer.StartServer()
+  fullName: Mirage.NetworkServer.Mirage.INetworkServer.StartServer()
+  nameWithType: NetworkServer.INetworkServer.StartServer()
+  nameWithType.vb: NetworkServer.Mirage.INetworkServer.StartServer()
+- uid: Mirage.NetworkServer.Mirage#INetworkServer#StartServer*
+  name: INetworkServer.StartServer
+  href: api/Mirage.NetworkServer.html#Mirage_NetworkServer_Mirage_INetworkServer_StartServer_
+  commentId: Overload:Mirage.NetworkServer.Mirage#INetworkServer#StartServer
+  isSpec: "True"
+  name.vb: Mirage.INetworkServer.StartServer
+  fullName: Mirage.NetworkServer.Mirage.INetworkServer.StartServer
+  nameWithType: NetworkServer.INetworkServer.StartServer
+  nameWithType.vb: NetworkServer.Mirage.INetworkServer.StartServer
 - uid: Mirage.NetworkServer.NumberOfPlayers
   name: NumberOfPlayers
   href: api/Mirage.NetworkServer.html#Mirage_NetworkServer_NumberOfPlayers
@@ -8227,6 +8292,12 @@ references:
   isSpec: "True"
   fullName: Mirage.NetworkServer.RemoveConnection
   nameWithType: NetworkServer.RemoveConnection
+- uid: Mirage.NetworkServer.RunInBackground
+  name: RunInBackground
+  href: api/Mirage.NetworkServer.html#Mirage_NetworkServer_RunInBackground
+  commentId: F:Mirage.NetworkServer.RunInBackground
+  fullName: Mirage.NetworkServer.RunInBackground
+  nameWithType: NetworkServer.RunInBackground
 - uid: Mirage.NetworkServer.SendToAll*
   name: SendToAll
   href: api/Mirage.NetworkServer.html#Mirage_NetworkServer_SendToAll_
@@ -8915,6 +8986,23 @@ references:
   fullName: Mirage.PipePeerConnection.Mirage.SocketLayer.IConnection.EndPoint
   nameWithType: PipePeerConnection.IConnection.EndPoint
   nameWithType.vb: PipePeerConnection.Mirage.SocketLayer.IConnection.EndPoint
+- uid: Mirage.PipePeerConnection.Mirage#SocketLayer#IConnection#FlushBatch
+  name: IConnection.FlushBatch()
+  href: api/Mirage.PipePeerConnection.html#Mirage_PipePeerConnection_Mirage_SocketLayer_IConnection_FlushBatch
+  commentId: M:Mirage.PipePeerConnection.Mirage#SocketLayer#IConnection#FlushBatch
+  name.vb: Mirage.SocketLayer.IConnection.FlushBatch()
+  fullName: Mirage.PipePeerConnection.Mirage.SocketLayer.IConnection.FlushBatch()
+  nameWithType: PipePeerConnection.IConnection.FlushBatch()
+  nameWithType.vb: PipePeerConnection.Mirage.SocketLayer.IConnection.FlushBatch()
+- uid: Mirage.PipePeerConnection.Mirage#SocketLayer#IConnection#FlushBatch*
+  name: IConnection.FlushBatch
+  href: api/Mirage.PipePeerConnection.html#Mirage_PipePeerConnection_Mirage_SocketLayer_IConnection_FlushBatch_
+  commentId: Overload:Mirage.PipePeerConnection.Mirage#SocketLayer#IConnection#FlushBatch
+  isSpec: "True"
+  name.vb: Mirage.SocketLayer.IConnection.FlushBatch
+  fullName: Mirage.PipePeerConnection.Mirage.SocketLayer.IConnection.FlushBatch
+  nameWithType: PipePeerConnection.IConnection.FlushBatch
+  nameWithType.vb: PipePeerConnection.Mirage.SocketLayer.IConnection.FlushBatch
 - uid: Mirage.PipePeerConnection.PipeEndPoint
   name: PipePeerConnection.PipeEndPoint
   href: api/Mirage.PipePeerConnection.PipeEndPoint.html
@@ -9631,6 +9719,12 @@ references:
   commentId: M:Mirage.Serialization.BitHelper.BitCount(System.Single,System.Single)
   fullName: Mirage.Serialization.BitHelper.BitCount(System.Single, System.Single)
   nameWithType: BitHelper.BitCount(Single, Single)
+- uid: Mirage.Serialization.BitHelper.BitCount(System.Single,System.Single,System.Boolean)
+  name: BitCount(Single, Single, Boolean)
+  href: api/Mirage.Serialization.BitHelper.html#Mirage_Serialization_BitHelper_BitCount_System_Single_System_Single_System_Boolean_
+  commentId: M:Mirage.Serialization.BitHelper.BitCount(System.Single,System.Single,System.Boolean)
+  fullName: Mirage.Serialization.BitHelper.BitCount(System.Single, System.Single, System.Boolean)
+  nameWithType: BitHelper.BitCount(Single, Single, Boolean)
 - uid: Mirage.Serialization.BitHelper.BitCount(System.UInt64)
   name: BitCount(UInt64)
   href: api/Mirage.Serialization.BitHelper.html#Mirage_Serialization_BitHelper_BitCount_System_UInt64_
@@ -9927,12 +10021,24 @@ references:
   commentId: M:Mirage.Serialization.FloatPacker.#ctor(System.Single,System.Int32)
   fullName: Mirage.Serialization.FloatPacker.FloatPacker(System.Single, System.Int32)
   nameWithType: FloatPacker.FloatPacker(Single, Int32)
+- uid: Mirage.Serialization.FloatPacker.#ctor(System.Single,System.Int32,System.Boolean)
+  name: FloatPacker(Single, Int32, Boolean)
+  href: api/Mirage.Serialization.FloatPacker.html#Mirage_Serialization_FloatPacker__ctor_System_Single_System_Int32_System_Boolean_
+  commentId: M:Mirage.Serialization.FloatPacker.#ctor(System.Single,System.Int32,System.Boolean)
+  fullName: Mirage.Serialization.FloatPacker.FloatPacker(System.Single, System.Int32, System.Boolean)
+  nameWithType: FloatPacker.FloatPacker(Single, Int32, Boolean)
 - uid: Mirage.Serialization.FloatPacker.#ctor(System.Single,System.Single)
   name: FloatPacker(Single, Single)
   href: api/Mirage.Serialization.FloatPacker.html#Mirage_Serialization_FloatPacker__ctor_System_Single_System_Single_
   commentId: M:Mirage.Serialization.FloatPacker.#ctor(System.Single,System.Single)
   fullName: Mirage.Serialization.FloatPacker.FloatPacker(System.Single, System.Single)
   nameWithType: FloatPacker.FloatPacker(Single, Single)
+- uid: Mirage.Serialization.FloatPacker.#ctor(System.Single,System.Single,System.Boolean)
+  name: FloatPacker(Single, Single, Boolean)
+  href: api/Mirage.Serialization.FloatPacker.html#Mirage_Serialization_FloatPacker__ctor_System_Single_System_Single_System_Boolean_
+  commentId: M:Mirage.Serialization.FloatPacker.#ctor(System.Single,System.Single,System.Boolean)
+  fullName: Mirage.Serialization.FloatPacker.FloatPacker(System.Single, System.Single, System.Boolean)
+  nameWithType: FloatPacker.FloatPacker(Single, Single, Boolean)
 - uid: Mirage.Serialization.FloatPacker.#ctor*
   name: FloatPacker
   href: api/Mirage.Serialization.FloatPacker.html#Mirage_Serialization_FloatPacker__ctor_
@@ -13852,6 +13958,19 @@ references:
   isSpec: "True"
   fullName: Mirage.SocketLayer.IConnection.EndPoint
   nameWithType: IConnection.EndPoint
+- uid: Mirage.SocketLayer.IConnection.FlushBatch
+  name: FlushBatch()
+  href: api/Mirage.SocketLayer.IConnection.html#Mirage_SocketLayer_IConnection_FlushBatch
+  commentId: M:Mirage.SocketLayer.IConnection.FlushBatch
+  fullName: Mirage.SocketLayer.IConnection.FlushBatch()
+  nameWithType: IConnection.FlushBatch()
+- uid: Mirage.SocketLayer.IConnection.FlushBatch*
+  name: FlushBatch
+  href: api/Mirage.SocketLayer.IConnection.html#Mirage_SocketLayer_IConnection_FlushBatch_
+  commentId: Overload:Mirage.SocketLayer.IConnection.FlushBatch
+  isSpec: "True"
+  fullName: Mirage.SocketLayer.IConnection.FlushBatch
+  nameWithType: IConnection.FlushBatch
 - uid: Mirage.SocketLayer.IConnection.SendNotify(System.ArraySegment{System.Byte})
   name: SendNotify(ArraySegment<Byte>)
   href: api/Mirage.SocketLayer.IConnection.html#Mirage_SocketLayer_IConnection_SendNotify_System_ArraySegment_System_Byte__

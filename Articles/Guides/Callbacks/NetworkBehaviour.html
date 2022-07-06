@@ -8,7 +8,7 @@
     <title>NetworkBehaviour Callbacks </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="NetworkBehaviour Callbacks ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.56.2.0">
     
     <link rel="shortcut icon" href="../../../favicon.ico?v=2">
     <link rel="stylesheet" href="../../../styles/docfx.vendor.css">
@@ -76,11 +76,11 @@
       <div class="container body-content">
         
         <div id="search-results">
-          <div class="search-list">Search Results for <span></span></div>
+          <div class="search-list"></div>
           <div class="sr-items">
             <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
           </div>
-          <ul id="pagination" data-first="First" data-prev="Previous" data-next="Next" data-last="Last"></ul>
+          <ul id="pagination"></ul>
         </div>
       </div>
       <div role="main" class="container body-content hide-when-search">
@@ -99,7 +99,26 @@
 
 <p><strong>See also <a class="xref" href="../../../api/Mirage.NetworkBehaviour.html">NetworkBehaviour</a> in the API Reference.</strong></p>
 <p>There are a number of events relating to network behaviours that can occur over the course of a normal multiplayer game. These include events such as the host starting up, a player joining, or a player leaving. Each of these possible events has an associated callback that you can implement in your own code to take action when the event occurs.</p>
-<p>When you create a script which inherits from <code>NetworkBehaviour</code>, you can write your own implementation of what should happen when these events occur. To do this, you override the virtual methods on the <code>NetworkBehaviour</code> class with your own implementation of what should happen when the given event occurs.</p>
+<p>To use an event you must add a function as a listener, this function will then be called when the event occurs. Some events, like <code>OnStartServer</code>, will call the listener immediately if the event was previously called. This allows you to add the listeners at any point without worrying about missing the Invoke.</p>
+<pre><code class="lang-cs">void Awake()
+{
+    Identity.OnStartServer.AddListener(MyStartServer);
+    Identity.OnStartClient.AddListener(MyStartClient);
+    Identity.OnStartLocalPlayer.AddListener(MyStartLocalPlayer);
+}
+void MyStartServer() 
+{
+    // ...
+}
+void MyStartClient() 
+{
+    // ...
+}
+void MyStartLocalPlayer() 
+{
+    // ...
+}
+</code></pre>
 <p>This is a full list of virtual methods (callbacks) that you can implement on <code>NetworkBehaviour</code>, and where they are called</p>
 <h2 id="server-only">Server Only</h2>
 <ul>
@@ -195,8 +214,7 @@
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-                <h5>In This Article</h5>
-                <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
               </nav>
             </div>
           </div>
