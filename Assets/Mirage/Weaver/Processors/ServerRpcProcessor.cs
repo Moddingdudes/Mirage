@@ -49,7 +49,7 @@ namespace Mirage.Weaver
         /// </remarks>
         private MethodDefinition GenerateStub(MethodDefinition md, CustomAttribute serverRpcAttr, int rpcIndex, ValueSerializer[] paramSerializers)
         {
-            var cmd = SubstituteMethod(md);
+            var cmd = this.SubstituteMethod(md);
 
             var worker = md.Body.GetILProcessor();
 
@@ -58,7 +58,7 @@ namespace Mirage.Weaver
             //    call the body
             //    return;
             // }
-            CallBody(worker, cmd);
+            this.CallBody(worker, cmd);
 
             // NetworkWriter writer = NetworkWriterPool.GetWriter()
             var writer = md.AddLocal<PooledNetworkWriter>();
@@ -66,14 +66,14 @@ namespace Mirage.Weaver
             worker.Append(worker.Create(OpCodes.Stloc, writer));
 
             // write all the arguments that the user passed to the Cmd call
-            WriteArguments(worker, md, writer, paramSerializers, RemoteCallType.ServerRpc);
+            this.WriteArguments(worker, md, writer, paramSerializers, RemoteCallType.ServerRpc);
 
             var cmdName = md.FullName;
 
             var channel = serverRpcAttr.GetField(nameof(ServerRpcAttribute.channel), 0);
             var requireAuthority = serverRpcAttr.GetField(nameof(ServerRpcAttribute.requireAuthority), true);
 
-            var sendMethod = GetSendMethod(md, worker);
+            var sendMethod = this.GetSendMethod(md, worker);
 
             // ServerRpcSender.Send(this, 12345, writer, channel, requireAuthority)
             worker.Append(worker.Create(OpCodes.Ldarg_0));
@@ -83,7 +83,7 @@ namespace Mirage.Weaver
             worker.Append(worker.Create(requireAuthority ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0));
             worker.Append(worker.Create(OpCodes.Call, sendMethod));
 
-            NetworkWriterHelper.CallRelease(module, worker, writer);
+            NetworkWriterHelper.CallRelease(this.module, worker, writer);
 
             worker.Append(worker.Create(OpCodes.Ret));
 
@@ -107,9 +107,9 @@ namespace Mirage.Weaver
 
         private void CallBody(ILProcessor worker, MethodDefinition rpc)
         {
-            IsServer(worker, () =>
+            this.IsServer(worker, () =>
             {
-                InvokeBody(worker, rpc);
+                this.InvokeBody(worker, rpc);
                 worker.Append(worker.Create(OpCodes.Ret));
             });
         }
@@ -176,7 +176,7 @@ namespace Mirage.Weaver
             worker.Append(worker.Create(OpCodes.Castclass, method.DeclaringType.MakeSelfGeneric()));
 
             // read and load args
-            ReadArguments(method, worker, readerParameter, senderParameter, false, paramSerializers);
+            this.ReadArguments(method, worker, readerParameter, senderParameter, false, paramSerializers);
 
             // invoke actual ServerRpc function
             worker.Append(worker.Create(OpCodes.Callvirt, userCodeFunc.MakeHostInstanceSelfGeneric()));
@@ -187,18 +187,18 @@ namespace Mirage.Weaver
 
         public ServerRpcMethod ProcessRpc(MethodDefinition md, CustomAttribute serverRpcAttr, int rpcIndex)
         {
-            ValidateMethod(md, RemoteCallType.ServerRpc);
-            ValidateParameters(md, RemoteCallType.ServerRpc);
-            ValidateReturnType(md, RemoteCallType.ServerRpc);
+            this.ValidateMethod(md, RemoteCallType.ServerRpc);
+            this.ValidateParameters(md, RemoteCallType.ServerRpc);
+            this.ValidateReturnType(md, RemoteCallType.ServerRpc);
 
             // default vaue true for requireAuthority, or someone could force call these on server
             var requireAuthority = serverRpcAttr.GetField(nameof(ServerRpcAttribute.requireAuthority), true);
 
-            var paramSerializers = GetValueSerializers(md);
+            var paramSerializers = this.GetValueSerializers(md);
 
-            var userCodeFunc = GenerateStub(md, serverRpcAttr, rpcIndex, paramSerializers);
+            var userCodeFunc = this.GenerateStub(md, serverRpcAttr, rpcIndex, paramSerializers);
 
-            var skeletonFunc = GenerateSkeleton(md, userCodeFunc, paramSerializers);
+            var skeletonFunc = this.GenerateSkeleton(md, userCodeFunc, paramSerializers);
             return new ServerRpcMethod
             {
                 Index = rpcIndex,

@@ -19,19 +19,19 @@ namespace Mirage
 
         internal NetworkBehaviour component;
 
-        internal uint NetId => component != null ? component.NetId : netId;
-        internal int ComponentId => component != null ? component.ComponentIndex : componentId;
+        internal uint NetId => this.component != null ? this.component.NetId : this.netId;
+        internal int ComponentId => this.component != null ? this.component.ComponentIndex : this.componentId;
 
         public NetworkBehaviour Value
         {
             get
             {
-                if (component != null)
-                    return component;
+                if (this.component != null)
+                    return this.component;
 
-                if (objectLocator != null && objectLocator.TryGetIdentity(NetId, out var result))
+                if (this.objectLocator != null && this.objectLocator.TryGetIdentity(this.NetId, out var result))
                 {
-                    return result.NetworkBehaviours[componentId];
+                    return result.NetworkBehaviours[this.componentId];
                 }
 
 
@@ -42,10 +42,10 @@ namespace Mirage
             {
                 if (value == null)
                 {
-                    netId = 0;
-                    componentId = 0;
+                    this.netId = 0;
+                    this.componentId = 0;
                 }
-                component = value;
+                this.component = value;
             }
         }
     }

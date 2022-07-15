@@ -18,16 +18,16 @@ namespace Mirage
 
         internal NetworkIdentity identity;
 
-        internal uint NetId => identity != null ? identity.NetId : netId;
+        internal uint NetId => this.identity != null ? this.identity.NetId : this.netId;
 
         public NetworkIdentity Value
         {
             get
             {
-                if (identity != null)
-                    return identity;
+                if (this.identity != null)
+                    return this.identity;
 
-                if (objectLocator != null && objectLocator.TryGetIdentity(NetId, out var result))
+                if (this.objectLocator != null && this.objectLocator.TryGetIdentity(this.NetId, out var result))
                 {
                     return result;
                 }
@@ -38,8 +38,8 @@ namespace Mirage
             set
             {
                 if (value == null)
-                    netId = 0;
-                identity = value;
+                    this.netId = 0;
+                this.identity = value;
             }
         }
     }

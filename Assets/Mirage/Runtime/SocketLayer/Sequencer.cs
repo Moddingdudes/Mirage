@@ -61,7 +61,7 @@ namespace Mirage.SocketLayer
         /// <summary>
         /// Number of bits used for the sequence generator up to 64
         /// </summary>
-        public int Bits => bits;
+        public int Bits => this.bits;
 
         /// <param name="bits">amount of bits for the sequence</param>
         public Sequencer(int bits)
@@ -76,9 +76,9 @@ namespace Mirage.SocketLayer
             //          = 1111 1111
 
             this.bits = bits;
-            sequence = 0;
-            mask = (1UL << bits) - 1UL;
-            shift = sizeof(ulong) * 8 - bits;
+            this.sequence = 0;
+            this.mask = (1UL << bits) - 1UL;
+            this.shift = sizeof(ulong) * 8 - bits;
         }
 
         /// <summary>
@@ -88,8 +88,8 @@ namespace Mirage.SocketLayer
         /// <returns>0, 1, 2, ..., (2^n)-1, 0, 1, 2, ...</returns>
         public ulong Next()
         {
-            var current = sequence;
-            sequence = NextAfter(sequence);
+            var current = this.sequence;
+            this.sequence = this.NextAfter(this.sequence);
             return current;
         }
 
@@ -101,7 +101,7 @@ namespace Mirage.SocketLayer
         /// <returns>the next sequence value</returns>
         public ulong NextAfter(ulong sequence)
         {
-            return (sequence + 1UL) & mask;
+            return (sequence + 1UL) & this.mask;
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace Mirage.SocketLayer
         /// <returns>the next sequence value</returns>
         public ulong MoveInBounds(ulong sequence)
         {
-            return (sequence) & mask;
+            return (sequence) & this.mask;
         }
 
         /// <summary>
@@ -124,9 +124,9 @@ namespace Mirage.SocketLayer
         /// <returns>from - to, adjusted for wrapping</returns>
         public long Distance(ulong from, ulong to)
         {
-            to <<= shift;
-            from <<= shift;
-            return ((long)(from - to)) >> shift;
+            to <<= this.shift;
+            from <<= this.shift;
+            return ((long)(from - to)) >> this.shift;
         }
     }
 }

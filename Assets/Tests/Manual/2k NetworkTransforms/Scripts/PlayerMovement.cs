@@ -8,13 +8,13 @@ namespace Mirage.Examples.OneK
 
         private void Update()
         {
-            if (!IsLocalPlayer) return;
+            if (!this.IsLocalPlayer) return;
 
             var h = Input.GetAxis("Horizontal");
             var v = Input.GetAxis("Vertical");
 
             var dir = new Vector3(h, 0, v);
-            transform.position += dir.normalized * (Time.deltaTime * speed);
+            this.transform.position += dir.normalized * (Time.deltaTime * this.speed);
         }
     }
 }

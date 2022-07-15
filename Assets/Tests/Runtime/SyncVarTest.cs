@@ -27,9 +27,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [TearDown]
         public void TearDown()
         {
-            ownerWriter.Reset();
-            observersWriter.Reset();
-            reader.Dispose();
+            this.ownerWriter.Reset();
+            this.observersWriter.Reset();
+            this.reader.Dispose();
         }
 
 
@@ -133,7 +133,7 @@ namespace Mirage.Tests.Runtime.Serialization
             player1.guild = myGuild;
 
             // serialize all the data as we would for the network
-            identity1.OnSerializeAll(true, ownerWriter, observersWriter);
+            identity1.OnSerializeAll(true, this.ownerWriter, this.observersWriter);
 
             // set up a "client" object
             var gameObject2 = new GameObject();
@@ -141,8 +141,8 @@ namespace Mirage.Tests.Runtime.Serialization
             var player2 = gameObject2.AddComponent<MockPlayer>();
 
             // apply all the data from the server object
-            reader.Reset(ownerWriter.ToArray());
-            identity2.OnDeserializeAll(reader, true);
+            this.reader.Reset(this.ownerWriter.ToArray());
+            identity2.OnDeserializeAll(this.reader, true);
 
             // check that the syncvars got updated
             Assert.That(player2.guild.name, Is.EqualTo("Back street boys"), "Data should be synchronized");

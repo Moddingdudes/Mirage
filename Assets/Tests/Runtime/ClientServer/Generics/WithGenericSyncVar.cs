@@ -30,12 +30,12 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         public IEnumerator SyncToClient()
         {
             const int num = 32;
-            serverComponent.value = num;
+            this.serverComponent.value = num;
 
             yield return null;
             yield return null;
 
-            Assert.That(clientComponent.value, Is.EqualTo(num));
+            Assert.That(this.clientComponent.value, Is.EqualTo(num));
         }
     }
     public class WithGenericSyncVarObject : ClientServerSetup<WithGenericSyncVar_behaviourObject>
@@ -51,13 +51,13 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         public IEnumerator SyncToClient()
         {
             const int num = 32;
-            serverComponent.value = new MyClass { Value = num };
+            this.serverComponent.value = new MyClass { Value = num };
 
             yield return null;
             yield return null;
 
-            Assert.That(clientComponent.value, Is.Not.Null);
-            Assert.That(clientComponent.value.Value, Is.EqualTo(num));
+            Assert.That(this.clientComponent.value, Is.Not.Null);
+            Assert.That(this.clientComponent.value.Value, Is.EqualTo(num));
         }
     }
 }

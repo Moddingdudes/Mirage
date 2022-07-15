@@ -30,63 +30,63 @@ namespace Mirage.Experimental
         /// Ignore value if is host or client with Authority
         /// </summary>
         /// <returns></returns>
-        private bool IgnoreSync => IsServer || ClientWithAuthority;
+        private bool IgnoreSync => this.IsServer || this.ClientWithAuthority;
 
-        private bool ClientWithAuthority => clientAuthority && HasAuthority;
+        private bool ClientWithAuthority => this.clientAuthority && this.HasAuthority;
 
         private void OnValidate()
         {
-            if (target == null)
+            if (this.target == null)
             {
-                target = GetComponent<Rigidbody>();
+                this.target = this.GetComponent<Rigidbody>();
             }
         }
 
         private void Update()
         {
-            if (IsServer)
+            if (this.IsServer)
             {
-                SyncToClients();
+                this.SyncToClients();
             }
-            else if (ClientWithAuthority)
+            else if (this.ClientWithAuthority)
             {
-                SendToServer();
+                this.SendToServer();
             }
         }
 
         private void SyncToClients()
         {
-            targetVelocity = target.velocity;
-            targetPosition = target.position;
+            this.targetVelocity = this.target.velocity;
+            this.targetPosition = this.target.position;
         }
 
         private void SendToServer()
         {
             var now = Time.time;
-            if (now > nextSyncTime)
+            if (now > this.nextSyncTime)
             {
-                nextSyncTime = now + syncInterval;
-                CmdSendState(target.velocity, target.position);
+                this.nextSyncTime = now + this.syncInterval;
+                this.CmdSendState(this.target.velocity, this.target.position);
             }
         }
 
         [ServerRpc]
         private void CmdSendState(Vector3 velocity, Vector3 position)
         {
-            target.velocity = velocity;
-            target.position = position;
-            targetVelocity = velocity;
-            targetPosition = position;
+            this.target.velocity = velocity;
+            this.target.position = position;
+            this.targetVelocity = velocity;
+            this.targetPosition = position;
         }
 
         private void FixedUpdate()
         {
-            if (IgnoreSync) { return; }
+            if (this.IgnoreSync) { return; }
 
-            target.velocity = Vector3.Lerp(target.velocity, targetVelocity, lerpVelocityAmount);
-            target.position = Vector3.Lerp(target.position, targetPosition, lerpPositionAmount);
+            this.target.velocity = Vector3.Lerp(this.target.velocity, this.targetVelocity, this.lerpVelocityAmount);
+            this.target.position = Vector3.Lerp(this.target.position, this.targetPosition, this.lerpPositionAmount);
             // add velocity to position as position would have moved on server at that velocity
-            targetPosition += target.velocity * Time.fixedDeltaTime;
+            this.targetPosition += this.target.velocity * Time.fixedDeltaTime;
 
             // TODO does this also need to sync acceleration so and update velocity?
         }

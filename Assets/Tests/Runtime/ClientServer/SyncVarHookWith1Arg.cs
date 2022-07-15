@@ -70,9 +70,9 @@ namespace Mirage.Tests.Runtime.ClientServer
             const int value = 50;
 
             var sub = Substitute.For<Action<int>>();
-            clientComponent.onChangedCalled += sub;
-            serverComponent.lastSyncTime = 0; // make sure syncs quick
-            serverComponent.var = value;
+            this.clientComponent.onChangedCalled += sub;
+            this.serverComponent.lastSyncTime = 0; // make sure syncs quick
+            this.serverComponent.var = value;
             yield return null;
             yield return null;
 
@@ -88,9 +88,9 @@ namespace Mirage.Tests.Runtime.ClientServer
             const int value = 50;
 
             var sub = Substitute.For<Action<int>>();
-            clientComponent.OnChange += sub;
-            serverComponent.lastSyncTime = 0; // make sure syncs quick
-            serverComponent.var = value;
+            this.clientComponent.OnChange += sub;
+            this.serverComponent.lastSyncTime = 0; // make sure syncs quick
+            this.serverComponent.var = value;
             yield return null;
             yield return null;
 
@@ -106,9 +106,9 @@ namespace Mirage.Tests.Runtime.ClientServer
             const int value = 50;
 
             var sub = Substitute.For<Action<int>>();
-            clientComponent.onChangedCalled += sub;
-            serverComponent.lastSyncTime = 0; // make sure syncs quick
-            serverComponent.var = value;
+            this.clientComponent.onChangedCalled += sub;
+            this.serverComponent.lastSyncTime = 0; // make sure syncs quick
+            this.serverComponent.var = value;
             yield return null;
             yield return null;
 
@@ -124,9 +124,9 @@ namespace Mirage.Tests.Runtime.ClientServer
             const int value = 50;
 
             var sub = Substitute.For<Action<int>>();
-            clientComponent.onChangedCalled += sub;
-            serverComponent.lastSyncTime = 0; // make sure syncs quick
-            serverComponent.var = value;
+            this.clientComponent.onChangedCalled += sub;
+            this.serverComponent.lastSyncTime = 0; // make sure syncs quick
+            this.serverComponent.var = value;
             yield return null;
             yield return null;
 

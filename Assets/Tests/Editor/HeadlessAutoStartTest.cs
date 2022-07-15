@@ -13,20 +13,20 @@ namespace Mirage.Tests
         [SetUp]
         public void Setup()
         {
-            testGO = new GameObject();
-            comp = testGO.AddComponent<HeadlessAutoStart>();
+            this.testGO = new GameObject();
+            this.comp = this.testGO.AddComponent<HeadlessAutoStart>();
         }
 
         [TearDown]
         public void Teardown()
         {
-            Object.DestroyImmediate(testGO);
+            Object.DestroyImmediate(this.testGO);
         }
 
         [Test]
         public void StartOnHeadlessValue()
         {
-            Assert.That(comp.startOnHeadless, Is.True);
+            Assert.That(this.comp.startOnHeadless, Is.True);
         }
     }
 }

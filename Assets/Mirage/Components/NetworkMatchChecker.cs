@@ -27,61 +27,61 @@ namespace Mirage
         /// </summary>
         public Guid MatchId
         {
-            get { return currentMatch; }
+            get { return this.currentMatch; }
             set
             {
-                if (currentMatch == value) return;
+                if (this.currentMatch == value) return;
 
                 // cache previous match so observers in that match can be rebuilt
-                var previousMatch = currentMatch;
+                var previousMatch = this.currentMatch;
 
                 // Set this to the new match this object just entered ...
-                currentMatch = value;
+                this.currentMatch = value;
                 // ... and copy the string for the inspector because Unity can't show Guid directly
-                currentMatchDebug = currentMatch.ToString();
+                this.currentMatchDebug = this.currentMatch.ToString();
 
                 if (previousMatch != Guid.Empty)
                 {
                     // Remove this object from the hashset of the match it just left
-                    matchPlayers[previousMatch].Remove(Identity);
+                    matchPlayers[previousMatch].Remove(this.Identity);
 
                     // RebuildObservers of all NetworkIdentity's in the match this object just left
-                    RebuildMatchObservers(previousMatch);
+                    this.RebuildMatchObservers(previousMatch);
                 }
 
-                if (currentMatch != Guid.Empty)
+                if (this.currentMatch != Guid.Empty)
                 {
                     // Make sure this new match is in the dictionary
-                    if (!matchPlayers.ContainsKey(currentMatch))
-                        matchPlayers.Add(currentMatch, new HashSet<NetworkIdentity>());
+                    if (!matchPlayers.ContainsKey(this.currentMatch))
+                        matchPlayers.Add(this.currentMatch, new HashSet<NetworkIdentity>());
 
                     // Add this object to the hashset of the new match
-                    matchPlayers[currentMatch].Add(Identity);
+                    matchPlayers[this.currentMatch].Add(this.Identity);
 
                     // RebuildObservers of all NetworkIdentity's in the match this object just entered
-                    RebuildMatchObservers(currentMatch);
+                    this.RebuildMatchObservers(this.currentMatch);
                 }
                 else
                 {
                     // Not in any match now...RebuildObservers will clear and add self
-                    Identity.RebuildObservers(false);
+                    this.Identity.RebuildObservers(false);
                 }
             }
         }
 
         public void Awake()
         {
-            Identity.OnStartServer.AddListener(OnStartServer);
+            this.Identity.OnStartServer.AddListener(this.OnStartServer);
         }
 
         public void OnStartServer()
         {
-            if (currentMatch == Guid.Empty) return;
+            if (this.currentMatch == Guid.Empty) return;
 
-            if (!matchPlayers.ContainsKey(currentMatch))
-                matchPlayers.Add(currentMatch, new HashSet<NetworkIdentity>());
+            if (!matchPlayers.ContainsKey(this.currentMatch))
+                matchPlayers.Add(this.currentMatch, new HashSet<NetworkIdentity>());
 
-            matchPlayers[currentMatch].Add(Identity);
+            matchPlayers[this.currentMatch].Add(this.Identity);
 
             // No need to rebuild anything here.
             // identity.RebuildObservers is called right after this from NetworkServer.SpawnObject
@@ -105,7 +105,7 @@ namespace Mirage
         public override bool OnCheckObserver(INetworkPlayer player)
         {
             // Not Visible if not in a match
-            if (MatchId == Guid.Empty)
+            if (this.MatchId == Guid.Empty)
                 return false;
 
             var networkMatchChecker = player.Identity.GetComponent<NetworkMatchChecker>();
@@ -113,7 +113,7 @@ namespace Mirage
             if (networkMatchChecker == null)
                 return false;
 
-            return networkMatchChecker.MatchId == MatchId;
+            return networkMatchChecker.MatchId == this.MatchId;
         }
 
         /// <summary>
@@ -124,9 +124,9 @@ namespace Mirage
         /// <param name="initialize">True if the set of observers is being built for the first time.</param>
         public override void OnRebuildObservers(HashSet<INetworkPlayer> observers, bool initialize)
         {
-            if (currentMatch == Guid.Empty) return;
+            if (this.currentMatch == Guid.Empty) return;
 
-            foreach (var networkIdentity in matchPlayers[currentMatch])
+            foreach (var networkIdentity in matchPlayers[this.currentMatch])
                 if (networkIdentity != null && networkIdentity.Owner != null)
                     observers.Add(networkIdentity.Owner);
         }

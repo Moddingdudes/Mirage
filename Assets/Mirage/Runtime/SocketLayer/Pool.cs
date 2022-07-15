@@ -34,15 +34,15 @@ namespace Mirage.SocketLayer
             if (this.maxPoolSize != maxPoolSize)
             {
                 this.maxPoolSize = maxPoolSize;
-                Array.Resize(ref pool, maxPoolSize);
+                Array.Resize(ref this.pool, maxPoolSize);
             }
 
-            for (var i = created; i < startPoolSize; i++)
+            for (var i = this.created; i < startPoolSize; i++)
             {
-                Put(CreateNewBuffer());
+                this.Put(this.CreateNewBuffer());
             }
 
-            if (logger.Enabled(LogType.Log)) logger.Log(LogType.Log, $"Configuring buffer, start Size {startPoolSize}, max size {maxPoolSize}");
+            if (this.logger.Enabled(LogType.Log)) this.logger.Log(LogType.Log, $"Configuring buffer, start Size {startPoolSize}, max size {maxPoolSize}");
         }
 
         /// <summary>
@@ -61,49 +61,49 @@ namespace Mirage.SocketLayer
             this.maxPoolSize = maxPoolSize;
             this.logger = logger;
 
-            pool = new T[maxPoolSize];
+            this.pool = new T[maxPoolSize];
             for (var i = 0; i < startPoolSize; i++)
             {
-                Put(CreateNewBuffer());
+                this.Put(this.CreateNewBuffer());
             }
         }
 
         private T CreateNewBuffer()
         {
-            created++;
-            overMaxLog.CheckLimit(this);
-            return createNew.Invoke(bufferSize, this);
+            this.created++;
+            this.overMaxLog.CheckLimit(this);
+            return this.createNew.Invoke(this.bufferSize, this);
         }
 
         public T Take()
         {
-            if (next == PoolEmpty)
+            if (this.next == PoolEmpty)
             {
-                return CreateNewBuffer();
+                return this.CreateNewBuffer();
             }
             else
             {
                 // todo is it a security risk to not clear buffer?
 
                 // take then decrement
-                var item = pool[next];
-                pool[next] = null;
-                next--;
+                var item = this.pool[this.next];
+                this.pool[this.next] = null;
+                this.next--;
                 return item;
             }
         }
 
         public void Put(T buffer)
         {
-            if (next < maxPoolSize - 1)
+            if (this.next < this.maxPoolSize - 1)
             {
                 // increment then put
-                pool[++next] = buffer;
+                this.pool[++this.next] = buffer;
             }
             else
             {
                 // buffer is left for GC, so decrement created
-                created--;
+                this.created--;
             }
         }
 
@@ -125,22 +125,22 @@ namespace Mirage.SocketLayer
             {
                 if (pool.created >= pool.maxPoolSize && pool.logger.Enabled(LogType.Warning))
                 {
-                    var now = GetTime();
+                    var now = this.GetTime();
 
                     // if has been enough time since last log, then log again 
-                    if (now > nextLogTime)
+                    if (now > this.nextLogTime)
                     {
-                        lastLogValue = pool.created;
-                        nextLogTime = now + LogInterval;
+                        this.lastLogValue = pool.created;
+                        this.nextLogTime = now + LogInterval;
                         pool.logger.Log(LogType.Warning, $"Pool Max Size reached, type:{typeof(T).Name} created:{pool.created + 1} max:{pool.maxPoolSize}");
                         return;
                     }
 
                     // if pool has grown enough since last log (but has been less than LogInterval) then log again now
-                    if (pool.created > lastLogValue + pool.maxPoolSize)
+                    if (pool.created > this.lastLogValue + pool.maxPoolSize)
                     {
-                        lastLogValue = pool.created;
-                        nextLogTime = now + LogInterval;
+                        this.lastLogValue = pool.created;
+                        this.nextLogTime = now + LogInterval;
                         pool.logger.Log(LogType.Warning, $"Pool Max Size reached, type:{typeof(T).Name} created:{pool.created + 1} max:{pool.maxPoolSize}");
                     }
                 }

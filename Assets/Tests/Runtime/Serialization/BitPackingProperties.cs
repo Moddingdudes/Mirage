@@ -13,42 +13,42 @@ namespace Mirage.Tests.Runtime.Serialization
         [TearDown]
         public void TearDown()
         {
-            writer.Reset();
-            reader.Dispose();
+            this.writer.Reset();
+            this.reader.Dispose();
         }
 
 
         [Test]
         public void WriterBitPositionStartsAtZero()
         {
-            Assert.That(writer.BitPosition, Is.EqualTo(0));
+            Assert.That(this.writer.BitPosition, Is.EqualTo(0));
         }
 
         [Test]
         public void WriterByteLengthStartsAtZero()
         {
-            Assert.That(writer.ByteLength, Is.EqualTo(0));
+            Assert.That(this.writer.ByteLength, Is.EqualTo(0));
         }
 
         [Test]
         public void ReaderBitPositionStartsStartsAtZero()
         {
-            reader.Reset(sampleData);
-            Assert.That(reader.BitPosition, Is.EqualTo(0));
+            this.reader.Reset(this.sampleData);
+            Assert.That(this.reader.BitPosition, Is.EqualTo(0));
         }
 
         [Test]
         public void ReaderBytePositionStartsStartsAtZero()
         {
-            reader.Reset(sampleData);
-            Assert.That(reader.BytePosition, Is.EqualTo(0));
+            this.reader.Reset(this.sampleData);
+            Assert.That(this.reader.BytePosition, Is.EqualTo(0));
         }
 
         [Test]
         public void ReaderBitLengthStartsStartsAtArrayLength()
         {
-            reader.Reset(sampleData);
-            Assert.That(reader.BitLength, Is.EqualTo(sampleData.Length * BITS_PER_BYTE));
+            this.reader.Reset(this.sampleData);
+            Assert.That(this.reader.BitLength, Is.EqualTo(this.sampleData.Length * BITS_PER_BYTE));
         }
 
 
@@ -56,54 +56,54 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test]
         public void WriterBitPositionIncreasesAfterWriting()
         {
-            writer.Write(0, 15);
-            Assert.That(writer.BitPosition, Is.EqualTo(15));
+            this.writer.Write(0, 15);
+            Assert.That(this.writer.BitPosition, Is.EqualTo(15));
 
-            writer.Write(0, 50);
-            Assert.That(writer.BitPosition, Is.EqualTo(65));
+            this.writer.Write(0, 50);
+            Assert.That(this.writer.BitPosition, Is.EqualTo(65));
         }
 
         [Test]
         public void WriterByteLengthIncreasesAfterWriting_ShouldRoundUp()
         {
-            writer.Write(0, 15);
-            Assert.That(writer.ByteLength, Is.EqualTo(2));
+            this.writer.Write(0, 15);
+            Assert.That(this.writer.ByteLength, Is.EqualTo(2));
 
-            writer.Write(0, 50);
-            Assert.That(writer.ByteLength, Is.EqualTo(9));
+            this.writer.Write(0, 50);
+            Assert.That(this.writer.ByteLength, Is.EqualTo(9));
         }
 
         [Test]
         public void ReaderBitPositionIncreasesAfterReading()
         {
-            reader.Reset(sampleData);
-            _ = reader.Read(15);
-            Assert.That(reader.BitPosition, Is.EqualTo(15));
+            this.reader.Reset(this.sampleData);
+            _ = this.reader.Read(15);
+            Assert.That(this.reader.BitPosition, Is.EqualTo(15));
 
-            _ = reader.Read(50);
-            Assert.That(reader.BitPosition, Is.EqualTo(65));
+            _ = this.reader.Read(50);
+            Assert.That(this.reader.BitPosition, Is.EqualTo(65));
         }
 
         [Test]
         public void ReaderBytePositionIncreasesAfterReading_ShouldRoundUp()
         {
-            reader.Reset(sampleData);
-            _ = reader.Read(15);
-            Assert.That(reader.BytePosition, Is.EqualTo(2));
+            this.reader.Reset(this.sampleData);
+            _ = this.reader.Read(15);
+            Assert.That(this.reader.BytePosition, Is.EqualTo(2));
 
-            _ = reader.Read(50);
-            Assert.That(reader.BytePosition, Is.EqualTo(9));
+            _ = this.reader.Read(50);
+            Assert.That(this.reader.BytePosition, Is.EqualTo(9));
         }
 
         [Test]
         public void ReaderBitLengthDoesnotIncreasesAfterReading()
         {
-            reader.Reset(sampleData);
-            _ = reader.Read(15);
-            Assert.That(reader.BitLength, Is.EqualTo(sampleData.Length * BITS_PER_BYTE));
+            this.reader.Reset(this.sampleData);
+            _ = this.reader.Read(15);
+            Assert.That(this.reader.BitLength, Is.EqualTo(this.sampleData.Length * BITS_PER_BYTE));
 
-            _ = reader.Read(50);
-            Assert.That(reader.BitLength, Is.EqualTo(sampleData.Length * BITS_PER_BYTE));
+            _ = this.reader.Read(50);
+            Assert.That(this.reader.BitLength, Is.EqualTo(this.sampleData.Length * BITS_PER_BYTE));
         }
     }
 }

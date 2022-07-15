@@ -8,7 +8,7 @@ namespace Mirage.EditorScripts.Logging
     {
         public override void OnInspectorGUI()
         {
-            DrawDefaultInspector();
+            this.DrawDefaultInspector();
 
             var target = this.target as LogSettings;
 
@@ -17,9 +17,9 @@ namespace Mirage.EditorScripts.Logging
                 var newSettings = LogLevelsGUI.DrawCreateNewButton();
                 if (newSettings != null)
                 {
-                    var settingsProp = serializedObject.FindProperty("settings");
+                    var settingsProp = this.serializedObject.FindProperty("settings");
                     settingsProp.objectReferenceValue = newSettings;
-                    serializedObject.ApplyModifiedProperties();
+                    this.serializedObject.ApplyModifiedProperties();
                 }
             }
             else

@@ -10,20 +10,20 @@ namespace Mirage.DisplayMetrics
 
         private void Start()
         {
-            if (server != null)
-                server.Started.AddListener(ServerStarted);
-            if (client != null)
-                client.Connected.AddListener(ClientConnected);
+            if (this.server != null)
+                this.server.Started.AddListener(this.ServerStarted);
+            if (this.client != null)
+                this.client.Connected.AddListener(this.ClientConnected);
         }
 
         private void ServerStarted()
         {
-            displayMetrics.Metrics = server.Metrics;
+            this.displayMetrics.Metrics = this.server.Metrics;
         }
 
         private void ClientConnected(INetworkPlayer arg0)
         {
-            displayMetrics.Metrics = client.Metrics;
+            this.displayMetrics.Metrics = this.client.Metrics;
         }
     }
 }

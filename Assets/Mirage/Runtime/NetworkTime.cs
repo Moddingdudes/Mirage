@@ -29,7 +29,7 @@ namespace Mirage
 
         public NetworkTime()
         {
-            stopwatch.Start();
+            this.stopwatch.Start();
         }
 
         private ExponentialMovingAverage _rtt = new ExponentialMovingAverage(10);
@@ -42,26 +42,26 @@ namespace Mirage
         private double offsetMax = double.MaxValue;
 
         // returns the clock time _in this system_
-        private double LocalTime() => stopwatch.Elapsed.TotalSeconds;
+        private double LocalTime() => this.stopwatch.Elapsed.TotalSeconds;
 
         public void Reset()
         {
-            _rtt = new ExponentialMovingAverage(PingWindowSize);
-            _offset = new ExponentialMovingAverage(PingWindowSize);
-            offsetMin = double.MinValue;
-            offsetMax = double.MaxValue;
+            this._rtt = new ExponentialMovingAverage(this.PingWindowSize);
+            this._offset = new ExponentialMovingAverage(this.PingWindowSize);
+            this.offsetMin = double.MinValue;
+            this.offsetMax = double.MaxValue;
         }
 
         internal void UpdateClient(INetworkClient client)
         {
-            if (UnityEngine.Time.time - lastPingTime >= PingInterval)
+            if (UnityEngine.Time.time - this.lastPingTime >= this.PingInterval)
             {
                 var pingMessage = new NetworkPingMessage
                 {
-                    clientTime = LocalTime()
+                    clientTime = this.LocalTime()
                 };
                 client.Send(pingMessage, Channel.Unreliable);
-                lastPingTime = UnityEngine.Time.time;
+                this.lastPingTime = UnityEngine.Time.time;
             }
         }
 
@@ -75,7 +75,7 @@ namespace Mirage
             var pongMsg = new NetworkPongMessage
             {
                 clientTime = msg.clientTime,
-                serverTime = LocalTime()
+                serverTime = this.LocalTime()
             };
 
             player.Send(pongMsg, Channel.Unreliable);
@@ -86,11 +86,11 @@ namespace Mirage
         // and update time offset
         internal void OnClientPong(NetworkPongMessage msg)
         {
-            var now = LocalTime();
+            var now = this.LocalTime();
 
             // how long did this message take to come back
             var newRtt = now - msg.clientTime;
-            _rtt.Add(newRtt);
+            this._rtt.Add(newRtt);
 
             // the difference in time between the client and the server
             // but subtract half of the rtt to compensate for latency
@@ -99,19 +99,19 @@ namespace Mirage
 
             var newOffsetMin = now - newRtt - msg.serverTime;
             var newOffsetMax = now - msg.serverTime;
-            offsetMin = Math.Max(offsetMin, newOffsetMin);
-            offsetMax = Math.Min(offsetMax, newOffsetMax);
+            this.offsetMin = Math.Max(this.offsetMin, newOffsetMin);
+            this.offsetMax = Math.Min(this.offsetMax, newOffsetMax);
 
-            if (_offset.Value < offsetMin || _offset.Value > offsetMax)
+            if (this._offset.Value < this.offsetMin || this._offset.Value > this.offsetMax)
             {
                 // the old offset was offrange,  throw it away and use new one
-                _offset = new ExponentialMovingAverage(PingWindowSize);
-                _offset.Add(newOffset);
+                this._offset = new ExponentialMovingAverage(this.PingWindowSize);
+                this._offset.Add(newOffset);
             }
-            else if (newOffset >= offsetMin || newOffset <= offsetMax)
+            else if (newOffset >= this.offsetMin || newOffset <= this.offsetMax)
             {
                 // new offset looks reasonable,  add to the average
-                _offset.Add(newOffset);
+                this._offset.Add(newOffset);
             }
         }
 
@@ -152,13 +152,13 @@ namespace Mirage
                 // so cache the time for the duration of the frame
                 // if someone asks for .time several times in a frame this has significant impact
                 // this also makes it more consistent with Time.time
-                if (lastFrame != UnityEngine.Time.frameCount)
+                if (this.lastFrame != UnityEngine.Time.frameCount)
                 {
                     // Notice _offset is 0 at the server
-                    _time = LocalTime() - _offset.Value;
-                    lastFrame = UnityEngine.Time.frameCount;
+                    this._time = this.LocalTime() - this._offset.Value;
+                    this.lastFrame = UnityEngine.Time.frameCount;
                 }
-                return _time;
+                return this._time;
 
             }
         }
@@ -167,13 +167,13 @@ namespace Mirage
         /// Measurement of the variance of time.
         /// <para>The higher the variance, the less accurate the time is</para>
         /// </summary>
-        public double TimeVar => _offset.Var;
+        public double TimeVar => this._offset.Var;
 
         /// <summary>
         /// standard deviation of time.
         /// <para>The higher the variance, the less accurate the time is</para>
         /// </summary>
-        public double TimeSd => Math.Sqrt(TimeVar);
+        public double TimeSd => Math.Sqrt(this.TimeVar);
 
         /// <summary>
         /// Clock difference in seconds between the client and the server
@@ -181,24 +181,24 @@ namespace Mirage
         /// <remarks>
         /// Note this value is always 0 at the server
         /// </remarks>
-        public double Offset => _offset.Value;
+        public double Offset => this._offset.Value;
 
         /// <summary>
         /// how long in seconds does it take for a message to go
         /// to the server and come back
         /// </summary>
-        public double Rtt => _rtt.Value;
+        public double Rtt => this._rtt.Value;
 
         /// <summary>
         /// measure variance of rtt
         /// the higher the number,  the less accurate rtt is
         /// </summary>
-        public double RttVar => _rtt.Var;
+        public double RttVar => this._rtt.Var;
 
         /// <summary>
         /// Measure the standard deviation of rtt
         /// the higher the number,  the less accurate rtt is
         /// </summary>
-        public double RttSd => Math.Sqrt(RttVar);
+        public double RttSd => Math.Sqrt(this.RttVar);
     }
 }

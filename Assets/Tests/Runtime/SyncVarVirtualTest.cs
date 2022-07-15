@@ -22,13 +22,13 @@ namespace Mirage.Tests.Runtime
 
         public void ChangeValues()
         {
-            value1 += 1f;
-            value2 += 1f;
+            this.value1 += 1f;
+            this.value2 += 1f;
         }
 
         public void CallOnValue2Changed()
         {
-            OnValue2Changed(1, 1);
+            this.OnValue2Changed(1, 1);
         }
     }
 
@@ -62,78 +62,78 @@ namespace Mirage.Tests.Runtime
             // create server and client objects and sync inital values
 
             var gameObject1 = new GameObject();
-            netIdServer = gameObject1.AddComponent<NetworkIdentity>();
-            serverTester = gameObject1.AddComponent<SyncVarHookTester>();
+            this.netIdServer = gameObject1.AddComponent<NetworkIdentity>();
+            this.serverTester = gameObject1.AddComponent<SyncVarHookTester>();
 
             var gameObject2 = new GameObject();
-            netIdClient = gameObject2.AddComponent<NetworkIdentity>();
-            clientTester = gameObject2.AddComponent<SyncVarHookTester>();
+            this.netIdClient = gameObject2.AddComponent<NetworkIdentity>();
+            this.clientTester = gameObject2.AddComponent<SyncVarHookTester>();
 
-            serverTester.value1 = 1;
-            serverTester.value2 = 2;
+            this.serverTester.value1 = 1;
+            this.serverTester.value2 = 2;
 
-            SyncValuesWithClient();
+            this.SyncValuesWithClient();
         }
 
         private void SyncValuesWithClient()
         {
-            ownerWriter.Reset();
-            observersWriter.Reset();
+            this.ownerWriter.Reset();
+            this.observersWriter.Reset();
 
-            netIdServer.OnSerializeAll(true, ownerWriter, observersWriter);
+            this.netIdServer.OnSerializeAll(true, this.ownerWriter, this.observersWriter);
 
             // apply all the data from the server object
 
-            reader.Reset(ownerWriter.ToArraySegment());
-            netIdClient.OnDeserializeAll(reader, true);
+            this.reader.Reset(this.ownerWriter.ToArraySegment());
+            this.netIdClient.OnDeserializeAll(this.reader, true);
         }
 
         [TearDown]
         public void TearDown()
         {
-            UnityEngine.Object.DestroyImmediate(serverTester.gameObject);
-            UnityEngine.Object.DestroyImmediate(clientTester.gameObject);
+            UnityEngine.Object.DestroyImmediate(this.serverTester.gameObject);
+            UnityEngine.Object.DestroyImmediate(this.clientTester.gameObject);
 
-            ownerWriter.Reset();
-            observersWriter.Reset();
-            reader.Dispose();
+            this.ownerWriter.Reset();
+            this.observersWriter.Reset();
+            this.reader.Dispose();
         }
         [Test]
         public void AbstractMethodOnChangeWorkWithHooks()
         {
-            serverTester.ChangeValues();
+            this.serverTester.ChangeValues();
 
             var value1OverrideCalled = false;
-            clientTester.OnValue1ChangedOverrideCalled += () =>
+            this.clientTester.OnValue1ChangedOverrideCalled += () =>
             {
                 value1OverrideCalled = true;
             };
 
-            SyncValuesWithClient();
+            this.SyncValuesWithClient();
 
-            Assert.AreEqual(serverTester.value1, serverTester.value1);
+            Assert.AreEqual(this.serverTester.value1, this.serverTester.value1);
             Assert.IsTrue(value1OverrideCalled);
         }
         [Test]
         public void VirtualMethodOnChangeWorkWithHooks()
         {
-            serverTester.ChangeValues();
+            this.serverTester.ChangeValues();
 
             var value2OverrideCalled = false;
-            clientTester.OnValue2ChangedOverrideCalled += () =>
+            this.clientTester.OnValue2ChangedOverrideCalled += () =>
             {
                 value2OverrideCalled = true;
             };
 
             var value2VirtualCalled = false;
-            clientTester.OnValue2ChangedVirtualCalled += () =>
+            this.clientTester.OnValue2ChangedVirtualCalled += () =>
             {
                 value2VirtualCalled = true;
             };
 
-            SyncValuesWithClient();
+            this.SyncValuesWithClient();
 
-            Assert.AreEqual(serverTester.value2, serverTester.value2);
+            Assert.AreEqual(this.serverTester.value2, this.serverTester.value2);
             Assert.IsTrue(value2OverrideCalled, "Override method not called");
             Assert.IsFalse(value2VirtualCalled, "Virtual method called when Override exists");
         }
@@ -142,24 +142,24 @@ namespace Mirage.Tests.Runtime
         public void ManuallyCallingVirtualMethodCallsOverride()
         {
             // this to check that class are set up correct for tests above
-            serverTester.ChangeValues();
+            this.serverTester.ChangeValues();
 
             var value2OverrideCalled = false;
-            clientTester.OnValue2ChangedOverrideCalled += () =>
+            this.clientTester.OnValue2ChangedOverrideCalled += () =>
             {
                 value2OverrideCalled = true;
             };
 
             var value2VirtualCalled = false;
-            clientTester.OnValue2ChangedVirtualCalled += () =>
+            this.clientTester.OnValue2ChangedVirtualCalled += () =>
             {
                 value2VirtualCalled = true;
             };
 
-            var baseClass = clientTester as SyncVarHookTesterBase;
+            var baseClass = this.clientTester as SyncVarHookTesterBase;
             baseClass.OnValue2Changed(1, 1);
 
-            Assert.AreEqual(serverTester.value2, serverTester.value2);
+            Assert.AreEqual(this.serverTester.value2, this.serverTester.value2);
             Assert.IsTrue(value2OverrideCalled, "Override method not called");
             Assert.IsFalse(value2VirtualCalled, "Virtual method called when Override exists");
         }
@@ -167,24 +167,24 @@ namespace Mirage.Tests.Runtime
         public void ManuallyCallingVirtualMethodInsideBaseClassCallsOverride()
         {
             // this to check that class are set up correct for tests above
-            serverTester.ChangeValues();
+            this.serverTester.ChangeValues();
 
             var value2OverrideCalled = false;
-            clientTester.OnValue2ChangedOverrideCalled += () =>
+            this.clientTester.OnValue2ChangedOverrideCalled += () =>
             {
                 value2OverrideCalled = true;
             };
 
             var value2VirtualCalled = false;
-            clientTester.OnValue2ChangedVirtualCalled += () =>
+            this.clientTester.OnValue2ChangedVirtualCalled += () =>
             {
                 value2VirtualCalled = true;
             };
 
-            var baseClass = clientTester as SyncVarHookTesterBase;
+            var baseClass = this.clientTester as SyncVarHookTesterBase;
             baseClass.CallOnValue2Changed();
 
-            Assert.AreEqual(serverTester.value2, serverTester.value2);
+            Assert.AreEqual(this.serverTester.value2, this.serverTester.value2);
             Assert.IsTrue(value2OverrideCalled, "Override method not called");
             Assert.IsFalse(value2VirtualCalled, "Virtual method called when Override exists");
         }

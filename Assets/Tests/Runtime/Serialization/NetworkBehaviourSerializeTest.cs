@@ -80,12 +80,12 @@ namespace Mirage.Tests.Runtime.Serialization.NetworkBehaviourSerialize
 
         public override bool OnSerialize(NetworkWriter writer, bool initialState)
         {
-            writer.WriteSingle(customSerializeField);
+            writer.WriteSingle(this.customSerializeField);
             return base.OnSerialize(writer, initialState);
         }
         public override void OnDeserialize(NetworkReader reader, bool initialState)
         {
-            customSerializeField = reader.ReadSingle();
+            this.customSerializeField = reader.ReadSingle();
             base.OnDeserialize(reader, initialState);
         }
     }
@@ -96,12 +96,12 @@ namespace Mirage.Tests.Runtime.Serialization.NetworkBehaviourSerialize
 
         public override bool OnSerialize(NetworkWriter writer, bool initialState)
         {
-            writer.WriteSingle(customSerializeField);
+            writer.WriteSingle(this.customSerializeField);
             return base.OnSerialize(writer, initialState);
         }
         public override void OnDeserialize(NetworkReader reader, bool initialState)
         {
-            customSerializeField = reader.ReadSingle();
+            this.customSerializeField = reader.ReadSingle();
             base.OnDeserialize(reader, initialState);
         }
     }
@@ -117,12 +117,12 @@ namespace Mirage.Tests.Runtime.Serialization.NetworkBehaviourSerialize
 
         public override bool OnSerialize(NetworkWriter writer, bool initialState)
         {
-            writer.WriteSingle(customSerializeField);
+            writer.WriteSingle(this.customSerializeField);
             return base.OnSerialize(writer, initialState);
         }
         public override void OnDeserialize(NetworkReader reader, bool initialState)
         {
-            customSerializeField = reader.ReadSingle();
+            this.customSerializeField = reader.ReadSingle();
             base.OnDeserialize(reader, initialState);
         }
     }
@@ -135,18 +135,18 @@ namespace Mirage.Tests.Runtime.Serialization.NetworkBehaviourSerialize
         public void TearDown()
         {
             // Clean up all created objects
-            foreach (var item in createdObjects)
+            foreach (var item in this.createdObjects)
             {
                 Object.DestroyImmediate(item);
             }
-            createdObjects.Clear();
+            this.createdObjects.Clear();
         }
 
         private T CreateBehaviour<T>() where T : NetworkBehaviour
         {
             var go1 = new GameObject();
             go1.AddComponent<NetworkIdentity>();
-            createdObjects.Add(go1);
+            this.createdObjects.Add(go1);
             return go1.AddComponent<T>();
         }
 
@@ -168,8 +168,8 @@ namespace Mirage.Tests.Runtime.Serialization.NetworkBehaviourSerialize
         [TestCase(false)]
         public void BehaviourWithSyncVarTest(bool initialState)
         {
-            var source = CreateBehaviour<BehaviourWithSyncVar>();
-            var target = CreateBehaviour<BehaviourWithSyncVar>();
+            var source = this.CreateBehaviour<BehaviourWithSyncVar>();
+            var target = this.CreateBehaviour<BehaviourWithSyncVar>();
 
             source.SyncField = 10;
             source.syncList.Add(true);
@@ -186,8 +186,8 @@ namespace Mirage.Tests.Runtime.Serialization.NetworkBehaviourSerialize
         [TestCase(false)]
         public void OverrideBehaviourFromSyncVarTest(bool initialState)
         {
-            var source = CreateBehaviour<OverrideBehaviourFromSyncVar>();
-            var target = CreateBehaviour<OverrideBehaviourFromSyncVar>();
+            var source = this.CreateBehaviour<OverrideBehaviourFromSyncVar>();
+            var target = this.CreateBehaviour<OverrideBehaviourFromSyncVar>();
 
             source.SyncFieldInAbstract = 12;
             source.syncListInAbstract.Add(true);
@@ -206,8 +206,8 @@ namespace Mirage.Tests.Runtime.Serialization.NetworkBehaviourSerialize
         [TestCase(false)]
         public void OverrideBehaviourWithSyncVarFromSyncVarTest(bool initialState)
         {
-            var source = CreateBehaviour<OverrideBehaviourWithSyncVarFromSyncVar>();
-            var target = CreateBehaviour<OverrideBehaviourWithSyncVarFromSyncVar>();
+            var source = this.CreateBehaviour<OverrideBehaviourWithSyncVarFromSyncVar>();
+            var target = this.CreateBehaviour<OverrideBehaviourWithSyncVarFromSyncVar>();
 
             source.SyncFieldInAbstract = 10;
             source.syncListInAbstract.Add(true);
@@ -235,8 +235,8 @@ namespace Mirage.Tests.Runtime.Serialization.NetworkBehaviourSerialize
         [TestCase(false)]
         public void SubClassTest(bool initialState)
         {
-            var source = CreateBehaviour<SubClass>();
-            var target = CreateBehaviour<SubClass>();
+            var source = this.CreateBehaviour<SubClass>();
+            var target = this.CreateBehaviour<SubClass>();
 
             source.SyncFieldInAbstract = 10;
             source.syncListInAbstract.Add(true);
@@ -257,8 +257,8 @@ namespace Mirage.Tests.Runtime.Serialization.NetworkBehaviourSerialize
         [TestCase(false)]
         public void SubClassFromSyncVarTest(bool initialState)
         {
-            var source = CreateBehaviour<SubClassFromSyncVar>();
-            var target = CreateBehaviour<SubClassFromSyncVar>();
+            var source = this.CreateBehaviour<SubClassFromSyncVar>();
+            var target = this.CreateBehaviour<SubClassFromSyncVar>();
 
             source.SyncFieldInAbstract = 10;
             source.syncListInAbstract.Add(true);
@@ -283,8 +283,8 @@ namespace Mirage.Tests.Runtime.Serialization.NetworkBehaviourSerialize
         [TestCase(false)]
         public void BehaviourWithSyncVarWithOnSerializeTest(bool initialState)
         {
-            var source = CreateBehaviour<BehaviourWithSyncVarWithOnSerialize>();
-            var target = CreateBehaviour<BehaviourWithSyncVarWithOnSerialize>();
+            var source = this.CreateBehaviour<BehaviourWithSyncVarWithOnSerialize>();
+            var target = this.CreateBehaviour<BehaviourWithSyncVarWithOnSerialize>();
 
             source.SyncField = 10;
             source.syncList.Add(true);
@@ -306,8 +306,8 @@ namespace Mirage.Tests.Runtime.Serialization.NetworkBehaviourSerialize
         [TestCase(false)]
         public void OverrideBehaviourFromSyncVarWithOnSerializeTest(bool initialState)
         {
-            var source = CreateBehaviour<OverrideBehaviourFromSyncVarWithOnSerialize>();
-            var target = CreateBehaviour<OverrideBehaviourFromSyncVarWithOnSerialize>();
+            var source = this.CreateBehaviour<OverrideBehaviourFromSyncVarWithOnSerialize>();
+            var target = this.CreateBehaviour<OverrideBehaviourFromSyncVarWithOnSerialize>();
 
             source.SyncFieldInAbstract = 12;
             source.syncListInAbstract.Add(true);
@@ -331,8 +331,8 @@ namespace Mirage.Tests.Runtime.Serialization.NetworkBehaviourSerialize
         [TestCase(false)]
         public void OverrideBehaviourWithSyncVarFromSyncVarWithOnSerializeTest(bool initialState)
         {
-            var source = CreateBehaviour<OverrideBehaviourWithSyncVarFromSyncVarWithOnSerialize>();
-            var target = CreateBehaviour<OverrideBehaviourWithSyncVarFromSyncVarWithOnSerialize>();
+            var source = this.CreateBehaviour<OverrideBehaviourWithSyncVarFromSyncVarWithOnSerialize>();
+            var target = this.CreateBehaviour<OverrideBehaviourWithSyncVarFromSyncVarWithOnSerialize>();
 
             source.SyncFieldInAbstract = 10;
             source.syncListInAbstract.Add(true);

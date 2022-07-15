@@ -33,9 +33,9 @@ namespace Mirage.Tests.Performance.Runtime
             SceneManager.SetActiveScene(scene);
 
             // load host
-            benchmarker = Object.FindObjectOfType<NetworkManager>();
+            this.benchmarker = Object.FindObjectOfType<NetworkManager>();
 
-            benchmarker.Server.StartServer(benchmarker.Client);
+            this.benchmarker.Server.StartServer(this.benchmarker.Client);
 
         });
 
@@ -43,14 +43,14 @@ namespace Mirage.Tests.Performance.Runtime
         public IEnumerator TearDown()
         {
             // shutdown
-            benchmarker.Server.Stop();
+            this.benchmarker.Server.Stop();
             yield return null;
 
             // unload scene
             var scene = SceneManager.GetSceneByPath(ScenePath);
             yield return SceneManager.UnloadSceneAsync(scene);
 
-            GameObject.Destroy(benchmarker.gameObject);
+            GameObject.Destroy(this.benchmarker.gameObject);
         }
 
         [UnityTest]

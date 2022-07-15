@@ -18,13 +18,13 @@ namespace Mirage.Tests.Runtime
         [SetUp]
         public void SetUp()
         {
-            connection = Substitute.For<SocketLayer.IConnection>();
-            player = new NetworkPlayer(connection);
+            this.connection = Substitute.For<SocketLayer.IConnection>();
+            this.player = new NetworkPlayer(this.connection);
             // reader with some random data
-            reader = new NetworkReader();
-            reader.Reset(new byte[] { 1, 2, 3, 4 });
+            this.reader = new NetworkReader();
+            this.reader.Reset(new byte[] { 1, 2, 3, 4 });
 
-            messageHandler = new MessageHandler(null, true);
+            this.messageHandler = new MessageHandler(null, true);
         }
 
 
@@ -32,10 +32,10 @@ namespace Mirage.Tests.Runtime
         public void InvokesMessageHandler()
         {
             var invoked = 0;
-            messageHandler.RegisterHandler<SceneReadyMessage>(_ => { invoked++; });
+            this.messageHandler.RegisterHandler<SceneReadyMessage>(_ => { invoked++; });
 
             var messageId = MessagePacker.GetId<SceneReadyMessage>();
-            messageHandler.InvokeHandler(player, messageId, reader);
+            this.messageHandler.InvokeHandler(this.player, messageId, this.reader);
 
             Assert.That(invoked, Is.EqualTo(1), "Should have been invoked");
         }
@@ -45,16 +45,16 @@ namespace Mirage.Tests.Runtime
         [TestCase(false)]
         public void DisconnectsIfHandlerHasException(bool disconnectOnThrow)
         {
-            messageHandler = new MessageHandler(null, disconnectOnThrow);
+            this.messageHandler = new MessageHandler(null, disconnectOnThrow);
 
             var invoked = 0;
-            messageHandler.RegisterHandler<SceneReadyMessage>(_ => { invoked++; throw new InvalidOperationException("Fun Exception"); });
+            this.messageHandler.RegisterHandler<SceneReadyMessage>(_ => { invoked++; throw new InvalidOperationException("Fun Exception"); });
 
             var packet = new ArraySegment<byte>(MessagePacker.Pack(new SceneReadyMessage()));
             LogAssert.ignoreFailingMessages = true;
             Assert.DoesNotThrow(() =>
             {
-                messageHandler.HandleMessage(player, packet);
+                this.messageHandler.HandleMessage(this.player, packet);
             });
             LogAssert.ignoreFailingMessages = false;
 
@@ -62,34 +62,34 @@ namespace Mirage.Tests.Runtime
 
             if (disconnectOnThrow)
             {
-                connection.Received(1).Disconnect();
+                this.connection.Received(1).Disconnect();
             }
             else
             {
-                connection.DidNotReceive().Disconnect();
+                this.connection.DidNotReceive().Disconnect();
             }
         }
 
         [Test]
         public void LogsWhenNoHandlerIsFound()
         {
-            ExpectLog(() =>
+            this.ExpectLog(() =>
             {
                 var messageId = MessagePacker.GetId<SceneMessage>();
-                messageHandler.InvokeHandler(player, messageId, reader);
+                this.messageHandler.InvokeHandler(this.player, messageId, this.reader);
             }
-            , LogType.Warning, $"Unexpected message {typeof(SceneMessage)} received from {player}. Did you register a handler for it?");
+            , LogType.Warning, $"Unexpected message {typeof(SceneMessage)} received from {this.player}. Did you register a handler for it?");
         }
 
         [Test]
         public void LogsWhenUnknownMessage()
         {
             const int id = 1234;
-            ExpectLog(() =>
+            this.ExpectLog(() =>
             {
-                messageHandler.InvokeHandler(player, id, reader);
+                this.messageHandler.InvokeHandler(this.player, id, this.reader);
             }
-            , LogType.Log, $"Unexpected message ID {id} received from {player}. May be due to no existing RegisterHandler for this message.");
+            , LogType.Log, $"Unexpected message ID {id} received from {this.player}. May be due to no existing RegisterHandler for this message.");
         }
 
         private void ExpectLog(Action action, LogType type, string log)

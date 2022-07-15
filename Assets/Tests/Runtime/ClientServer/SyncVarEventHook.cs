@@ -23,14 +23,14 @@ namespace Mirage.Tests.Runtime.ClientServer
             int clientA = default;
             int clientB = default;
             var called = 0;
-            clientComponent.health = CValue;
-            clientComponent.OnHealthChanged += (a, b) =>
+            this.clientComponent.health = CValue;
+            this.clientComponent.OnHealthChanged += (a, b) =>
             {
                 clientA = a;
                 clientB = b;
                 called++;
             };
-            serverComponent.health = SValue;
+            this.serverComponent.health = SValue;
             yield return null;
             yield return null;
 

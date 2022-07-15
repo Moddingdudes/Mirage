@@ -11,7 +11,7 @@ namespace Mirage.SocketLayer.Tests
 
         public ConnectKeyValidatorTest(string key)
         {
-            validator = new ConnectKeyValidator(key);
+            this.validator = new ConnectKeyValidator(key);
         }
 
         [Test]
@@ -19,8 +19,8 @@ namespace Mirage.SocketLayer.Tests
         {
             var buffer1 = new byte[50];
             var buffer2 = new byte[50];
-            validator.CopyTo(buffer1);
-            validator.CopyTo(buffer2);
+            this.validator.CopyTo(buffer1);
+            this.validator.CopyTo(buffer2);
 
             Assert.That(buffer1, Is.EquivalentTo(buffer2), "buffers should have same values");
         }
@@ -29,9 +29,9 @@ namespace Mirage.SocketLayer.Tests
         public void ValidateReturnsTrueIfKeyIsCorrect()
         {
             var buffer = new byte[50];
-            validator.CopyTo(buffer);
+            this.validator.CopyTo(buffer);
 
-            var valid = validator.Validate(buffer);
+            var valid = this.validator.Validate(buffer);
             Assert.IsTrue(valid);
         }
 
@@ -39,11 +39,11 @@ namespace Mirage.SocketLayer.Tests
         public void ValidateReturnsFalseIfKeyIsCorrect()
         {
             var buffer = new byte[50];
-            validator.CopyTo(buffer);
+            this.validator.CopyTo(buffer);
             // corrupt 1 byte
             buffer[4] = 0;
 
-            var valid = validator.Validate(buffer);
+            var valid = this.validator.Validate(buffer);
             Assert.IsFalse(valid);
         }
 
@@ -56,7 +56,7 @@ namespace Mirage.SocketLayer.Tests
             var buffer = new byte[50];
             buffer[0] = index1;
             buffer[1] = index2;
-            validator.CopyTo(buffer);
+            this.validator.CopyTo(buffer);
 
             Assert.That(buffer[0], Is.EqualTo(index1));
             Assert.That(buffer[1], Is.EqualTo(index2));

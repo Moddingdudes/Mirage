@@ -60,44 +60,44 @@ namespace Mirage
         /// <summary>
         /// This is invoked when a server is started - including when a host is started.
         /// </summary>
-        public IAddLateEvent Started => _started;
+        public IAddLateEvent Started => this._started;
 
         /// <summary>
         /// Event fires once a new Client has connect to the Server.
         /// </summary>
         [FormerlySerializedAs("Connected")]
         [FoldoutEvent, SerializeField] private NetworkPlayerEvent _connected = new NetworkPlayerEvent();
-        public NetworkPlayerEvent Connected => _connected;
+        public NetworkPlayerEvent Connected => this._connected;
 
         /// <summary>
         /// Event fires once a new Client has passed Authentication to the Server.
         /// </summary>
         [FormerlySerializedAs("Authenticated")]
         [FoldoutEvent, SerializeField] private NetworkPlayerEvent _authenticated = new NetworkPlayerEvent();
-        public NetworkPlayerEvent Authenticated => _authenticated;
+        public NetworkPlayerEvent Authenticated => this._authenticated;
 
         /// <summary>
         /// Event fires once a Client has Disconnected from the Server.
         /// </summary>
         [FormerlySerializedAs("Disconnected")]
         [FoldoutEvent, SerializeField] private NetworkPlayerEvent _disconnected = new NetworkPlayerEvent();
-        public NetworkPlayerEvent Disconnected => _disconnected;
+        public NetworkPlayerEvent Disconnected => this._disconnected;
 
         [SerializeField] private AddLateEvent _stopped = new AddLateEvent();
-        public IAddLateEvent Stopped => _stopped;
+        public IAddLateEvent Stopped => this._stopped;
 
         /// <summary>
         /// This is invoked when a host is started.
         /// <para>StartHost has multiple signatures, but they all cause this hook to be called.</para>
         /// </summary>
         [SerializeField] private AddLateEvent _onStartHost = new AddLateEvent();
-        public IAddLateEvent OnStartHost => _onStartHost;
+        public IAddLateEvent OnStartHost => this._onStartHost;
 
         /// <summary>
         /// This is called when a host is stopped.
         /// </summary>
         [SerializeField] private AddLateEvent _onStopHost = new AddLateEvent();
-        public IAddLateEvent OnStopHost => _onStopHost;
+        public IAddLateEvent OnStopHost => this._onStopHost;
 
         /// <summary>
         /// The connection to the host mode client (if any).
@@ -115,18 +115,18 @@ namespace Mirage
         /// <summary>
         /// True if there is a local client connected to this server (host mode)
         /// </summary>
-        public bool LocalClientActive => LocalClient != null && LocalClient.Active;
+        public bool LocalClientActive => this.LocalClient != null && this.LocalClient.Active;
 
         /// <summary>
         /// Number of active player objects across all connections on the server.
         /// <para>This is only valid on the host / server.</para>
         /// </summary>
-        public int NumberOfPlayers => Players.Count(kv => kv.HasCharacter);
+        public int NumberOfPlayers => this.Players.Count(kv => kv.HasCharacter);
 
         /// <summary>
         /// A list of local connections on the server.
         /// </summary>
-        public IReadOnlyCollection<INetworkPlayer> Players => connections.Values;
+        public IReadOnlyCollection<INetworkPlayer> Players => this.connections.Values;
 
         private readonly Dictionary<IConnection, INetworkPlayer> connections = new Dictionary<IConnection, INetworkPlayer>();
 
@@ -143,8 +143,8 @@ namespace Mirage
         private void OnDestroy()
         {
             // if gameobject with server on is destroyed, stop the server
-            if (Active)
-                Stop();
+            if (this.Active)
+                this.Stop();
         }
 
         /// <summary>
@@ -153,26 +153,26 @@ namespace Mirage
         /// </summary>
         public void Stop()
         {
-            if (!Active)
+            if (!this.Active)
             {
                 logger.LogWarning("Can't stop server because it is not active");
                 return;
             }
 
-            if (LocalClient != null)
+            if (this.LocalClient != null)
             {
-                _onStopHost?.Invoke();
-                LocalClient.Disconnect();
+                this._onStopHost?.Invoke();
+                this.LocalClient.Disconnect();
             }
 
             // just clear list, connections will be disconnected when peer is closed
-            connections.Clear();
-            LocalPlayer = null;
+            this.connections.Clear();
+            this.LocalPlayer = null;
 
-            Cleanup();
+            this.Cleanup();
 
             // remove listen when server is stopped so that we can cleanup correctly 
-            Application.quitting -= Stop;
+            Application.quitting -= this.Stop;
         }
 
         /// <summary>
@@ -184,26 +184,26 @@ namespace Mirage
         // Has to be called "StartServer" to stop unity complaining about "Start" method
         public void StartServer(NetworkClient localClient = null)
         {
-            ThrowIfActive();
-            ThrowIfSocketIsMissing();
+            this.ThrowIfActive();
+            this.ThrowIfSocketIsMissing();
 
-            Application.quitting += Stop;
+            Application.quitting += this.Stop;
             if (logger.LogEnabled()) logger.Log($"NetworkServer created, Mirage version: {Version.Current}");
 
-            logger.Assert(Players.Count == 0, "Player should have been reset since previous session");
-            logger.Assert(connections.Count == 0, "Connections should have been reset since previous session");
+            logger.Assert(this.Players.Count == 0, "Player should have been reset since previous session");
+            logger.Assert(this.connections.Count == 0, "Connections should have been reset since previous session");
 
-            World = new NetworkWorld();
-            SyncVarSender = new SyncVarSender();
+            this.World = new NetworkWorld();
+            this.SyncVarSender = new SyncVarSender();
 
-            LocalClient = localClient;
-            MessageHandler = new MessageHandler(World, DisconnectOnException);
-            MessageHandler.RegisterHandler<NetworkPingMessage>(World.Time.OnServerPing);
+            this.LocalClient = localClient;
+            this.MessageHandler = new MessageHandler(this.World, this.DisconnectOnException);
+            this.MessageHandler.RegisterHandler<NetworkPingMessage>(this.World.Time.OnServerPing);
 
-            var dataHandler = new DataHandler(MessageHandler, connections);
-            Metrics = EnablePeerMetrics ? new Metrics(MetricsSize) : null;
+            var dataHandler = new DataHandler(this.MessageHandler, this.connections);
+            this.Metrics = this.EnablePeerMetrics ? new Metrics(this.MetricsSize) : null;
 
-            var config = PeerConfig;
+            var config = this.PeerConfig;
             if (config == null)
             {
                 config = new Config
@@ -213,28 +213,28 @@ namespace Mirage
                 };
             }
 
-            var maxPacketSize = SocketFactory.MaxPacketSize;
+            var maxPacketSize = this.SocketFactory.MaxPacketSize;
             NetworkWriterPool.Configure(maxPacketSize);
 
             // Are we listening for incoming connections?
             // If yes, set up a socket for incoming connections (we're a multiplayer game).
             // If not, that's okay. Some games use a non-listening server for their single player game mode (Battlefield, Call of Duty...)
-            if (Listening)
+            if (this.Listening)
             {
                 // Create a server specific socket.
-                var socket = SocketFactory.CreateServerSocket();
+                var socket = this.SocketFactory.CreateServerSocket();
 
                 // Tell the peer to use that newly created socket.
-                peer = new Peer(socket, maxPacketSize, dataHandler, config, LogFactory.GetLogger<Peer>(), Metrics);
-                peer.OnConnected += Peer_OnConnected;
-                peer.OnDisconnected += Peer_OnDisconnected;
+                this.peer = new Peer(socket, maxPacketSize, dataHandler, config, LogFactory.GetLogger<Peer>(), this.Metrics);
+                this.peer.OnConnected += this.Peer_OnConnected;
+                this.peer.OnDisconnected += this.Peer_OnDisconnected;
                 // Bind it to the endpoint.
-                peer.Bind(SocketFactory.GetBindEndPoint());
+                this.peer.Bind(this.SocketFactory.GetBindEndPoint());
 
                 if (logger.LogEnabled()) logger.Log($"Server started, listening for connections. Using socket {socket.GetType()}");
 
-                if (RunInBackground)
-                    Application.runInBackground = RunInBackground;
+                if (this.RunInBackground)
+                    Application.runInBackground = this.RunInBackground;
             }
             else
             {
@@ -242,15 +242,15 @@ namespace Mirage
                 if (logger.LogEnabled()) logger.Log("Server started, but not listening for connections: Attempts to connect to this instance will fail!");
             }
 
-            InitializeAuthEvents();
-            Active = true;
-            _started?.Invoke();
+            this.InitializeAuthEvents();
+            this.Active = true;
+            this._started?.Invoke();
 
-            if (LocalClient != null)
+            if (this.LocalClient != null)
             {
                 // we should call onStartHost after transport is ready to be used
                 // this allows server methods like NetworkServer.Spawn to be called in there
-                _onStartHost?.Invoke();
+                this._onStartHost?.Invoke();
 
                 localClient.ConnectHost(this, dataHandler);
                 if (logger.LogEnabled()) logger.Log("NetworkServer StartHost");
@@ -259,43 +259,43 @@ namespace Mirage
 
         void INetworkServer.StartServer()
         {
-            StartServer();
+            this.StartServer();
         }
 
         private void ThrowIfActive()
         {
-            if (Active) throw new InvalidOperationException("Server is already active");
+            if (this.Active) throw new InvalidOperationException("Server is already active");
         }
 
         private void ThrowIfSocketIsMissing()
         {
-            if (SocketFactory is null)
-                SocketFactory = GetComponent<SocketFactory>();
-            if (SocketFactory == null)
-                throw new InvalidOperationException($"{nameof(SocketFactory)} could not be found for {nameof(NetworkServer)}");
+            if (this.SocketFactory is null)
+                this.SocketFactory = this.GetComponent<SocketFactory>();
+            if (this.SocketFactory == null)
+                throw new InvalidOperationException($"{nameof(this.SocketFactory)} could not be found for {nameof(NetworkServer)}");
         }
 
         private void InitializeAuthEvents()
         {
-            if (authenticator != null)
+            if (this.authenticator != null)
             {
-                authenticator.OnServerAuthenticated += OnAuthenticated;
-                authenticator.ServerSetup(this);
+                this.authenticator.OnServerAuthenticated += this.OnAuthenticated;
+                this.authenticator.ServerSetup(this);
 
-                Connected.AddListener(authenticator.ServerAuthenticate);
+                this.Connected.AddListener(this.authenticator.ServerAuthenticate);
             }
             else
             {
                 // if no authenticator, consider every connection as authenticated
-                Connected.AddListener(OnAuthenticated);
+                this.Connected.AddListener(this.OnAuthenticated);
             }
         }
 
         internal void Update()
         {
-            peer?.UpdateReceive();
-            SyncVarSender?.Update();
-            peer?.UpdateSent();
+            this.peer?.UpdateReceive();
+            this.SyncVarSender?.Update();
+            this.peer?.UpdateSent();
         }
 
         private void Peer_OnConnected(IConnection conn)
@@ -305,19 +305,19 @@ namespace Mirage
             if (logger.LogEnabled()) logger.Log($"Server accepted client: {player}");
 
             // add connection
-            AddConnection(player);
+            this.AddConnection(player);
 
             // let everyone know we just accepted a connection
-            Connected?.Invoke(player);
+            this.Connected?.Invoke(player);
         }
 
         private void Peer_OnDisconnected(IConnection conn, DisconnectReason reason)
         {
             if (logger.LogEnabled()) logger.Log($"Client {conn} disconnected with reason: {reason}");
 
-            if (connections.TryGetValue(conn, out var player))
+            if (this.connections.TryGetValue(conn, out var player))
             {
-                OnDisconnected(player);
+                this.OnDisconnected(player);
             }
             else
             {
@@ -331,37 +331,37 @@ namespace Mirage
         /// </summary>
         private void Cleanup()
         {
-            if (authenticator != null)
+            if (this.authenticator != null)
             {
-                authenticator.OnServerAuthenticated -= OnAuthenticated;
-                Connected.RemoveListener(authenticator.ServerAuthenticate);
+                this.authenticator.OnServerAuthenticated -= this.OnAuthenticated;
+                this.Connected.RemoveListener(this.authenticator.ServerAuthenticate);
             }
             else
             {
                 // if no authenticator, consider every connection as authenticated
-                Connected.RemoveListener(OnAuthenticated);
+                this.Connected.RemoveListener(this.OnAuthenticated);
             }
 
-            _stopped?.Invoke();
-            Active = false;
+            this._stopped?.Invoke();
+            this.Active = false;
 
-            _started.Reset();
-            _onStartHost.Reset();
-            _onStopHost.Reset();
-            _stopped.Reset();
+            this._started.Reset();
+            this._onStartHost.Reset();
+            this._onStopHost.Reset();
+            this._stopped.Reset();
 
-            World = null;
-            SyncVarSender = null;
+            this.World = null;
+            this.SyncVarSender = null;
 
-            Application.quitting -= Stop;
+            Application.quitting -= this.Stop;
 
-            if (peer != null)
+            if (this.peer != null)
             {
                 //remove handlers first to stop loop
-                peer.OnConnected -= Peer_OnConnected;
-                peer.OnDisconnected -= Peer_OnDisconnected;
-                peer.Close();
-                peer = null;
+                this.peer.OnConnected -= this.Peer_OnConnected;
+                this.peer.OnDisconnected -= this.Peer_OnDisconnected;
+                this.peer.Close();
+                this.peer = null;
             }
         }
 
@@ -372,9 +372,9 @@ namespace Mirage
         /// <param name="player">Network connection to add.</param>
         public void AddConnection(INetworkPlayer player)
         {
-            if (!Players.Contains(player))
+            if (!this.Players.Contains(player))
             {
-                connections.Add(player.Connection, player);
+                this.connections.Add(player.Connection, player);
             }
         }
 
@@ -384,7 +384,7 @@ namespace Mirage
         /// <param name="connectionId">The id of the connection to remove.</param>
         public void RemoveConnection(INetworkPlayer player)
         {
-            connections.Remove(player.Connection);
+            this.connections.Remove(player.Connection);
         }
 
         /// <summary>
@@ -393,19 +393,19 @@ namespace Mirage
         /// </summary>
         internal void AddLocalConnection(INetworkClient client, IConnection connection)
         {
-            if (LocalPlayer != null)
+            if (this.LocalPlayer != null)
             {
                 throw new InvalidOperationException("Local client connection already exists");
             }
 
             var player = new NetworkPlayer(connection);
-            LocalPlayer = player;
-            LocalClient = client;
+            this.LocalPlayer = player;
+            this.LocalClient = client;
 
             if (logger.LogEnabled()) logger.Log($"Server accepted local client connection: {player}");
 
             // add the connection for this local player.
-            AddConnection(player);
+            this.AddConnection(player);
         }
 
         /// <summary>
@@ -414,11 +414,11 @@ namespace Mirage
         /// </summary>
         internal void InvokeLocalConnected()
         {
-            if (LocalPlayer == null)
+            if (this.LocalPlayer == null)
             {
                 throw new InvalidOperationException("Local connection does not exist");
             }
-            Connected?.Invoke(LocalPlayer);
+            this.Connected?.Invoke(this.LocalPlayer);
         }
 
         /// <summary>
@@ -440,7 +440,7 @@ namespace Mirage
 
                 // using SendToMany (with IEnumerable) will cause Enumerator to be boxed and create GC/alloc
                 // instead we can use while loop and MoveNext to avoid boxing
-                var enumerator = connections.Values.GetEnumerator();
+                var enumerator = this.connections.Values.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
                     var player = enumerator.Current;
@@ -516,22 +516,22 @@ namespace Mirage
             // connection as they wouldn't get them
             player.MarkAsDisconnected();
 
-            RemoveConnection(player);
+            this.RemoveConnection(player);
 
-            Disconnected?.Invoke(player);
+            this.Disconnected?.Invoke(player);
 
             player.DestroyOwnedObjects();
             player.Identity = null;
 
-            if (player == LocalPlayer)
-                LocalPlayer = null;
+            if (player == this.LocalPlayer)
+                this.LocalPlayer = null;
         }
 
         internal void OnAuthenticated(INetworkPlayer player)
         {
             if (logger.LogEnabled()) logger.Log("Server authenticate client:" + player);
 
-            Authenticated?.Invoke(player);
+            this.Authenticated?.Invoke(player);
         }
 
         /// <summary>
@@ -545,14 +545,14 @@ namespace Mirage
             public DataHandler(IMessageReceiver messageHandler, Dictionary<IConnection, INetworkPlayer> connections)
             {
                 this.messageHandler = messageHandler;
-                players = connections;
+                this.players = connections;
             }
 
             public void ReceiveMessage(IConnection connection, ArraySegment<byte> message)
             {
-                if (players.TryGetValue(connection, out var player))
+                if (this.players.TryGetValue(connection, out var player))
                 {
-                    messageHandler.HandleMessage(player, message);
+                    this.messageHandler.HandleMessage(player, message);
                 }
                 else
                 {

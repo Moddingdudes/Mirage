@@ -13,7 +13,7 @@ namespace Mirage.Examples.InterestManagement
         // Start is called before the first frame update
         public void StartMoving()
         {
-            StartCoroutine(Move());
+            this.StartCoroutine(this.Move());
         }
 
         public IEnumerator Move()
@@ -22,12 +22,12 @@ namespace Mirage.Examples.InterestManagement
             {
 
                 var position = new Vector3(
-                    (Random.value - 0.5f) * bounds.size.x + bounds.center.x,
-                    (Random.value - 0.5f) * bounds.size.y + bounds.center.y,
-                    (Random.value - 0.5f) * bounds.size.z + bounds.center.z
+                    (Random.value - 0.5f) * this.bounds.size.x + this.bounds.center.x,
+                    (Random.value - 0.5f) * this.bounds.size.y + this.bounds.center.y,
+                    (Random.value - 0.5f) * this.bounds.size.z + this.bounds.center.z
                 );
 
-                agent.destination = position;
+                this.agent.destination = position;
 
                 yield return new WaitForSeconds(Random.Range(1.0f, 5.0f));
             }

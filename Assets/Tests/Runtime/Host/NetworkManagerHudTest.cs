@@ -14,22 +14,22 @@ namespace Mirage.Tests.Runtime.Host
         protected NetworkManagerHud networkManagerHud;
         public override void ExtraSetup()
         {
-            gameObject = new GameObject("NetworkManagerHud", typeof(NetworkManagerHud));
-            networkManagerHud = gameObject.GetComponent<NetworkManagerHud>();
-            networkManagerHud.NetworkManager = manager;
-            networkManagerHud.OfflineGO = new GameObject();
-            networkManagerHud.OnlineGO = new GameObject();
+            this.gameObject = new GameObject("NetworkManagerHud", typeof(NetworkManagerHud));
+            this.networkManagerHud = this.gameObject.GetComponent<NetworkManagerHud>();
+            this.networkManagerHud.NetworkManager = this.manager;
+            this.networkManagerHud.OfflineGO = new GameObject();
+            this.networkManagerHud.OnlineGO = new GameObject();
 
             //Initial state in the prefab
-            networkManagerHud.OfflineGO.SetActive(true);
-            networkManagerHud.OnlineGO.SetActive(false);
+            this.networkManagerHud.OfflineGO.SetActive(true);
+            this.networkManagerHud.OnlineGO.SetActive(false);
         }
 
         public override void ExtraTearDown()
         {
-            Object.DestroyImmediate(networkManagerHud.OfflineGO);
-            Object.DestroyImmediate(networkManagerHud.OnlineGO);
-            Object.DestroyImmediate(gameObject);
+            Object.DestroyImmediate(this.networkManagerHud.OfflineGO);
+            Object.DestroyImmediate(this.networkManagerHud.OnlineGO);
+            Object.DestroyImmediate(this.gameObject);
         }
     }
 
@@ -39,17 +39,17 @@ namespace Mirage.Tests.Runtime.Host
         [Test]
         public void OnlineSetActiveTest()
         {
-            networkManagerHud.OnlineSetActive();
-            Assert.That(networkManagerHud.OfflineGO.activeSelf, Is.False);
-            Assert.That(networkManagerHud.OnlineGO.activeSelf, Is.True);
+            this.networkManagerHud.OnlineSetActive();
+            Assert.That(this.networkManagerHud.OfflineGO.activeSelf, Is.False);
+            Assert.That(this.networkManagerHud.OnlineGO.activeSelf, Is.True);
         }
 
         [Test]
         public void OfflineSetActiveTest()
         {
-            networkManagerHud.OfflineSetActive();
-            Assert.That(networkManagerHud.OfflineGO.activeSelf, Is.True);
-            Assert.That(networkManagerHud.OnlineGO.activeSelf, Is.False);
+            this.networkManagerHud.OfflineSetActive();
+            Assert.That(this.networkManagerHud.OfflineGO.activeSelf, Is.True);
+            Assert.That(this.networkManagerHud.OnlineGO.activeSelf, Is.False);
         }
 
 
@@ -57,13 +57,13 @@ namespace Mirage.Tests.Runtime.Host
         [UnityTest]
         public IEnumerator StopButtonTest() => UniTask.ToCoroutine(async () =>
         {
-            networkManagerHud.StopButtonHandler();
-            Assert.That(networkManagerHud.OfflineGO.activeSelf, Is.True);
-            Assert.That(networkManagerHud.OnlineGO.activeSelf, Is.False);
+            this.networkManagerHud.StopButtonHandler();
+            Assert.That(this.networkManagerHud.OfflineGO.activeSelf, Is.True);
+            Assert.That(this.networkManagerHud.OnlineGO.activeSelf, Is.False);
 
-            await AsyncUtil.WaitUntilWithTimeout(() => !manager.IsNetworkActive);
+            await AsyncUtil.WaitUntilWithTimeout(() => !this.manager.IsNetworkActive);
 
-            Assert.That(manager.IsNetworkActive, Is.False);
+            Assert.That(this.manager.IsNetworkActive, Is.False);
         });
     }
 
@@ -75,11 +75,11 @@ namespace Mirage.Tests.Runtime.Host
         [Test]
         public void StartServerOnlyButtonTest()
         {
-            networkManagerHud.StartServerOnlyButtonHandler();
-            Assert.That(networkManagerHud.OfflineGO.activeSelf, Is.False);
-            Assert.That(networkManagerHud.OnlineGO.activeSelf, Is.True);
+            this.networkManagerHud.StartServerOnlyButtonHandler();
+            Assert.That(this.networkManagerHud.OfflineGO.activeSelf, Is.False);
+            Assert.That(this.networkManagerHud.OnlineGO.activeSelf, Is.True);
 
-            Assert.That(manager.Server.Active, Is.True);
+            Assert.That(this.manager.Server.Active, Is.True);
         }
     }
 }

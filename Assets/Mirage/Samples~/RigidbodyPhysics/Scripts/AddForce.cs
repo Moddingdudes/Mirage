@@ -8,9 +8,9 @@ namespace Mirage.Examples.RigidbodyPhysics
 
         private void Update()
         {
-            if (IsServer && Input.GetKeyDown(KeyCode.Space))
+            if (this.IsServer && Input.GetKeyDown(KeyCode.Space))
             {
-                GetComponent<Rigidbody>().AddForce(Vector3.up * force);
+                this.GetComponent<Rigidbody>().AddForce(Vector3.up * this.force);
             }
         }
     }

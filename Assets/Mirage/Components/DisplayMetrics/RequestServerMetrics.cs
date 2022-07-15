@@ -22,47 +22,47 @@ namespace Mirage.DisplayMetrics
 
         private void Start()
         {
-            if (RequestMetrics)
+            if (this.RequestMetrics)
             {
-                client.Connected.AddListener((x) => sendRequest());
+                this.client.Connected.AddListener((x) => this.sendRequest());
             }
 
-            server.Started.AddListener(ServerStarted);
-            StartCoroutine(Runner());
+            this.server.Started.AddListener(this.ServerStarted);
+            this.StartCoroutine(this.Runner());
         }
 
         private void ServerStarted()
         {
-            connections = new HashSet<INetworkPlayer>();
+            this.connections = new HashSet<INetworkPlayer>();
 
-            server.MessageHandler.RegisterHandler<RequestMetricsMessage>(OnRequestMetricsMessage);
-            server.Disconnected.AddListener(x => connections.Remove(x));
+            this.server.MessageHandler.RegisterHandler<RequestMetricsMessage>(this.OnRequestMetricsMessage);
+            this.server.Disconnected.AddListener(x => this.connections.Remove(x));
         }
 
         private void OnRequestMetricsMessage(INetworkPlayer arg1, RequestMetricsMessage arg2)
         {
-            connections.Add(arg1);
-            if (metrics == null)
+            this.connections.Add(arg1);
+            if (this.metrics == null)
             {
-                metrics = server.Metrics;
-                lastSendTick = metrics.tick;
+                this.metrics = this.server.Metrics;
+                this.lastSendTick = this.metrics.tick;
             }
         }
 
         private void sendRequest()
         {
-            client.MessageHandler.RegisterHandler<SendMetricsMessage>(OnSendMetricsMessage);
-            client.Player.Send(new RequestMetricsMessage());
-            metrics = new Metrics();
-            displayMetrics.Metrics = metrics;
+            this.client.MessageHandler.RegisterHandler<SendMetricsMessage>(this.OnSendMetricsMessage);
+            this.client.Player.Send(new RequestMetricsMessage());
+            this.metrics = new Metrics();
+            this.displayMetrics.Metrics = this.metrics;
         }
 
         private void OnSendMetricsMessage(INetworkPlayer _, SendMetricsMessage msg)
         {
             for (uint i = 0; i < msg.newFrames.Length; i++)
             {
-                var seq = metrics.Sequencer.MoveInBounds(i + msg.start);
-                metrics.buffer[seq] = msg.newFrames[i];
+                var seq = this.metrics.Sequencer.MoveInBounds(i + msg.start);
+                this.metrics.buffer[seq] = msg.newFrames[i];
             }
         }
 
@@ -85,8 +85,8 @@ namespace Mirage.DisplayMetrics
             {
                 try
                 {
-                    if (server.Active && connections.Count > 0) ServerUpdate();
-                    if (RequestMetrics && client.Active) ClientUpdate();
+                    if (this.server.Active && this.connections.Count > 0) this.ServerUpdate();
+                    if (this.RequestMetrics && this.client.Active) this.ClientUpdate();
                 }
                 catch (Exception e)
                 {
@@ -101,10 +101,10 @@ namespace Mirage.DisplayMetrics
             var msg = new SendMetricsMessage
             {
                 start = lastSendTick,
-                newFrames = getFrames(lastSendTick, metrics.tick)
+                newFrames = this.getFrames(this.lastSendTick, this.metrics.tick)
             };
 
-            foreach (var player in connections)
+            foreach (var player in this.connections)
             {
                 player.Send(msg);
             }
@@ -112,18 +112,18 @@ namespace Mirage.DisplayMetrics
 
         private Metrics.Frame[] getFrames(uint start, uint end)
         {
-            var count = metrics.Sequencer.Distance(end, start);
+            var count = this.metrics.Sequencer.Distance(end, start);
             // limit to 100 frames
             if (count > 100) count = 100;
 
             var frames = new Metrics.Frame[count];
             for (uint i = 0; i < count; i++)
             {
-                var seq = metrics.Sequencer.MoveInBounds(i + start);
-                frames[i] = metrics.buffer[seq];
+                var seq = this.metrics.Sequencer.MoveInBounds(i + start);
+                frames[i] = this.metrics.buffer[seq];
             }
 
-            lastSendTick = (uint)metrics.Sequencer.MoveInBounds(start + (uint)count);
+            this.lastSendTick = (uint)this.metrics.Sequencer.MoveInBounds(start + (uint)count);
 
             return frames;
         }

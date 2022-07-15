@@ -25,8 +25,8 @@ namespace Mirage.Weaver
 
         protected WeaverException(string message, MemberReference memberReference, SequencePoint sequencePoint) : base(message)
         {
-            SequencePoint = sequencePoint;
-            MemberReference = memberReference;
+            this.SequencePoint = sequencePoint;
+            this.MemberReference = memberReference;
         }
     }
 

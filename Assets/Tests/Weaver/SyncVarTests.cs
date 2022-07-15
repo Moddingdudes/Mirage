@@ -7,78 +7,78 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void SyncVarsValid()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncVarsValidInitialOnly()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncVarArraySegment()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncVarsDerivedNetworkBehaviour()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncVarsStatic()
         {
-            HasError("invalidVar cannot be static",
+            this.HasError("invalidVar cannot be static",
                 "System.Int32 SyncVarTests.SyncVarsStatic.SyncVarsStatic::invalidVar");
         }
 
         [Test]
         public void SyncVarsGenericField()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncVarsGenericParam()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncVarsInterface()
         {
-            HasError("Cannot generate write function for interface IMySyncVar. Use a supported type or provide a custom write function",
+            this.HasError("Cannot generate write function for interface IMySyncVar. Use a supported type or provide a custom write function",
                 "SyncVarTests.SyncVarsInterface.SyncVarsInterface/IMySyncVar SyncVarTests.SyncVarsInterface.SyncVarsInterface::invalidVar");
         }
 
         [Test]
         public void SyncVarsUnityComponent()
         {
-            HasError("Cannot generate write function for component type TextMesh. Use a supported type or provide a custom write function",
+            this.HasError("Cannot generate write function for component type TextMesh. Use a supported type or provide a custom write function",
                 "UnityEngine.TextMesh SyncVarTests.SyncVarsUnityComponent.SyncVarsUnityComponent::invalidVar");
         }
 
         [Test]
         public void SyncVarsCantBeArray()
         {
-            HasError("thisShouldntWork has invalid type. Use SyncLists instead of arrays",
+            this.HasError("thisShouldntWork has invalid type. Use SyncLists instead of arrays",
                 "System.Int32[] SyncVarTests.SyncVarsCantBeArray.SyncVarsCantBeArray::thisShouldntWork");
         }
 
         [Test]
         public void SyncVarsSyncList()
         {
-            HasError("syncints has [SyncVar] attribute. ISyncObject should not be marked with SyncVar",
+            this.HasError("syncints has [SyncVar] attribute. ISyncObject should not be marked with SyncVar",
                 "Mirage.Collections.SyncList`1<System.Int32> SyncVarTests.SyncVarsSyncList.SyncVarsSyncList::syncints");
         }
 
         [Test]
         public void SyncVarsMoreThan63()
         {
-            HasError("SyncVarsMoreThan63 has too many [SyncVar]. Consider refactoring your class into multiple components",
+            this.HasError("SyncVarsMoreThan63 has too many [SyncVar]. Consider refactoring your class into multiple components",
                 "SyncVarTests.SyncVarsMoreThan63.SyncVarsMoreThan63");
         }
     }

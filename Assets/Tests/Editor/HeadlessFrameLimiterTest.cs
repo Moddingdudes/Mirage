@@ -13,20 +13,20 @@ namespace Mirage.Tests
         [SetUp]
         public void Setup()
         {
-            testGO = new GameObject();
-            comp = testGO.AddComponent<HeadlessFrameLimiter>();
+            this.testGO = new GameObject();
+            this.comp = this.testGO.AddComponent<HeadlessFrameLimiter>();
         }
 
         [TearDown]
         public void Teardown()
         {
-            Object.DestroyImmediate(testGO);
+            Object.DestroyImmediate(this.testGO);
         }
 
         [Test]
         public void StartOnHeadlessValue()
         {
-            Assert.That(comp.serverTickRate, Is.EqualTo(30));
+            Assert.That(this.comp.serverTickRate, Is.EqualTo(30));
         }
     }
 }

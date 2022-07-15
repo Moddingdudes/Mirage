@@ -9,10 +9,10 @@ namespace Mirage.Collections
     {
         protected readonly ISet<T> objects;
 
-        public int Count => objects.Count;
+        public int Count => this.objects.Count;
         public bool IsReadOnly { get; private set; }
 
-        internal int ChangeCount => changes.Count;
+        internal int ChangeCount => this.changes.Count;
 
         /// <summary>
         /// Raised when an element is added to the list.
@@ -66,23 +66,23 @@ namespace Mirage.Collections
 
         public void Reset()
         {
-            IsReadOnly = false;
-            changes.Clear();
-            changesAhead = 0;
-            objects.Clear();
+            this.IsReadOnly = false;
+            this.changes.Clear();
+            this.changesAhead = 0;
+            this.objects.Clear();
         }
 
-        public bool IsDirty => changes.Count > 0;
+        public bool IsDirty => this.changes.Count > 0;
 
         // throw away all the changes
         // this should be called after a successfull sync
-        public void Flush() => changes.Clear();
+        public void Flush() => this.changes.Clear();
 
-        private void AddOperation(Operation op) => AddOperation(op, default);
+        private void AddOperation(Operation op) => this.AddOperation(op, default);
 
         private void AddOperation(Operation op, T item)
         {
-            if (IsReadOnly)
+            if (this.IsReadOnly)
             {
                 throw new InvalidOperationException("SyncSets can only be modified at the server");
             }
@@ -93,16 +93,16 @@ namespace Mirage.Collections
                 item = item
             };
 
-            changes.Add(change);
+            this.changes.Add(change);
             OnChange?.Invoke();
         }
 
         public void OnSerializeAll(NetworkWriter writer)
         {
             // if init,  write the full list content
-            writer.WritePackedUInt32((uint)objects.Count);
+            writer.WritePackedUInt32((uint)this.objects.Count);
 
-            foreach (var obj in objects)
+            foreach (var obj in this.objects)
             {
                 writer.Write(obj);
             }
@@ -111,17 +111,17 @@ namespace Mirage.Collections
             // thus the client will need to skip all the pending changes
             // or they would be applied again.
             // So we write how many changes are pending
-            writer.WritePackedUInt32((uint)changes.Count);
+            writer.WritePackedUInt32((uint)this.changes.Count);
         }
 
         public void OnSerializeDelta(NetworkWriter writer)
         {
             // write all the queued up changes
-            writer.WritePackedUInt32((uint)changes.Count);
+            writer.WritePackedUInt32((uint)this.changes.Count);
 
-            for (var i = 0; i < changes.Count; i++)
+            for (var i = 0; i < this.changes.Count; i++)
             {
-                var change = changes[i];
+                var change = this.changes[i];
                 writer.WriteByte((byte)change.operation);
 
                 switch (change.operation)
@@ -143,33 +143,33 @@ namespace Mirage.Collections
         public void OnDeserializeAll(NetworkReader reader)
         {
             // This list can now only be modified by synchronization
-            IsReadOnly = true;
+            this.IsReadOnly = true;
 
             // if init,  write the full list content
             var count = (int)reader.ReadPackedUInt32();
 
-            objects.Clear();
-            changes.Clear();
+            this.objects.Clear();
+            this.changes.Clear();
             OnClear?.Invoke();
 
             for (var i = 0; i < count; i++)
             {
                 var obj = reader.Read<T>();
-                objects.Add(obj);
+                this.objects.Add(obj);
                 OnAdd?.Invoke(obj);
             }
 
             // We will need to skip all these changes
             // the next time the list is synchronized
             // because they have already been applied
-            changesAhead = (int)reader.ReadPackedUInt32();
+            this.changesAhead = (int)reader.ReadPackedUInt32();
             OnChange?.Invoke();
         }
 
         public void OnDeserializeDelta(NetworkReader reader)
         {
             // This list can now only be modified by synchronization
-            IsReadOnly = true;
+            this.IsReadOnly = true;
             var raiseOnChange = false;
 
             var changesCount = (int)reader.ReadPackedUInt32();
@@ -180,20 +180,20 @@ namespace Mirage.Collections
 
                 // apply the operation only if it is a new change
                 // that we have not applied yet
-                var apply = changesAhead == 0;
+                var apply = this.changesAhead == 0;
 
                 switch (operation)
                 {
                     case Operation.OP_ADD:
-                        DeserializeAdd(reader, apply);
+                        this.DeserializeAdd(reader, apply);
                         break;
 
                     case Operation.OP_CLEAR:
-                        DeserializeClear(apply);
+                        this.DeserializeClear(apply);
                         break;
 
                     case Operation.OP_REMOVE:
-                        DeserializeRemove(reader, apply);
+                        this.DeserializeRemove(reader, apply);
                         break;
                 }
 
@@ -204,7 +204,7 @@ namespace Mirage.Collections
                 // we just skipped this change
                 else
                 {
-                    changesAhead--;
+                    this.changesAhead--;
                 }
             }
 
@@ -219,7 +219,7 @@ namespace Mirage.Collections
             var item = reader.Read<T>();
             if (apply)
             {
-                objects.Add(item);
+                this.objects.Add(item);
                 OnAdd?.Invoke(item);
             }
         }
@@ -228,7 +228,7 @@ namespace Mirage.Collections
         {
             if (apply)
             {
-                objects.Clear();
+                this.objects.Clear();
                 OnClear?.Invoke();
             }
         }
@@ -238,62 +238,62 @@ namespace Mirage.Collections
             var item = reader.Read<T>();
             if (apply)
             {
-                objects.Remove(item);
+                this.objects.Remove(item);
                 OnRemove?.Invoke(item);
             }
         }
 
         public bool Add(T item)
         {
-            if (objects.Add(item))
+            if (this.objects.Add(item))
             {
                 OnAdd?.Invoke(item);
-                AddOperation(Operation.OP_ADD, item);
+                this.AddOperation(Operation.OP_ADD, item);
                 return true;
             }
             return false;
         }
 
-        void ICollection<T>.Add(T item) => _ = Add(item);
+        void ICollection<T>.Add(T item) => _ = this.Add(item);
 
         public void Clear()
         {
-            objects.Clear();
+            this.objects.Clear();
             OnClear?.Invoke();
-            AddOperation(Operation.OP_CLEAR);
+            this.AddOperation(Operation.OP_CLEAR);
         }
 
-        public bool Contains(T item) => objects.Contains(item);
+        public bool Contains(T item) => this.objects.Contains(item);
 
-        public void CopyTo(T[] array, int arrayIndex) => objects.CopyTo(array, arrayIndex);
+        public void CopyTo(T[] array, int arrayIndex) => this.objects.CopyTo(array, arrayIndex);
 
         public bool Remove(T item)
         {
-            if (objects.Remove(item))
+            if (this.objects.Remove(item))
             {
                 OnRemove?.Invoke(item);
-                AddOperation(Operation.OP_REMOVE, item);
+                this.AddOperation(Operation.OP_REMOVE, item);
                 return true;
             }
             return false;
         }
 
-        public IEnumerator<T> GetEnumerator() => objects.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => this.objects.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         public void ExceptWith(IEnumerable<T> other)
         {
             if (other == this)
             {
-                Clear();
+                this.Clear();
                 return;
             }
 
             // remove every element in other from this
             foreach (var element in other)
             {
-                Remove(element);
+                this.Remove(element);
             }
         }
 
@@ -301,53 +301,53 @@ namespace Mirage.Collections
         {
             if (other is ISet<T> otherSet)
             {
-                IntersectWithSet(otherSet);
+                this.IntersectWithSet(otherSet);
             }
             else
             {
                 var otherAsSet = new HashSet<T>(other);
-                IntersectWithSet(otherAsSet);
+                this.IntersectWithSet(otherAsSet);
             }
         }
 
         private void IntersectWithSet(ISet<T> otherSet)
         {
-            var elements = new List<T>(objects);
+            var elements = new List<T>(this.objects);
 
             foreach (var element in elements)
             {
                 if (!otherSet.Contains(element))
                 {
-                    Remove(element);
+                    this.Remove(element);
                 }
             }
         }
 
-        public bool IsProperSubsetOf(IEnumerable<T> other) => objects.IsProperSubsetOf(other);
+        public bool IsProperSubsetOf(IEnumerable<T> other) => this.objects.IsProperSubsetOf(other);
 
-        public bool IsProperSupersetOf(IEnumerable<T> other) => objects.IsProperSupersetOf(other);
+        public bool IsProperSupersetOf(IEnumerable<T> other) => this.objects.IsProperSupersetOf(other);
 
-        public bool IsSubsetOf(IEnumerable<T> other) => objects.IsSubsetOf(other);
+        public bool IsSubsetOf(IEnumerable<T> other) => this.objects.IsSubsetOf(other);
 
-        public bool IsSupersetOf(IEnumerable<T> other) => objects.IsSupersetOf(other);
+        public bool IsSupersetOf(IEnumerable<T> other) => this.objects.IsSupersetOf(other);
 
-        public bool Overlaps(IEnumerable<T> other) => objects.Overlaps(other);
+        public bool Overlaps(IEnumerable<T> other) => this.objects.Overlaps(other);
 
-        public bool SetEquals(IEnumerable<T> other) => objects.SetEquals(other);
+        public bool SetEquals(IEnumerable<T> other) => this.objects.SetEquals(other);
 
         public void SymmetricExceptWith(IEnumerable<T> other)
         {
             if (other == this)
             {
-                Clear();
+                this.Clear();
             }
             else
             {
                 foreach (var element in other)
                 {
-                    if (!Remove(element))
+                    if (!this.Remove(element))
                     {
-                        Add(element);
+                        this.Add(element);
                     }
                 }
             }
@@ -359,7 +359,7 @@ namespace Mirage.Collections
             {
                 foreach (var element in other)
                 {
-                    Add(element);
+                    this.Add(element);
                 }
             }
         }
@@ -372,7 +372,7 @@ namespace Mirage.Collections
         public SyncHashSet(IEqualityComparer<T> comparer) : base(new HashSet<T>(comparer ?? EqualityComparer<T>.Default)) { }
 
         // allocation free enumerator
-        public new HashSet<T>.Enumerator GetEnumerator() => ((HashSet<T>)objects).GetEnumerator();
+        public new HashSet<T>.Enumerator GetEnumerator() => ((HashSet<T>)this.objects).GetEnumerator();
     }
 
     public class SyncSortedSet<T> : SyncSet<T>
@@ -382,6 +382,6 @@ namespace Mirage.Collections
         public SyncSortedSet(IComparer<T> comparer) : base(new SortedSet<T>(comparer ?? Comparer<T>.Default)) { }
 
         // allocation free enumerator
-        public new SortedSet<T>.Enumerator GetEnumerator() => ((SortedSet<T>)objects).GetEnumerator();
+        public new SortedSet<T>.Enumerator GetEnumerator() => ((SortedSet<T>)this.objects).GetEnumerator();
     }
 }

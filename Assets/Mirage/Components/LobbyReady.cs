@@ -16,7 +16,7 @@ namespace Mirage
 
         public void SetAllClientsNotReady()
         {
-            foreach (var obj in ObjectReadyList)
+            foreach (var obj in this.ObjectReadyList)
             {
                 obj.SetClientNotReady();
             }
@@ -28,7 +28,7 @@ namespace Mirage
 
             playerCache.Clear();
 
-            foreach (var objectReady in ObjectReadyList)
+            foreach (var objectReady in this.ObjectReadyList)
             {
                 var isOwner = objectReady.Identity == identity;
                 if ((!isOwner || includeOwner) && objectReady.IsReady)

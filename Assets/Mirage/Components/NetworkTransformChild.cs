@@ -13,6 +13,6 @@ namespace Mirage
         [Header("Target")]
         public Transform Target;
 
-        protected override Transform TargetComponent => Target;
+        protected override Transform TargetComponent => this.Target;
     }
 }

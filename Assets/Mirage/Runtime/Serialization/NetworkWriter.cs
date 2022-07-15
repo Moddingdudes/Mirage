@@ -56,7 +56,7 @@ namespace Mirage.Serialization
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             // see ByteLength for comment on math
-            get => (bitCapacity + 0b111) >> 3;
+            get => (this.bitCapacity + 0b111) >> 3;
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Mirage.Serialization
             // add to 3 last bits,
             //   if any are 1 then it will roll over 4th bit.
             //   if all are 0, then nothing happens 
-            get => (bitPosition + 0b111) >> 3;
+            get => (this.bitPosition + 0b111) >> 3;
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Mirage.Serialization
         public int BitPosition
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => bitPosition;
+            get => this.bitPosition;
         }
 
         public NetworkWriter(int minByteCapacity) : this(minByteCapacity, true) { }
@@ -92,23 +92,23 @@ namespace Mirage.Serialization
             var ulongCapacity = Mathf.CeilToInt(minByteCapacity / (float)sizeof(ulong));
             var byteCapacity = ulongCapacity * sizeof(ulong);
 
-            bitCapacity = byteCapacity * 8;
-            managedBuffer = new byte[byteCapacity];
+            this.bitCapacity = byteCapacity * 8;
+            this.managedBuffer = new byte[byteCapacity];
 
-            CreateHandle();
+            this.CreateHandle();
         }
 
 
         ~NetworkWriter()
         {
-            FreeHandle();
+            this.FreeHandle();
         }
 
         private void ResizeBuffer(int minBitCapacity)
         {
             // +7 to round up to next byte
             var minByteCapacity = (minBitCapacity + 7) / 8;
-            var size = managedBuffer.Length;
+            var size = this.managedBuffer.Length;
             while (size < minByteCapacity)
             {
                 size *= 2;
@@ -120,21 +120,21 @@ namespace Mirage.Serialization
 
             Debug.LogWarning($"Resizing buffer, new size:{size} bytes");
 
-            FreeHandle();
+            this.FreeHandle();
 
-            Array.Resize(ref managedBuffer, size);
-            bitCapacity = size * 8;
+            Array.Resize(ref this.managedBuffer, size);
+            this.bitCapacity = size * 8;
 
-            CreateHandle();
+            this.CreateHandle();
         }
 
         private void CreateHandle()
         {
-            if (needsDisposing) FreeHandle();
+            if (this.needsDisposing) this.FreeHandle();
 
-            handle = GCHandle.Alloc(managedBuffer, GCHandleType.Pinned);
-            longPtr = (ulong*)handle.AddrOfPinnedObject();
-            needsDisposing = true;
+            this.handle = GCHandle.Alloc(this.managedBuffer, GCHandleType.Pinned);
+            this.longPtr = (ulong*)this.handle.AddrOfPinnedObject();
+            this.needsDisposing = true;
         }
 
         /// <summary>
@@ -143,16 +143,16 @@ namespace Mirage.Serialization
         /// </summary>
         private void FreeHandle()
         {
-            if (!needsDisposing) return;
+            if (!this.needsDisposing) return;
 
-            handle.Free();
-            longPtr = null;
-            needsDisposing = false;
+            this.handle.Free();
+            this.longPtr = null;
+            this.needsDisposing = false;
         }
 
         public void Reset()
         {
-            bitPosition = 0;
+            this.bitPosition = 0;
         }
 
         /// <summary>
@@ -162,46 +162,46 @@ namespace Mirage.Serialization
         /// <returns></returns>
         public byte[] ToArray()
         {
-            var data = new byte[ByteLength];
-            Buffer.BlockCopy(managedBuffer, 0, data, 0, ByteLength);
+            var data = new byte[this.ByteLength];
+            Buffer.BlockCopy(this.managedBuffer, 0, data, 0, this.ByteLength);
             return data;
         }
         public ArraySegment<byte> ToArraySegment()
         {
-            return new ArraySegment<byte>(managedBuffer, 0, ByteLength);
+            return new ArraySegment<byte>(this.managedBuffer, 0, this.ByteLength);
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void CheckCapacity(int newLength)
         {
-            if (newLength > bitCapacity)
+            if (newLength > this.bitCapacity)
             {
-                if (allowResize)
+                if (this.allowResize)
                 {
-                    ResizeBuffer(newLength);
+                    this.ResizeBuffer(newLength);
                 }
                 else
                 {
-                    ThrowLengthOverCapacity(newLength);
+                    this.ThrowLengthOverCapacity(newLength);
                 }
             }
         }
 
         private void ThrowLengthOverCapacity(int newLength)
         {
-            throw new InvalidOperationException($"Can not write over end of buffer, new length {newLength}, capacity {bitCapacity}");
+            throw new InvalidOperationException($"Can not write over end of buffer, new length {newLength}, capacity {this.bitCapacity}");
         }
 
         private void PadToByte()
         {
-            bitPosition = ByteLength << 3;
+            this.bitPosition = this.ByteLength << 3;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteBoolean(bool value)
         {
-            WriteBoolean(value ? 1UL : 0UL);
+            this.WriteBoolean(value ? 1UL : 0UL);
         }
         /// <summary>
         /// Writes first bit of <paramref name="value"/> to buffer
@@ -209,12 +209,12 @@ namespace Mirage.Serialization
         /// <param name="value"></param>
         public void WriteBoolean(ulong value)
         {
-            var newPosition = bitPosition + 1;
-            CheckCapacity(newPosition);
+            var newPosition = this.bitPosition + 1;
+            this.CheckCapacity(newPosition);
 
-            var bitsInLong = bitPosition & 0b11_1111;
+            var bitsInLong = this.bitPosition & 0b11_1111;
 
-            var ptr = longPtr + (bitPosition >> 6);
+            var ptr = this.longPtr + (this.bitPosition >> 6);
             *ptr = (
                 *ptr & (
                     // start with 0000_0001
@@ -224,90 +224,90 @@ namespace Mirage.Serialization
                 )
             ) | ((value & 0b1) << bitsInLong);
 
-            bitPosition = newPosition;
+            this.bitPosition = newPosition;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteSByte(sbyte value) => WriteByte((byte)value);
+        public void WriteSByte(sbyte value) => this.WriteByte((byte)value);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteByte(byte value) => WriterUnmasked(value, 8);
+        public void WriteByte(byte value) => this.WriterUnmasked(value, 8);
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteInt16(short value) => WriteUInt16((ushort)value);
+        public void WriteInt16(short value) => this.WriteUInt16((ushort)value);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUInt16(ushort value) => WriterUnmasked(value, 16);
+        public void WriteUInt16(ushort value) => this.WriterUnmasked(value, 16);
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteInt32(int value) => WriteUInt32((uint)value);
+        public void WriteInt32(int value) => this.WriteUInt32((uint)value);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUInt32(uint value) => WriterUnmasked(value, 32);
+        public void WriteUInt32(uint value) => this.WriterUnmasked(value, 32);
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteInt64(long value) => WriteUInt64((ulong)value);
+        public void WriteInt64(long value) => this.WriteUInt64((ulong)value);
         public void WriteUInt64(ulong value)
         {
-            var newPosition = bitPosition + 64;
-            CheckCapacity(newPosition);
+            var newPosition = this.bitPosition + 64;
+            this.CheckCapacity(newPosition);
 
-            var bitsInLong = bitPosition & 0b11_1111;
+            var bitsInLong = this.bitPosition & 0b11_1111;
 
             if (bitsInLong == 0)
             {
-                var ptr1 = longPtr + (bitPosition >> 6);
+                var ptr1 = this.longPtr + (this.bitPosition >> 6);
                 *ptr1 = value;
             }
             else
             {
                 var bitsLeft = 64 - bitsInLong;
 
-                var ptr1 = longPtr + (bitPosition >> 6);
+                var ptr1 = this.longPtr + (this.bitPosition >> 6);
                 var ptr2 = ptr1 + 1;
 
                 *ptr1 = (*ptr1 & (ulong.MaxValue >> bitsLeft)) | (value << bitsInLong);
                 *ptr2 = (*ptr2 & (ulong.MaxValue << newPosition)) | (value >> bitsLeft);
             }
-            bitPosition = newPosition;
+            this.bitPosition = newPosition;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteSingle(float value) => WriteUInt32(*(uint*)&value);
+        public void WriteSingle(float value) => this.WriteUInt32(*(uint*)&value);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteDouble(double value) => WriteUInt64(*(ulong*)&value);
+        public void WriteDouble(double value) => this.WriteUInt64(*(ulong*)&value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(ulong value, int bits)
         {
             if (bits == 0) return;
             // mask so we dont overwrite
-            WriterUnmasked(value & BitMask.Mask(bits), bits);
+            this.WriterUnmasked(value & BitMask.Mask(bits), bits);
         }
 
         private void WriterUnmasked(ulong value, int bits)
         {
-            var newPosition = bitPosition + bits;
-            CheckCapacity(newPosition);
+            var newPosition = this.bitPosition + bits;
+            this.CheckCapacity(newPosition);
 
-            var bitsInLong = bitPosition & 0b11_1111;
+            var bitsInLong = this.bitPosition & 0b11_1111;
             var bitsLeft = 64 - bitsInLong;
 
             if (bitsLeft >= bits)
             {
-                var ptr = longPtr + (bitPosition >> 6);
+                var ptr = this.longPtr + (this.bitPosition >> 6);
 
-                *ptr = (*ptr & BitMask.OuterMask(bitPosition, newPosition)) | (value << bitsInLong);
+                *ptr = (*ptr & BitMask.OuterMask(this.bitPosition, newPosition)) | (value << bitsInLong);
             }
             else
             {
-                var ptr1 = longPtr + (bitPosition >> 6);
+                var ptr1 = this.longPtr + (this.bitPosition >> 6);
                 var ptr2 = ptr1 + 1;
 
                 *ptr1 = (*ptr1 & (ulong.MaxValue >> bitsLeft)) | (value << bitsInLong);
                 *ptr2 = (*ptr2 & (ulong.MaxValue << newPosition)) | (value >> bitsLeft);
             }
-            bitPosition = newPosition;
+            this.bitPosition = newPosition;
         }
 
         /// <summary>
@@ -319,7 +319,7 @@ namespace Mirage.Serialization
         /// <param name="bytePosition"></param>
         public void WriteAtBytePosition(ulong value, int bits, int bytePosition)
         {
-            WriteAtPosition(value, bits, bytePosition * 8);
+            this.WriteAtPosition(value, bits, bytePosition * 8);
         }
 
         /// <summary>
@@ -334,12 +334,12 @@ namespace Mirage.Serialization
         {
             // check length here so this methods throws instead of the write below
             // this is so that it is more obvious that the position arg for this method is invalid
-            CheckCapacity(bitPosition + bits);
+            this.CheckCapacity(bitPosition + bits);
 
             // moves position to arg, then write, then reset position
             var currentPosition = this.bitPosition;
             this.bitPosition = bitPosition;
-            Write(value, bits);
+            this.Write(value, bits);
             this.bitPosition = currentPosition;
         }
 
@@ -352,8 +352,8 @@ namespace Mirage.Serialization
         /// <param name="newPosition"></param>
         public void MoveBitPosition(int newPosition)
         {
-            CheckCapacity(newPosition);
-            bitPosition = newPosition;
+            this.CheckCapacity(newPosition);
+            this.bitPosition = newPosition;
         }
 
         /// <summary>
@@ -365,15 +365,15 @@ namespace Mirage.Serialization
         /// <param name="value"></param>
         public void PadAndCopy<T>(in T value) where T : unmanaged
         {
-            PadToByte();
-            var newPosition = bitPosition + (8 * sizeof(T));
-            CheckCapacity(newPosition);
+            this.PadToByte();
+            var newPosition = this.bitPosition + (8 * sizeof(T));
+            this.CheckCapacity(newPosition);
 
-            var startPtr = ((byte*)longPtr) + (bitPosition >> 3);
+            var startPtr = ((byte*)this.longPtr) + (this.bitPosition >> 3);
 
             var ptr = (T*)startPtr;
             *ptr = value;
-            bitPosition = newPosition;
+            this.bitPosition = newPosition;
         }
 
         /// <summary>
@@ -386,13 +386,13 @@ namespace Mirage.Serialization
         /// <param name="length"></param>
         public void WriteBytes(byte[] array, int offset, int length)
         {
-            PadToByte();
-            var newPosition = bitPosition + (8 * length);
-            CheckCapacity(newPosition);
+            this.PadToByte();
+            var newPosition = this.bitPosition + (8 * length);
+            this.CheckCapacity(newPosition);
 
             // todo benchmark this vs Marshal.Copy or for loop
-            Buffer.BlockCopy(array, offset, managedBuffer, ByteLength, length);
-            bitPosition = newPosition;
+            Buffer.BlockCopy(array, offset, this.managedBuffer, this.ByteLength, length);
+            this.bitPosition = newPosition;
         }
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace Mirage.Serialization
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CopyFromWriter(NetworkWriter other)
         {
-            CopyFromWriter(other, 0, other.BitPosition);
+            this.CopyFromWriter(other, 0, other.BitPosition);
         }
 
         /// <summary>
@@ -413,8 +413,8 @@ namespace Mirage.Serialization
         /// <param name="bitLength"></param>
         public void CopyFromWriter(NetworkWriter other, int otherBitPosition, int bitLength)
         {
-            var newBit = bitPosition + bitLength;
-            CheckCapacity(newBit);
+            var newBit = this.bitPosition + bitLength;
+            this.CheckCapacity(newBit);
 
             var ulongPos = otherBitPosition >> 6;
             var otherPtr = other.longPtr + ulongPos;
@@ -430,7 +430,7 @@ namespace Mirage.Serialization
                 // if offset is 10, then we want to shift value by 10 to remove un-needed bits
                 var firstValue = *otherPtr >> firstBitOffset;
 
-                Write(firstValue, bitsToCopyFromFirst);
+                this.Write(firstValue, bitsToCopyFromFirst);
 
                 bitLength -= bitsToCopyFromFirst;
                 otherPtr++;
@@ -439,7 +439,7 @@ namespace Mirage.Serialization
             // write aligned with other
             while (bitLength > 64)
             {
-                WriteUInt64(*otherPtr);
+                this.WriteUInt64(*otherPtr);
 
                 bitLength -= 64;
                 otherPtr++;
@@ -447,10 +447,10 @@ namespace Mirage.Serialization
 
             // write left over others
             //      if bitlength == 0 then write will return
-            Write(*otherPtr, bitLength);
+            this.Write(*otherPtr, bitLength);
 
-            Debug.Assert(bitPosition == newBit, "bitPosition should already be equal to newBit because it would have incremented each WriteUInt64");
-            bitPosition = newBit;
+            Debug.Assert(this.bitPosition == newBit, "bitPosition should already be equal to newBit because it would have incremented each WriteUInt64");
+            this.bitPosition = newBit;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Mirage.Weaver
         public void Process(ModuleDefinition moduleDef)
         {
             // replace all field access with property access for syncvars
-            CodePass.ForEachInstruction(moduleDef, WeavedMethods, ProcessInstruction);
+            CodePass.ForEachInstruction(moduleDef, WeavedMethods, this.ProcessInstruction);
         }
 
         private static bool WeavedMethods(MethodDefinition md) =>
@@ -27,7 +27,7 @@ namespace Mirage.Weaver
         private void ProcessInstructionSetterField(Instruction i, FieldReference opField)
         {
             // does it set a field that we replaced?
-            if (Setters.TryGetValue(opField, out var replacement))
+            if (this.Setters.TryGetValue(opField, out var replacement))
             {
                 if (opField.DeclaringType.IsGenericInstance || opField.DeclaringType.HasGenericParameters) // We're calling to a generic class
                 {
@@ -49,7 +49,7 @@ namespace Mirage.Weaver
         private void ProcessInstructionGetterField(Instruction i, FieldReference opField)
         {
             // does it set a field that we replaced?
-            if (Getters.TryGetValue(opField, out var replacement))
+            if (this.Getters.TryGetValue(opField, out var replacement))
             {
                 if (opField.DeclaringType.IsGenericInstance || opField.DeclaringType.HasGenericParameters) // We're calling to a generic class
                 {
@@ -78,7 +78,7 @@ namespace Mirage.Weaver
                 }
 
                 // this instruction sets the value of a field. cache the field reference.
-                ProcessInstructionSetterField(instr, resolved);
+                this.ProcessInstructionSetterField(instr, resolved);
             }
 
             if (instr.OpCode == OpCodes.Ldfld && instr.Operand is FieldReference opFieldld)
@@ -90,7 +90,7 @@ namespace Mirage.Weaver
                 }
 
                 // this instruction gets the value of a field. cache the field reference.
-                ProcessInstructionGetterField(instr, resolved);
+                this.ProcessInstructionGetterField(instr, resolved);
             }
 
             if (instr.OpCode == OpCodes.Ldflda && instr.Operand is FieldReference opFieldlda)
@@ -103,7 +103,7 @@ namespace Mirage.Weaver
 
                 // loading a field by reference,  watch out for initobj instruction
                 // see https://github.com/vis2k/Mirror/issues/696
-                return ProcessInstructionLoadAddress(md, instr, resolved);
+                return this.ProcessInstructionLoadAddress(md, instr, resolved);
             }
 
             return instr;
@@ -112,7 +112,7 @@ namespace Mirage.Weaver
         private Instruction ProcessInstructionLoadAddress(MethodDefinition md, Instruction instr, FieldReference opField)
         {
             // does it set a field that we replaced?
-            if (Setters.TryGetValue(opField, out var replacement))
+            if (this.Setters.TryGetValue(opField, out var replacement))
             {
                 // we have a replacement for this property
                 // is the next instruction a initobj?

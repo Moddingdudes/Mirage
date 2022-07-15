@@ -17,68 +17,68 @@ namespace Mirage
 
         private void Start()
         {
-            if (DontDestroy)
-                DontDestroyOnLoad(transform.root.gameObject);
+            if (this.DontDestroy)
+                DontDestroyOnLoad(this.transform.root.gameObject);
 
             Application.runInBackground = true;
 
             // return to offset menu when server or client is stopped
-            NetworkManager.Server?.Stopped.AddListener(OfflineSetActive);
-            NetworkManager.Client?.Disconnected.AddListener(_ => OfflineSetActive());
+            this.NetworkManager.Server?.Stopped.AddListener(this.OfflineSetActive);
+            this.NetworkManager.Client?.Disconnected.AddListener(_ => this.OfflineSetActive());
         }
 
         private void SetLabel(string value)
         {
-            if (StatusLabel) StatusLabel.text = value;
+            if (this.StatusLabel) this.StatusLabel.text = value;
         }
 
         internal void OnlineSetActive()
         {
-            OfflineGO.SetActive(false);
-            OnlineGO.SetActive(true);
+            this.OfflineGO.SetActive(false);
+            this.OnlineGO.SetActive(true);
         }
 
         internal void OfflineSetActive()
         {
-            OfflineGO.SetActive(true);
-            OnlineGO.SetActive(false);
+            this.OfflineGO.SetActive(true);
+            this.OnlineGO.SetActive(false);
         }
 
         public void StartHostButtonHandler()
         {
-            SetLabel("Host Mode");
-            NetworkManager.Server.StartServer(NetworkManager.Client);
-            OnlineSetActive();
+            this.SetLabel("Host Mode");
+            this.NetworkManager.Server.StartServer(this.NetworkManager.Client);
+            this.OnlineSetActive();
         }
 
         public void StartServerOnlyButtonHandler()
         {
-            SetLabel("Server Mode");
-            NetworkManager.Server.StartServer();
-            OnlineSetActive();
+            this.SetLabel("Server Mode");
+            this.NetworkManager.Server.StartServer();
+            this.OnlineSetActive();
         }
 
         public void StartClientButtonHandler()
         {
-            SetLabel("Client Mode");
-            NetworkManager.Client.Connect(NetworkAddress);
-            OnlineSetActive();
+            this.SetLabel("Client Mode");
+            this.NetworkManager.Client.Connect(this.NetworkAddress);
+            this.OnlineSetActive();
         }
 
         public void StopButtonHandler()
         {
-            SetLabel(string.Empty);
+            this.SetLabel(string.Empty);
 
-            if (NetworkManager.Server.Active)
-                NetworkManager.Server.Stop();
-            if (NetworkManager.Client.Active)
-                NetworkManager.Client.Disconnect();
-            OfflineSetActive();
+            if (this.NetworkManager.Server.Active)
+                this.NetworkManager.Server.Stop();
+            if (this.NetworkManager.Client.Active)
+                this.NetworkManager.Client.Disconnect();
+            this.OfflineSetActive();
         }
 
         public void OnNetworkAddressInputUpdate()
         {
-            NetworkAddress = NetworkAddressInput.text;
+            this.NetworkAddress = this.NetworkAddressInput.text;
         }
     }
 }

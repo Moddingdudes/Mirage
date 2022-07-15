@@ -45,17 +45,17 @@ namespace Mirage.Weaver
                 {
                     if (fd.IsStatic)
                     {
-                        logger.Error($"{fd.Name} cannot be static", fd);
+                        this.logger.Error($"{fd.Name} cannot be static", fd);
                         continue;
                     }
 
-                    GenerateReadersAndWriters(fd.FieldType);
+                    this.GenerateReadersAndWriters(fd.FieldType);
 
-                    syncObjects.Add(fd);
+                    this.syncObjects.Add(fd);
                 }
             }
 
-            RegisterSyncObjects(td);
+            this.RegisterSyncObjects(td);
         }
 
         /// <summary>
@@ -71,15 +71,15 @@ namespace Mirage.Weaver
                 {
                     if (!argument.IsGenericParameter)
                     {
-                        readers.TryGetFunction(argument, null);
-                        writers.TryGetFunction(argument, null);
+                        this.readers.TryGetFunction(argument, null);
+                        this.writers.TryGetFunction(argument, null);
                     }
                 }
             }
 
             if (tr != null)
             {
-                GenerateReadersAndWriters(tr.Resolve().BaseType);
+                this.GenerateReadersAndWriters(tr.Resolve().BaseType);
             }
         }
 
@@ -87,9 +87,9 @@ namespace Mirage.Weaver
         {
             Weaver.DebugLog(netBehaviourSubclass, "  GenerateConstants ");
 
-            netBehaviourSubclass.AddToConstructor(logger, (worker) =>
+            netBehaviourSubclass.AddToConstructor(this.logger, (worker) =>
             {
-                foreach (var fd in syncObjects)
+                foreach (var fd in this.syncObjects)
                 {
                     GenerateSyncObjectRegistration(worker, fd);
                 }

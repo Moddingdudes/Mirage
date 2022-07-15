@@ -7,91 +7,91 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void ServerRpcValid()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void ServerRpcCantBeStatic()
         {
-            HasError("CmdCantBeStatic must not be static", "System.Void ServerRpcTests.ServerRpcCantBeStatic.ServerRpcCantBeStatic::CmdCantBeStatic()");
+            this.HasError("CmdCantBeStatic must not be static", "System.Void ServerRpcTests.ServerRpcCantBeStatic.ServerRpcCantBeStatic::CmdCantBeStatic()");
         }
 
         [Test]
         public void ServerRpcThatIgnoresAuthority()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void ServerRpcWithArguments()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void ServerRpcThatIgnoresAuthorityWithSenderConnection()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void ServerRpcWithSenderConnectionAndOtherArgs()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void ServerRpcWithSenderConnectionAndOtherArgsWrongOrder()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void VirtualServerRpc()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void OverrideVirtualServerRpc()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void OverrideVirtualCallBaseServerRpc()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void OverrideVirtualCallsBaseServerRpcWithMultipleBaseClasses()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void OverrideVirtualCallsBaseServerRpcWithOverride()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void AbstractServerRpc()
         {
-            HasError("Abstract Rpcs are currently not supported, use virtual method instead", "System.Void ServerRpcTests.AbstractServerRpc.AbstractServerRpc::CmdDoSomething()");
+            this.HasError("Abstract Rpcs are currently not supported, use virtual method instead", "System.Void ServerRpcTests.AbstractServerRpc.AbstractServerRpc::CmdDoSomething()");
         }
 
         [Test]
         public void OverrideAbstractServerRpc()
         {
-            HasError("Abstract Rpcs are currently not supported, use virtual method instead", "System.Void ServerRpcTests.OverrideAbstractServerRpc.BaseBehaviour::CmdDoSomething()");
+            this.HasError("Abstract Rpcs are currently not supported, use virtual method instead", "System.Void ServerRpcTests.OverrideAbstractServerRpc.BaseBehaviour::CmdDoSomething()");
         }
 
         [Test]
         public void ServerRpcWithReturn()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
     }
 }

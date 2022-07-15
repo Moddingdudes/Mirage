@@ -9,15 +9,15 @@ namespace Mirage.EditorScripts.Logging
     {
         public override void OnInspectorGUI()
         {
-            CurrentScriptField();
+            this.CurrentScriptField();
             EditorGUILayout.Space();
-            LogLevelsGUI.DrawSettings(target as LogSettingsSO);
+            LogLevelsGUI.DrawSettings(this.target as LogSettingsSO);
         }
 
         public void CurrentScriptField()
         {
             GUI.enabled = false;
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Script"));
+            EditorGUILayout.PropertyField(this.serializedObject.FindProperty("m_Script"));
             GUI.enabled = true;
         }
     }

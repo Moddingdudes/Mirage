@@ -18,49 +18,49 @@ namespace Mirage.Tests.Runtime
         [Server]
         public void CallServerFunction()
         {
-            serverFunctionCalled = true;
+            this.serverFunctionCalled = true;
         }
 
         [Server(error = false)]
         public void CallServerCallbackFunction()
         {
-            serverCallbackFunctionCalled = true;
+            this.serverCallbackFunctionCalled = true;
         }
 
         [Client]
         public void CallClientFunction()
         {
-            clientFunctionCalled = true;
+            this.clientFunctionCalled = true;
         }
 
         [Client(error = false)]
         public void CallClientCallbackFunction()
         {
-            clientCallbackFunctionCalled = true;
+            this.clientCallbackFunctionCalled = true;
         }
 
         [HasAuthority]
         public void CallAuthorityFunction()
         {
-            hasAuthorityCalled = true;
+            this.hasAuthorityCalled = true;
         }
 
         [HasAuthority(error = false)]
         public void CallAuthorityNoErrorFunction()
         {
-            hasAuthorityNoErrorCalled = true;
+            this.hasAuthorityNoErrorCalled = true;
         }
 
         [LocalPlayer]
         public void CallLocalPlayer()
         {
-            localPlayerCalled = true;
+            this.localPlayerCalled = true;
         }
 
         [LocalPlayer(error = false)]
         public void CallLocalPlayerNoError()
         {
-            localPlayerNoErrorCalled = true;
+            this.localPlayerNoErrorCalled = true;
         }
     }
 
@@ -70,15 +70,15 @@ namespace Mirage.Tests.Runtime
         [Test]
         public void CanCallServerFunctionAsServer()
         {
-            serverComponent.CallServerFunction();
-            Assert.That(serverComponent.serverFunctionCalled, Is.True);
+            this.serverComponent.CallServerFunction();
+            Assert.That(this.serverComponent.serverFunctionCalled, Is.True);
         }
 
         [Test]
         public void CanCallServerFunctionCallbackAsServer()
         {
-            serverComponent.CallServerCallbackFunction();
-            Assert.That(serverComponent.serverCallbackFunctionCalled, Is.True);
+            this.serverComponent.CallServerCallbackFunction();
+            Assert.That(this.serverComponent.serverCallbackFunctionCalled, Is.True);
         }
 
         [Test]
@@ -86,15 +86,15 @@ namespace Mirage.Tests.Runtime
         {
             Assert.Throws<MethodInvocationException>(() =>
             {
-                serverComponent.CallClientFunction();
+                this.serverComponent.CallClientFunction();
             });
         }
 
         [Test]
         public void CannotCallClientCallbackFunctionAsServer()
         {
-            serverComponent.CallClientCallbackFunction();
-            Assert.That(serverComponent.clientCallbackFunctionCalled, Is.False);
+            this.serverComponent.CallClientCallbackFunction();
+            Assert.That(this.serverComponent.clientCallbackFunctionCalled, Is.False);
         }
 
         [Test]
@@ -102,43 +102,43 @@ namespace Mirage.Tests.Runtime
         {
             Assert.Throws<MethodInvocationException>(() =>
             {
-                clientComponent.CallServerFunction();
+                this.clientComponent.CallServerFunction();
             });
         }
 
         [Test]
         public void CannotCallServerFunctionCallbackAsClient()
         {
-            clientComponent.CallServerCallbackFunction();
-            Assert.That(clientComponent.serverCallbackFunctionCalled, Is.False);
+            this.clientComponent.CallServerCallbackFunction();
+            Assert.That(this.clientComponent.serverCallbackFunctionCalled, Is.False);
         }
 
         [Test]
         public void CanCallClientFunctionAsClient()
         {
-            clientComponent.CallClientFunction();
-            Assert.That(clientComponent.clientFunctionCalled, Is.True);
+            this.clientComponent.CallClientFunction();
+            Assert.That(this.clientComponent.clientFunctionCalled, Is.True);
         }
 
         [Test]
         public void CanCallClientCallbackFunctionAsClient()
         {
-            clientComponent.CallClientCallbackFunction();
-            Assert.That(clientComponent.clientCallbackFunctionCalled, Is.True);
+            this.clientComponent.CallClientCallbackFunction();
+            Assert.That(this.clientComponent.clientCallbackFunctionCalled, Is.True);
         }
 
         [Test]
         public void CanCallHasAuthorityFunctionAsClient()
         {
-            clientComponent.CallAuthorityFunction();
-            Assert.That(clientComponent.hasAuthorityCalled, Is.True);
+            this.clientComponent.CallAuthorityFunction();
+            Assert.That(this.clientComponent.hasAuthorityCalled, Is.True);
         }
 
         [Test]
         public void CanCallHasAuthorityCallbackFunctionAsClient()
         {
-            clientComponent.CallAuthorityNoErrorFunction();
-            Assert.That(clientComponent.hasAuthorityNoErrorCalled, Is.True);
+            this.clientComponent.CallAuthorityNoErrorFunction();
+            Assert.That(this.clientComponent.hasAuthorityNoErrorCalled, Is.True);
         }
 
         [Test]
@@ -168,15 +168,15 @@ namespace Mirage.Tests.Runtime
         [Test]
         public void CanCallLocalPlayer()
         {
-            clientComponent.CallLocalPlayer();
-            Assert.That(clientComponent.localPlayerCalled, Is.True);
+            this.clientComponent.CallLocalPlayer();
+            Assert.That(this.clientComponent.localPlayerCalled, Is.True);
         }
 
         [Test]
         public void CanCallLocalPlayerNoError()
         {
-            clientComponent.CallLocalPlayerNoError();
-            Assert.That(clientComponent.localPlayerNoErrorCalled, Is.True);
+            this.clientComponent.CallLocalPlayerNoError();
+            Assert.That(this.clientComponent.localPlayerNoErrorCalled, Is.True);
         }
 
         [Test]

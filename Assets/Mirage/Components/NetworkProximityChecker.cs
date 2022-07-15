@@ -36,20 +36,20 @@ namespace Mirage
 
         public void Awake()
         {
-            Identity.OnStartServer.AddListener(() =>
+            this.Identity.OnStartServer.AddListener(() =>
             {
-                InvokeRepeating(nameof(RebuildObservers), 0, VisibilityUpdateInterval);
+                this.InvokeRepeating(nameof(RebuildObservers), 0, this.VisibilityUpdateInterval);
             });
 
-            Identity.OnStopServer.AddListener(() =>
+            this.Identity.OnStopServer.AddListener(() =>
             {
-                CancelInvoke(nameof(RebuildObservers));
+                this.CancelInvoke(nameof(RebuildObservers));
             });
         }
 
         private void RebuildObservers()
         {
-            Identity.RebuildObservers(false);
+            this.Identity.RebuildObservers(false);
         }
 
         /// <summary>
@@ -61,10 +61,10 @@ namespace Mirage
         /// <returns>True if the player can see this object.</returns>
         public override bool OnCheckObserver(INetworkPlayer player)
         {
-            if (ForceHidden)
+            if (this.ForceHidden)
                 return false;
 
-            return Vector3.Distance(player.Identity.transform.position, transform.position) < VisibilityRange;
+            return Vector3.Distance(player.Identity.transform.position, this.transform.position) < this.VisibilityRange;
         }
 
         /// <summary>
@@ -76,11 +76,11 @@ namespace Mirage
         public override void OnRebuildObservers(HashSet<INetworkPlayer> observers, bool initialize)
         {
             // if force hidden then return without adding any observers.
-            if (ForceHidden)
+            if (this.ForceHidden)
                 return;
 
             // 'transform.' calls GetComponent, only do it once
-            var position = transform.position;
+            var position = this.transform.position;
 
             // brute force distance check
             // -> only player connections can be observers, so it's enough if we
@@ -89,10 +89,10 @@ namespace Mirage
             //    magnitude faster. if we have 10k monsters and run a sphere
             //    cast 10k times, we will see a noticeable lag even with physics
             //    layers. but checking to every connection is fast.
-            foreach (var player in Server.Players)
+            foreach (var player in this.Server.Players)
             {
                 // check distance
-                if (player != null && player.HasCharacter && Vector3.Distance(player.Identity.transform.position, position) < VisibilityRange)
+                if (player != null && player.HasCharacter && Vector3.Distance(player.Identity.transform.position, position) < this.VisibilityRange)
                 {
                     observers.Add(player);
                 }

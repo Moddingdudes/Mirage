@@ -45,36 +45,36 @@ namespace Mirage.Tests.Performance.Runtime
             SceneManager.SetActiveScene(scene);
 
 #if UNITY_EDITOR
-            MonsterPrefab = AssetDatabase.LoadAssetAtPath<NetworkIdentity>(MonsterPath);
+            this.MonsterPrefab = AssetDatabase.LoadAssetAtPath<NetworkIdentity>(MonsterPath);
 #else
             throw new System.NotSupportedException("Test not supported in player");
 #endif
 
             // load host
-            Server = Object.FindObjectOfType<NetworkServer>();
-            ServerObjectManager = Object.FindObjectOfType<ServerObjectManager>();
+            this.Server = Object.FindObjectOfType<NetworkServer>();
+            this.ServerObjectManager = Object.FindObjectOfType<ServerObjectManager>();
 
-            Server.Authenticated.AddListener(conn => ServerObjectManager.SpawnVisibleObjects(conn, true));
+            this.Server.Authenticated.AddListener(conn => this.ServerObjectManager.SpawnVisibleObjects(conn, true));
 
             var started = new UniTaskCompletionSource();
-            Server.Started.AddListener(() => started.TrySetResult());
+            this.Server.Started.AddListener(() => started.TrySetResult());
 
             // wait 1 frame before Starting server to give time for Unity to call "Start"
             await UniTask.Yield();
-            Server.StartServer();
+            this.Server.StartServer();
 
             await started.Task;
 
-            socketFactory = Server.GetComponent<SocketFactory>();
-            Debug.Assert(socketFactory != null, "Could not find socket factory for test");
+            this.socketFactory = this.Server.GetComponent<SocketFactory>();
+            Debug.Assert(this.socketFactory != null, "Could not find socket factory for test");
 
             // connect from a bunch of clients
             for (var i = 0; i < ClientCount; i++)
-                await StartClient(i, socketFactory);
+                await this.StartClient(i, this.socketFactory);
 
             // spawn a bunch of monsters
             for (var i = 0; i < MonsterCount; i++)
-                SpawnMonster(i);
+                this.SpawnMonster(i);
 
             while (Object.FindObjectsOfType<MonsterBehavior>().Count() < MonsterCount * (ClientCount + 1))
                 await UniTask.Delay(10);
@@ -89,7 +89,7 @@ namespace Mirage.Tests.Performance.Runtime
             objectManager.Start();
             client.SocketFactory = socketFactory;
 
-            objectManager.RegisterPrefab(MonsterPrefab);
+            objectManager.RegisterPrefab(this.MonsterPrefab);
             client.Connect("localhost");
             while (!client.IsConnected)
                 yield return null;
@@ -97,18 +97,18 @@ namespace Mirage.Tests.Performance.Runtime
 
         private void SpawnMonster(int i)
         {
-            var monster = Object.Instantiate(MonsterPrefab);
+            var monster = Object.Instantiate(this.MonsterPrefab);
 
             monster.GetComponent<MonsterBehavior>().MonsterId = i;
             monster.gameObject.name = $"Monster {i}";
-            ServerObjectManager.Spawn(monster.gameObject);
+            this.ServerObjectManager.Spawn(monster.gameObject);
         }
 
         [UnityTearDown]
         public IEnumerator TearDown()
         {
             // shutdown
-            Server.Stop();
+            this.Server.Stop();
             yield return null;
 
             // unload scene

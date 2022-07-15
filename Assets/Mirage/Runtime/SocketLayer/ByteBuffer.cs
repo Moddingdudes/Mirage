@@ -14,7 +14,7 @@ namespace Mirage.SocketLayer
         {
             this.pool = pool ?? throw new ArgumentNullException(nameof(pool));
 
-            array = new byte[bufferSize];
+            this.array = new byte[bufferSize];
         }
 
         public static ByteBuffer CreateNew(int bufferSize, Pool<ByteBuffer> pool)
@@ -24,9 +24,9 @@ namespace Mirage.SocketLayer
 
         public void Release()
         {
-            pool.Put(this);
+            this.pool.Put(this);
         }
 
-        void IDisposable.Dispose() => Release();
+        void IDisposable.Dispose() => this.Release();
     }
 }

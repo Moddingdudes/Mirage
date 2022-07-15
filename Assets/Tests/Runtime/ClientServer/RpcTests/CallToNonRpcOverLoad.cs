@@ -18,7 +18,7 @@ namespace Mirage.Tests.Runtime.ClientServer.RpcTests
             clientRpcCalled?.Invoke(arg1);
 
             // should call overload without any problem
-            MyRpc(arg1);
+            this.MyRpc(arg1);
         }
 
         [ServerRpc(requireAuthority = false)]
@@ -27,7 +27,7 @@ namespace Mirage.Tests.Runtime.ClientServer.RpcTests
             serverRpcCalled?.Invoke(arg1);
 
             // should call base user code, not generated rpc
-            MyRpc(arg1);
+            this.MyRpc(arg1);
         }
 
         public void MyRpc(int arg1)
@@ -45,10 +45,10 @@ namespace Mirage.Tests.Runtime.ClientServer.RpcTests
             var clientSub = Substitute.For<Action<int>>();
             var serverSub = Substitute.For<Action<int>>();
             var overloadSub = Substitute.For<Action<int>>();
-            serverComponent.clientRpcCalled += clientSub;
-            serverComponent.serverRpcCalled += serverSub;
-            serverComponent.overloadCalled += overloadSub;
-            clientComponent.MyRpc(num, default(INetworkPlayer));
+            this.serverComponent.clientRpcCalled += clientSub;
+            this.serverComponent.serverRpcCalled += serverSub;
+            this.serverComponent.overloadCalled += overloadSub;
+            this.clientComponent.MyRpc(num, default(INetworkPlayer));
 
             yield return null;
             yield return null;
@@ -65,10 +65,10 @@ namespace Mirage.Tests.Runtime.ClientServer.RpcTests
             var clientSub = Substitute.For<Action<int>>();
             var serverSub = Substitute.For<Action<int>>();
             var overloadSub = Substitute.For<Action<int>>();
-            clientComponent.clientRpcCalled += clientSub;
-            clientComponent.serverRpcCalled += serverSub;
-            clientComponent.overloadCalled += overloadSub;
-            serverComponent.MyRpc(serverPlayer, num);
+            this.clientComponent.clientRpcCalled += clientSub;
+            this.clientComponent.serverRpcCalled += serverSub;
+            this.clientComponent.overloadCalled += overloadSub;
+            this.serverComponent.MyRpc(this.serverPlayer, num);
 
             yield return null;
             yield return null;

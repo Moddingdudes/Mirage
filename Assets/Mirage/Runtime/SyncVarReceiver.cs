@@ -18,12 +18,12 @@ namespace Mirage
             this.objectLocator = objectLocator;
             if (client.IsConnected)
             {
-                AddHandlers(client);
+                this.AddHandlers(client);
             }
             else
             {
                 // todo replace this with RunOnceEvent
-                client.Connected.AddListener(_ => AddHandlers(client));
+                client.Connected.AddListener(_ => this.AddHandlers(client));
             }
         }
 
@@ -35,7 +35,7 @@ namespace Mirage
             }
             else
             {
-                client.MessageHandler.RegisterHandler<UpdateVarsMessage>(OnUpdateVarsMessage);
+                client.MessageHandler.RegisterHandler<UpdateVarsMessage>(this.OnUpdateVarsMessage);
             }
         }
 
@@ -43,9 +43,9 @@ namespace Mirage
         {
             if (logger.LogEnabled()) logger.Log("ClientScene.OnUpdateVarsMessage " + msg.netId);
 
-            if (objectLocator.TryGetIdentity(msg.netId, out var localObject))
+            if (this.objectLocator.TryGetIdentity(msg.netId, out var localObject))
             {
-                using (var networkReader = NetworkReaderPool.GetReader(msg.payload, objectLocator))
+                using (var networkReader = NetworkReaderPool.GetReader(msg.payload, this.objectLocator))
                     localObject.OnDeserializeAll(networkReader, false);
             }
             else

@@ -11,9 +11,9 @@ namespace Mirage.Sockets.Udp
 
         public NanoEndPoint(string host, ushort port)
         {
-            address = new Address();
-            address.port = port;
-            UDP.SetHostName(ref address, host);
+            this.address = new Address();
+            this.address.port = port;
+            UDP.SetHostName(ref this.address, host);
         }
 
         public NanoEndPoint(Address address)
@@ -23,19 +23,19 @@ namespace Mirage.Sockets.Udp
 
         public IEndPoint CreateCopy()
         {
-            return new NanoEndPoint(address);
+            return new NanoEndPoint(this.address);
         }
 
         public bool Equals(NanoEndPoint other)
         {
-            return address.Equals(other.address);
+            return this.address.Equals(other.address);
         }
 
         public override bool Equals(object obj)
         {
             if (obj is NanoEndPoint endPoint)
             {
-                return address.Equals(endPoint.address);
+                return this.address.Equals(endPoint.address);
             }
 
             return false;
@@ -43,12 +43,12 @@ namespace Mirage.Sockets.Udp
 
         public override int GetHashCode()
         {
-            return address.GetHashCode();
+            return this.address.GetHashCode();
         }
 
         public override string ToString()
         {
-            return address.ToString();
+            return this.address.ToString();
         }
     }
 }

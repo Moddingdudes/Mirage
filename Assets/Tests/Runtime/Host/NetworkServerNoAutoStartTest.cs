@@ -12,7 +12,7 @@ namespace Mirage.Tests.Runtime.Host
         {
             Assert.Throws<InvalidOperationException>(() =>
             {
-                server.InvokeLocalConnected();
+                this.server.InvokeLocalConnected();
             });
         }
     }

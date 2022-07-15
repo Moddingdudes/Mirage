@@ -6,7 +6,7 @@ namespace Mirage.Events.Tests
     public abstract class AddLateEventTestsBase
     {
         private int listenerCallCount;
-        protected void TestListener() => listenerCallCount++;
+        protected void TestListener() => this.listenerCallCount++;
 
         protected abstract void Init();
         protected abstract void Invoke();
@@ -19,28 +19,28 @@ namespace Mirage.Events.Tests
         [SetUp]
         public void Setup()
         {
-            listenerCallCount = 0;
-            Init();
+            this.listenerCallCount = 0;
+            this.Init();
         }
 
         [Test]
         public void EventCanBeInvokedOnce()
         {
-            AddListener();
-            Invoke();
-            Assert.That(listenerCallCount, Is.EqualTo(1));
+            this.AddListener();
+            this.Invoke();
+            Assert.That(this.listenerCallCount, Is.EqualTo(1));
         }
 
         [Test]
         public void EventCanBeInvokedTwice()
         {
-            AddListener();
+            this.AddListener();
 
-            Invoke();
-            Assert.That(listenerCallCount, Is.EqualTo(1));
+            this.Invoke();
+            Assert.That(this.listenerCallCount, Is.EqualTo(1));
 
-            Invoke();
-            Assert.That(listenerCallCount, Is.EqualTo(2));
+            this.Invoke();
+            Assert.That(this.listenerCallCount, Is.EqualTo(2));
         }
 
         [Test]
@@ -48,90 +48,90 @@ namespace Mirage.Events.Tests
         {
             Assert.DoesNotThrow(() =>
             {
-                Invoke();
+                this.Invoke();
             });
         }
 
         [Test]
         public void AddingListenerLateInvokesListener()
         {
-            Invoke();
-            Assert.That(listenerCallCount, Is.EqualTo(0));
-            AddListener();
-            Assert.That(listenerCallCount, Is.EqualTo(1));
+            this.Invoke();
+            Assert.That(this.listenerCallCount, Is.EqualTo(0));
+            this.AddListener();
+            Assert.That(this.listenerCallCount, Is.EqualTo(1));
         }
 
         [Test]
         public void AddingListenerLateInvokesListenerOnce()
         {
-            Invoke();
-            Invoke();
-            Invoke();
-            Assert.That(listenerCallCount, Is.EqualTo(0));
-            AddListener();
-            Assert.That(listenerCallCount, Is.EqualTo(1));
+            this.Invoke();
+            this.Invoke();
+            this.Invoke();
+            Assert.That(this.listenerCallCount, Is.EqualTo(0));
+            this.AddListener();
+            Assert.That(this.listenerCallCount, Is.EqualTo(1));
         }
 
         [Test]
         public void AddingListenerLateCanBeInvokedMultipleTimes()
         {
-            Invoke();
-            Assert.That(listenerCallCount, Is.EqualTo(0));
+            this.Invoke();
+            Assert.That(this.listenerCallCount, Is.EqualTo(0));
 
-            AddListener();
-            Assert.That(listenerCallCount, Is.EqualTo(1));
+            this.AddListener();
+            Assert.That(this.listenerCallCount, Is.EqualTo(1));
 
-            Invoke();
-            Assert.That(listenerCallCount, Is.EqualTo(2));
+            this.Invoke();
+            Assert.That(this.listenerCallCount, Is.EqualTo(2));
         }
 
         [Test]
         public void ResetThenAddListenerDoesntInvokeRightAway()
         {
-            AddListener();
+            this.AddListener();
 
-            Invoke();
-            Assert.That(listenerCallCount, Is.EqualTo(1));
+            this.Invoke();
+            Assert.That(this.listenerCallCount, Is.EqualTo(1));
 
-            Reset();
+            this.Reset();
 
-            AddListener();
-            Assert.That(listenerCallCount, Is.EqualTo(1), "Event should not auto invoke after reset");
+            this.AddListener();
+            Assert.That(this.listenerCallCount, Is.EqualTo(1), "Event should not auto invoke after reset");
 
-            Invoke();
-            Assert.That(listenerCallCount, Is.EqualTo(3), "old and new listeners should have been invoked");
+            this.Invoke();
+            Assert.That(this.listenerCallCount, Is.EqualTo(3), "old and new listeners should have been invoked");
         }
 
         [Test]
         public void RemoveListenersShouldRemove1Listner()
         {
-            AddListener();
+            this.AddListener();
 
-            Invoke();
-            Assert.That(listenerCallCount, Is.EqualTo(1));
+            this.Invoke();
+            Assert.That(this.listenerCallCount, Is.EqualTo(1));
 
-            RemoveListener();
-            Invoke();
+            this.RemoveListener();
+            this.Invoke();
             // listener removed so no increase to count
-            Assert.That(listenerCallCount, Is.EqualTo(1));
+            Assert.That(this.listenerCallCount, Is.EqualTo(1));
         }
 
         [Test]
         public void RemoveAllRemovesListeners()
         {
-            AddListener();
+            this.AddListener();
 
-            Invoke();
-            Assert.That(listenerCallCount, Is.EqualTo(1));
+            this.Invoke();
+            Assert.That(this.listenerCallCount, Is.EqualTo(1));
 
-            RemoveAllListeners();
+            this.RemoveAllListeners();
 
             Assert.DoesNotThrow(() =>
             {
-                Invoke();
+                this.Invoke();
             });
             // listener removed so no increase to count
-            Assert.That(listenerCallCount, Is.EqualTo(1));
+            Assert.That(this.listenerCallCount, Is.EqualTo(1));
         }
     }
 
@@ -141,32 +141,32 @@ namespace Mirage.Events.Tests
         private AddLateEvent allLate;
         protected override void Init()
         {
-            allLate = new AddLateEvent();
+            this.allLate = new AddLateEvent();
         }
 
         protected override void Invoke()
         {
-            allLate.Invoke();
+            this.allLate.Invoke();
         }
 
         protected override void AddListener()
         {
-            allLate.AddListener(TestListener);
+            this.allLate.AddListener(this.TestListener);
         }
 
         protected override void RemoveListener()
         {
-            allLate.RemoveListener(TestListener);
+            this.allLate.RemoveListener(this.TestListener);
         }
 
         protected override void Reset()
         {
-            allLate.Reset();
+            this.allLate.Reset();
         }
 
         protected override void RemoveAllListeners()
         {
-            allLate.RemoveAllListeners();
+            this.allLate.RemoveAllListeners();
         }
     }
 
@@ -179,37 +179,37 @@ namespace Mirage.Events.Tests
 
         private void TestListener1Arg(int a)
         {
-            TestListener();
+            this.TestListener();
         }
 
         protected override void Init()
         {
-            allLate = new IntAddLateEvent();
+            this.allLate = new IntAddLateEvent();
         }
 
         protected override void Invoke()
         {
-            allLate.Invoke(default);
+            this.allLate.Invoke(default);
         }
 
         protected override void AddListener()
         {
-            allLate.AddListener(TestListener1Arg);
+            this.allLate.AddListener(this.TestListener1Arg);
         }
 
         protected override void RemoveListener()
         {
-            allLate.RemoveListener(TestListener1Arg);
+            this.allLate.RemoveListener(this.TestListener1Arg);
         }
 
         protected override void Reset()
         {
-            allLate.Reset();
+            this.allLate.Reset();
         }
 
         protected override void RemoveAllListeners()
         {
-            allLate.RemoveAllListeners();
+            this.allLate.RemoveAllListeners();
         }
 
         [Test]
@@ -219,14 +219,14 @@ namespace Mirage.Events.Tests
 
             var callCount = 0;
 
-            allLate.AddListener((a0) =>
+            this.allLate.AddListener((a0) =>
             {
                 callCount++;
                 Assert.That(a0, Is.EqualTo(arg0));
             });
 
 
-            allLate.Invoke(arg0);
+            this.allLate.Invoke(arg0);
             Assert.That(callCount, Is.EqualTo(1));
         }
 
@@ -238,9 +238,9 @@ namespace Mirage.Events.Tests
             var callCount = 0;
 
             // invoke before adding handler
-            allLate.Invoke(arg0);
+            this.allLate.Invoke(arg0);
 
-            allLate.AddListener((a0) =>
+            this.allLate.AddListener((a0) =>
             {
                 callCount++;
                 Assert.That(a0, Is.EqualTo(arg0));
@@ -259,37 +259,37 @@ namespace Mirage.Events.Tests
 
         private void TestListener2Arg(int a, string b)
         {
-            TestListener();
+            this.TestListener();
         }
 
         protected override void Init()
         {
-            allLate = new IntStringAddLateEvent();
+            this.allLate = new IntStringAddLateEvent();
         }
 
         protected override void Invoke()
         {
-            allLate.Invoke(default, default);
+            this.allLate.Invoke(default, default);
         }
 
         protected override void AddListener()
         {
-            allLate.AddListener(TestListener2Arg);
+            this.allLate.AddListener(this.TestListener2Arg);
         }
 
         protected override void RemoveListener()
         {
-            allLate.RemoveListener(TestListener2Arg);
+            this.allLate.RemoveListener(this.TestListener2Arg);
         }
 
         protected override void Reset()
         {
-            allLate.Reset();
+            this.allLate.Reset();
         }
 
         protected override void RemoveAllListeners()
         {
-            allLate.RemoveAllListeners();
+            this.allLate.RemoveAllListeners();
         }
 
         [Test]
@@ -300,7 +300,7 @@ namespace Mirage.Events.Tests
 
             var callCount = 0;
 
-            allLate.AddListener((a0, a1) =>
+            this.allLate.AddListener((a0, a1) =>
             {
                 callCount++;
                 Assert.That(a0, Is.EqualTo(arg0));
@@ -308,7 +308,7 @@ namespace Mirage.Events.Tests
             });
 
 
-            allLate.Invoke(arg0, arg1);
+            this.allLate.Invoke(arg0, arg1);
             Assert.That(callCount, Is.EqualTo(1));
         }
 
@@ -321,9 +321,9 @@ namespace Mirage.Events.Tests
             var callCount = 0;
 
             // invoke before adding handler
-            allLate.Invoke(arg0, arg1);
+            this.allLate.Invoke(arg0, arg1);
 
-            allLate.AddListener((a0, a1) =>
+            this.allLate.AddListener((a0, a1) =>
             {
                 callCount++;
                 Assert.That(a0, Is.EqualTo(arg0));

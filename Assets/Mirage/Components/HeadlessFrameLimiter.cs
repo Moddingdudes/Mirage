@@ -22,7 +22,7 @@ namespace Mirage
             // set a fixed tick rate instead of updating as often as possible
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
             {
-                Application.targetFrameRate = serverTickRate;
+                Application.targetFrameRate = this.serverTickRate;
                 if (logger.logEnabled) logger.Log("Server Tick Rate set to: " + Application.targetFrameRate + " Hz.");
             }
         }

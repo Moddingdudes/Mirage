@@ -53,9 +53,9 @@ namespace Mirage
         {
             get
             {
-                if (IsServer)
+                if (this.IsServer)
                 {
-                    if (!ClientAuthority)
+                    if (!this.ClientAuthority)
                         return true;
 
                     // This is a special case where we have client authority but we have not assigned the client who has
@@ -63,11 +63,11 @@ namespace Mirage
                     //
                     // So we check here for a Owner and if it is null we will
                     // let the server send animation data until we receive an owner.
-                    if (Identity != null && Identity.Owner == null)
+                    if (this.Identity != null && this.Identity.Owner == null)
                         return true;
                 }
 
-                return HasAuthority && ClientAuthority;
+                return this.HasAuthority && this.ClientAuthority;
             }
         }
 
@@ -75,39 +75,39 @@ namespace Mirage
         {
             // store the animator parameters in a variable - the "Animator.parameters" getter allocates
             // a new parameter array every time it is accessed so we should avoid doing it in a loop
-            parameters = Animator.parameters
-                .Where(par => !Animator.IsParameterControlledByCurve(par.nameHash))
+            this.parameters = this.Animator.parameters
+                .Where(par => !this.Animator.IsParameterControlledByCurve(par.nameHash))
                 .ToArray();
-            lastIntParameters = new int[parameters.Length];
-            lastFloatParameters = new float[parameters.Length];
-            lastBoolParameters = new bool[parameters.Length];
+            this.lastIntParameters = new int[this.parameters.Length];
+            this.lastFloatParameters = new float[this.parameters.Length];
+            this.lastBoolParameters = new bool[this.parameters.Length];
 
-            animationHash = new int[Animator.layerCount];
-            transitionHash = new int[Animator.layerCount];
-            layerWeight = new float[Animator.layerCount];
+            this.animationHash = new int[this.Animator.layerCount];
+            this.transitionHash = new int[this.Animator.layerCount];
+            this.layerWeight = new float[this.Animator.layerCount];
         }
 
         private void FixedUpdate()
         {
-            if (!SendMessagesAllowed)
+            if (!this.SendMessagesAllowed)
                 return;
 
-            if (!Animator.enabled)
+            if (!this.Animator.enabled)
                 return;
 
-            CheckSendRate();
+            this.CheckSendRate();
 
-            for (var i = 0; i < Animator.layerCount; i++)
+            for (var i = 0; i < this.Animator.layerCount; i++)
             {
-                if (!CheckAnimStateChanged(out var stateHash, out var normalizedTime, i))
+                if (!this.CheckAnimStateChanged(out var stateHash, out var normalizedTime, i))
                 {
                     continue;
                 }
 
                 using (var writer = NetworkWriterPool.GetWriter())
                 {
-                    WriteParameters(writer);
-                    SendAnimationMessage(stateHash, normalizedTime, i, layerWeight[i], writer.ToArraySegment());
+                    this.WriteParameters(writer);
+                    this.SendAnimationMessage(stateHash, normalizedTime, i, this.layerWeight[i], writer.ToArraySegment());
                 }
             }
         }
@@ -118,38 +118,38 @@ namespace Mirage
             stateHash = 0;
             normalizedTime = 0;
 
-            var lw = Animator.GetLayerWeight(layerId);
-            if (Mathf.Abs(lw - layerWeight[layerId]) > 0.001f)
+            var lw = this.Animator.GetLayerWeight(layerId);
+            if (Mathf.Abs(lw - this.layerWeight[layerId]) > 0.001f)
             {
-                layerWeight[layerId] = lw;
+                this.layerWeight[layerId] = lw;
                 change = true;
             }
 
-            if (Animator.IsInTransition(layerId))
+            if (this.Animator.IsInTransition(layerId))
             {
-                var tt = Animator.GetAnimatorTransitionInfo(layerId);
-                if (tt.fullPathHash != transitionHash[layerId])
+                var tt = this.Animator.GetAnimatorTransitionInfo(layerId);
+                if (tt.fullPathHash != this.transitionHash[layerId])
                 {
                     // first time in this transition
-                    transitionHash[layerId] = tt.fullPathHash;
-                    animationHash[layerId] = 0;
+                    this.transitionHash[layerId] = tt.fullPathHash;
+                    this.animationHash[layerId] = 0;
                     return true;
                 }
                 return change;
             }
 
-            var st = Animator.GetCurrentAnimatorStateInfo(layerId);
-            if (st.fullPathHash != animationHash[layerId])
+            var st = this.Animator.GetCurrentAnimatorStateInfo(layerId);
+            if (st.fullPathHash != this.animationHash[layerId])
             {
                 // first time in this animation state
-                if (animationHash[layerId] != 0)
+                if (this.animationHash[layerId] != 0)
                 {
                     // came from another animation directly - from Play()
                     stateHash = st.fullPathHash;
                     normalizedTime = st.normalizedTime;
                 }
-                transitionHash[layerId] = 0;
-                animationHash[layerId] = st.fullPathHash;
+                this.transitionHash[layerId] = 0;
+                this.animationHash[layerId] = st.fullPathHash;
                 return true;
             }
             return change;
@@ -158,112 +158,112 @@ namespace Mirage
         private void CheckSendRate()
         {
             var now = Time.time;
-            if (SendMessagesAllowed && syncInterval >= 0 && now > nextSendTime)
+            if (this.SendMessagesAllowed && this.syncInterval >= 0 && now > this.nextSendTime)
             {
-                nextSendTime = now + syncInterval;
+                this.nextSendTime = now + this.syncInterval;
 
                 using (var writer = NetworkWriterPool.GetWriter())
                 {
-                    if (WriteParameters(writer))
-                        SendAnimationParametersMessage(writer.ToArraySegment());
+                    if (this.WriteParameters(writer))
+                        this.SendAnimationParametersMessage(writer.ToArraySegment());
                 }
             }
         }
 
         private void SendAnimationMessage(int stateHash, float normalizedTime, int layerId, float weight, ArraySegment<byte> parameters)
         {
-            if (IsServer)
+            if (this.IsServer)
             {
-                RpcOnAnimationClientMessage(stateHash, normalizedTime, layerId, weight, parameters);
+                this.RpcOnAnimationClientMessage(stateHash, normalizedTime, layerId, weight, parameters);
             }
-            else if (Client.Player != null)
+            else if (this.Client.Player != null)
             {
-                CmdOnAnimationServerMessage(stateHash, normalizedTime, layerId, weight, parameters);
+                this.CmdOnAnimationServerMessage(stateHash, normalizedTime, layerId, weight, parameters);
             }
         }
 
         private void SendAnimationParametersMessage(ArraySegment<byte> parameters)
         {
-            if (IsServer)
+            if (this.IsServer)
             {
-                RpcOnAnimationParametersClientMessage(parameters);
+                this.RpcOnAnimationParametersClientMessage(parameters);
             }
-            else if (Client.Player != null)
+            else if (this.Client.Player != null)
             {
-                CmdOnAnimationParametersServerMessage(parameters);
+                this.CmdOnAnimationParametersServerMessage(parameters);
             }
         }
 
         private void HandleAnimMsg(int stateHash, float normalizedTime, int layerId, float weight, NetworkReader reader)
         {
-            if (HasAuthority && ClientAuthority)
+            if (this.HasAuthority && this.ClientAuthority)
                 return;
 
             // usually transitions will be triggered by parameters, if not, play anims directly.
             // NOTE: this plays "animations", not transitions, so any transitions will be skipped.
             // NOTE: there is no API to play a transition(?)
-            if (stateHash != 0 && Animator.enabled)
+            if (stateHash != 0 && this.Animator.enabled)
             {
-                Animator.Play(stateHash, layerId, normalizedTime);
+                this.Animator.Play(stateHash, layerId, normalizedTime);
             }
 
-            Animator.SetLayerWeight(layerId, weight);
+            this.Animator.SetLayerWeight(layerId, weight);
 
-            ReadParameters(reader);
+            this.ReadParameters(reader);
         }
 
         private void HandleAnimParamsMsg(NetworkReader reader)
         {
-            if (HasAuthority && ClientAuthority)
+            if (this.HasAuthority && this.ClientAuthority)
                 return;
 
-            ReadParameters(reader);
+            this.ReadParameters(reader);
         }
 
         private void HandleAnimTriggerMsg(int hash)
         {
-            if (Animator.enabled)
-                Animator.SetTrigger(hash);
+            if (this.Animator.enabled)
+                this.Animator.SetTrigger(hash);
         }
 
         private void HandleAnimResetTriggerMsg(int hash)
         {
-            if (Animator.enabled)
-                Animator.ResetTrigger(hash);
+            if (this.Animator.enabled)
+                this.Animator.ResetTrigger(hash);
         }
 
         private ulong NextDirtyBits()
         {
             ulong dirtyBits = 0;
-            for (var i = 0; i < parameters.Length; i++)
+            for (var i = 0; i < this.parameters.Length; i++)
             {
-                var par = parameters[i];
+                var par = this.parameters[i];
                 var changed = false;
                 switch (par.type)
                 {
                     case AnimatorControllerParameterType.Int:
                         {
-                            var newIntValue = Animator.GetInteger(par.nameHash);
-                            changed = newIntValue != lastIntParameters[i];
-                            lastIntParameters[i] = newIntValue;
+                            var newIntValue = this.Animator.GetInteger(par.nameHash);
+                            changed = newIntValue != this.lastIntParameters[i];
+                            this.lastIntParameters[i] = newIntValue;
                             break;
                         }
 
                     case AnimatorControllerParameterType.Float:
                         {
-                            var newFloatValue = Animator.GetFloat(par.nameHash);
-                            changed = Mathf.Abs(newFloatValue - lastFloatParameters[i]) > 0.001f;
+                            var newFloatValue = this.Animator.GetFloat(par.nameHash);
+                            changed = Mathf.Abs(newFloatValue - this.lastFloatParameters[i]) > 0.001f;
                             // only set lastValue if it was changed, otherwise value could slowly drift within the 0.001f limit each frame
                             if (changed)
-                                lastFloatParameters[i] = newFloatValue;
+                                this.lastFloatParameters[i] = newFloatValue;
                             break;
                         }
 
                     case AnimatorControllerParameterType.Bool:
                         {
-                            var newBoolValue = Animator.GetBool(par.nameHash);
-                            changed = newBoolValue != lastBoolParameters[i];
-                            lastBoolParameters[i] = newBoolValue;
+                            var newBoolValue = this.Animator.GetBool(par.nameHash);
+                            changed = newBoolValue != this.lastBoolParameters[i];
+                            this.lastBoolParameters[i] = newBoolValue;
                             break;
                         }
                 }
@@ -277,27 +277,27 @@ namespace Mirage
 
         private bool WriteParameters(NetworkWriter writer, bool forceAll = false)
         {
-            var dirtyBits = forceAll ? (~0ul) : NextDirtyBits();
+            var dirtyBits = forceAll ? (~0ul) : this.NextDirtyBits();
             writer.WritePackedUInt64(dirtyBits);
-            for (var i = 0; i < parameters.Length; i++)
+            for (var i = 0; i < this.parameters.Length; i++)
             {
                 if ((dirtyBits & (1ul << i)) == 0)
                     continue;
 
-                var par = parameters[i];
+                var par = this.parameters[i];
                 if (par.type == AnimatorControllerParameterType.Int)
                 {
-                    var newIntValue = Animator.GetInteger(par.nameHash);
+                    var newIntValue = this.Animator.GetInteger(par.nameHash);
                     writer.WritePackedInt32(newIntValue);
                 }
                 else if (par.type == AnimatorControllerParameterType.Float)
                 {
-                    var newFloatValue = Animator.GetFloat(par.nameHash);
+                    var newFloatValue = this.Animator.GetFloat(par.nameHash);
                     writer.WriteSingle(newFloatValue);
                 }
                 else if (par.type == AnimatorControllerParameterType.Bool)
                 {
-                    var newBoolValue = Animator.GetBool(par.nameHash);
+                    var newBoolValue = this.Animator.GetBool(par.nameHash);
                     writer.WriteBoolean(newBoolValue);
                 }
             }
@@ -309,32 +309,32 @@ namespace Mirage
             // need to read values from NetworkReader even if animator is disabled
 
             var dirtyBits = reader.ReadPackedUInt64();
-            for (var i = 0; i < parameters.Length; i++)
+            for (var i = 0; i < this.parameters.Length; i++)
             {
                 if ((dirtyBits & (1ul << i)) == 0)
                     continue;
 
-                var par = parameters[i];
+                var par = this.parameters[i];
                 switch (par.type)
                 {
                     case AnimatorControllerParameterType.Int:
                         {
                             var newIntValue = reader.ReadPackedInt32();
-                            SetInteger(par, newIntValue);
+                            this.SetInteger(par, newIntValue);
                             break;
                         }
 
                     case AnimatorControllerParameterType.Float:
                         {
                             var newFloatValue = reader.ReadSingle();
-                            SetFloat(par, newFloatValue);
+                            this.SetFloat(par, newFloatValue);
                             break;
                         }
 
                     case AnimatorControllerParameterType.Bool:
                         {
                             var newBoolValue = reader.ReadBoolean();
-                            SetBool(par, newBoolValue);
+                            this.SetBool(par, newBoolValue);
                             break;
                         }
                 }
@@ -343,20 +343,20 @@ namespace Mirage
 
         private void SetBool(AnimatorControllerParameter par, bool newBoolValue)
         {
-            if (Animator.enabled)
-                Animator.SetBool(par.nameHash, newBoolValue);
+            if (this.Animator.enabled)
+                this.Animator.SetBool(par.nameHash, newBoolValue);
         }
 
         private void SetFloat(AnimatorControllerParameter par, float newFloatValue)
         {
-            if (Animator.enabled)
-                Animator.SetFloat(par.nameHash, newFloatValue);
+            if (this.Animator.enabled)
+                this.Animator.SetFloat(par.nameHash, newFloatValue);
         }
 
         private void SetInteger(AnimatorControllerParameter par, int newIntValue)
         {
-            if (Animator.enabled)
-                Animator.SetInteger(par.nameHash, newIntValue);
+            if (this.Animator.enabled)
+                this.Animator.SetInteger(par.nameHash, newIntValue);
         }
 
         /// <summary>
@@ -369,23 +369,23 @@ namespace Mirage
         {
             if (initialState)
             {
-                for (var i = 0; i < Animator.layerCount; i++)
+                for (var i = 0; i < this.Animator.layerCount; i++)
                 {
-                    if (Animator.IsInTransition(i))
+                    if (this.Animator.IsInTransition(i))
                     {
-                        var st = Animator.GetNextAnimatorStateInfo(i);
+                        var st = this.Animator.GetNextAnimatorStateInfo(i);
                         writer.WriteInt32(st.fullPathHash);
                         writer.WriteSingle(st.normalizedTime);
                     }
                     else
                     {
-                        var st = Animator.GetCurrentAnimatorStateInfo(i);
+                        var st = this.Animator.GetCurrentAnimatorStateInfo(i);
                         writer.WriteInt32(st.fullPathHash);
                         writer.WriteSingle(st.normalizedTime);
                     }
-                    writer.WriteSingle(Animator.GetLayerWeight(i));
+                    writer.WriteSingle(this.Animator.GetLayerWeight(i));
                 }
-                WriteParameters(writer, initialState);
+                this.WriteParameters(writer, initialState);
                 return true;
             }
             return false;
@@ -400,15 +400,15 @@ namespace Mirage
         {
             if (initialState)
             {
-                for (var i = 0; i < Animator.layerCount; i++)
+                for (var i = 0; i < this.Animator.layerCount; i++)
                 {
                     var stateHash = reader.ReadInt32();
                     var normalizedTime = reader.ReadSingle();
-                    Animator.SetLayerWeight(i, reader.ReadSingle());
-                    Animator.Play(stateHash, i, normalizedTime);
+                    this.Animator.SetLayerWeight(i, reader.ReadSingle());
+                    this.Animator.Play(stateHash, i, normalizedTime);
                 }
 
-                ReadParameters(reader);
+                this.ReadParameters(reader);
             }
         }
 
@@ -419,7 +419,7 @@ namespace Mirage
         /// <param name="triggerName">Name of trigger.</param>
         public void SetTrigger(string triggerName)
         {
-            SetTrigger(Animator.StringToHash(triggerName));
+            this.SetTrigger(Animator.StringToHash(triggerName));
         }
 
         /// <summary>
@@ -428,36 +428,36 @@ namespace Mirage
         /// <param name="hash">Hash id of trigger (from the Animator).</param>
         public void SetTrigger(int hash)
         {
-            if (ClientAuthority)
+            if (this.ClientAuthority)
             {
-                if (!IsClient)
+                if (!this.IsClient)
                 {
                     logger.LogWarning("Tried to set animation in the server for a client-controlled animator");
                     return;
                 }
 
-                if (!HasAuthority)
+                if (!this.HasAuthority)
                 {
                     logger.LogWarning("Only the client with authority can set animations");
                     return;
                 }
 
-                if (Client.Player != null)
-                    CmdOnAnimationTriggerServerMessage(hash);
+                if (this.Client.Player != null)
+                    this.CmdOnAnimationTriggerServerMessage(hash);
 
                 // call on client right away
-                HandleAnimTriggerMsg(hash);
+                this.HandleAnimTriggerMsg(hash);
             }
             else
             {
-                if (!IsServer)
+                if (!this.IsServer)
                 {
                     logger.LogWarning("Tried to set animation in the client for a server-controlled animator");
                     return;
                 }
 
-                HandleAnimTriggerMsg(hash);
-                RpcOnAnimationTriggerClientMessage(hash);
+                this.HandleAnimTriggerMsg(hash);
+                this.RpcOnAnimationTriggerClientMessage(hash);
             }
         }
 
@@ -468,7 +468,7 @@ namespace Mirage
         /// <param name="triggerName">Name of trigger.</param>
         public void ResetTrigger(string triggerName)
         {
-            ResetTrigger(Animator.StringToHash(triggerName));
+            this.ResetTrigger(Animator.StringToHash(triggerName));
         }
 
         /// <summary>
@@ -477,36 +477,36 @@ namespace Mirage
         /// <param name="hash">Hash id of trigger (from the Animator).</param>
         public void ResetTrigger(int hash)
         {
-            if (ClientAuthority)
+            if (this.ClientAuthority)
             {
-                if (!IsClient)
+                if (!this.IsClient)
                 {
                     logger.LogWarning("Tried to reset animation in the server for a client-controlled animator");
                     return;
                 }
 
-                if (!HasAuthority)
+                if (!this.HasAuthority)
                 {
                     logger.LogWarning("Only the client with authority can reset animations");
                     return;
                 }
 
-                if (Client.Player != null)
-                    CmdOnAnimationResetTriggerServerMessage(hash);
+                if (this.Client.Player != null)
+                    this.CmdOnAnimationResetTriggerServerMessage(hash);
 
                 // call on client right away
-                HandleAnimResetTriggerMsg(hash);
+                this.HandleAnimResetTriggerMsg(hash);
             }
             else
             {
-                if (!IsServer)
+                if (!this.IsServer)
                 {
                     logger.LogWarning("Tried to reset animation in the client for a server-controlled animator");
                     return;
                 }
 
-                HandleAnimResetTriggerMsg(hash);
-                RpcOnAnimationResetTriggerClientMessage(hash);
+                this.HandleAnimResetTriggerMsg(hash);
+                this.RpcOnAnimationResetTriggerClientMessage(hash);
             }
         }
 
@@ -516,16 +516,16 @@ namespace Mirage
         private void CmdOnAnimationServerMessage(int stateHash, float normalizedTime, int layerId, float weight, ArraySegment<byte> parameters)
         {
             // Ignore messages from client if not in client authority mode
-            if (!ClientAuthority)
+            if (!this.ClientAuthority)
                 return;
 
-            if (logger.LogEnabled()) logger.Log("OnAnimationMessage for netId=" + NetId);
+            if (logger.LogEnabled()) logger.Log("OnAnimationMessage for netId=" + this.NetId);
 
             // handle and broadcast
             using (var networkReader = NetworkReaderPool.GetReader(parameters, null))
             {
-                HandleAnimMsg(stateHash, normalizedTime, layerId, weight, networkReader);
-                RpcOnAnimationClientMessage(stateHash, normalizedTime, layerId, weight, parameters);
+                this.HandleAnimMsg(stateHash, normalizedTime, layerId, weight, networkReader);
+                this.RpcOnAnimationClientMessage(stateHash, normalizedTime, layerId, weight, parameters);
             }
         }
 
@@ -533,14 +533,14 @@ namespace Mirage
         private void CmdOnAnimationParametersServerMessage(ArraySegment<byte> parameters)
         {
             // Ignore messages from client if not in client authority mode
-            if (!ClientAuthority)
+            if (!this.ClientAuthority)
                 return;
 
             // handle and broadcast
             using (var networkReader = NetworkReaderPool.GetReader(parameters, null))
             {
-                HandleAnimParamsMsg(networkReader);
-                RpcOnAnimationParametersClientMessage(parameters);
+                this.HandleAnimParamsMsg(networkReader);
+                this.RpcOnAnimationParametersClientMessage(parameters);
             }
         }
 
@@ -548,36 +548,36 @@ namespace Mirage
         private void CmdOnAnimationTriggerServerMessage(int hash)
         {
             // Ignore messages from client if not in client authority mode
-            if (!ClientAuthority)
+            if (!this.ClientAuthority)
                 return;
 
             // handle and broadcast
             // host should have already the trigger
-            var isHostOwner = IsClient && HasAuthority;
+            var isHostOwner = this.IsClient && this.HasAuthority;
             if (!isHostOwner)
             {
-                HandleAnimTriggerMsg(hash);
+                this.HandleAnimTriggerMsg(hash);
             }
 
-            RpcOnAnimationTriggerClientMessage(hash);
+            this.RpcOnAnimationTriggerClientMessage(hash);
         }
 
         [ServerRpc]
         private void CmdOnAnimationResetTriggerServerMessage(int hash)
         {
             // Ignore messages from client if not in client authority mode
-            if (!ClientAuthority)
+            if (!this.ClientAuthority)
                 return;
 
             // handle and broadcast
             // host should have already the trigger
-            var isHostOwner = IsClient && HasAuthority;
+            var isHostOwner = this.IsClient && this.HasAuthority;
             if (!isHostOwner)
             {
-                HandleAnimResetTriggerMsg(hash);
+                this.HandleAnimResetTriggerMsg(hash);
             }
 
-            RpcOnAnimationResetTriggerClientMessage(hash);
+            this.RpcOnAnimationResetTriggerClientMessage(hash);
         }
 
         #endregion
@@ -588,32 +588,32 @@ namespace Mirage
         private void RpcOnAnimationClientMessage(int stateHash, float normalizedTime, int layerId, float weight, ArraySegment<byte> parameters)
         {
             using (var networkReader = NetworkReaderPool.GetReader(parameters, null))
-                HandleAnimMsg(stateHash, normalizedTime, layerId, weight, networkReader);
+                this.HandleAnimMsg(stateHash, normalizedTime, layerId, weight, networkReader);
         }
 
         [ClientRpc]
         private void RpcOnAnimationParametersClientMessage(ArraySegment<byte> parameters)
         {
             using (var networkReader = NetworkReaderPool.GetReader(parameters, null))
-                HandleAnimParamsMsg(networkReader);
+                this.HandleAnimParamsMsg(networkReader);
         }
 
         [ClientRpc]
         private void RpcOnAnimationTriggerClientMessage(int hash)
         {
             // host/owner handles this before it is sent
-            if (IsServer || (ClientAuthority && HasAuthority)) return;
+            if (this.IsServer || (this.ClientAuthority && this.HasAuthority)) return;
 
-            HandleAnimTriggerMsg(hash);
+            this.HandleAnimTriggerMsg(hash);
         }
 
         [ClientRpc]
         private void RpcOnAnimationResetTriggerClientMessage(int hash)
         {
             // host/owner handles this before it is sent
-            if (IsServer || (ClientAuthority && HasAuthority)) return;
+            if (this.IsServer || (this.ClientAuthority && this.HasAuthority)) return;
 
-            HandleAnimResetTriggerMsg(hash);
+            this.HandleAnimResetTriggerMsg(hash);
         }
 
         #endregion

@@ -11,8 +11,8 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         [TearDown]
         public virtual void TearDown()
         {
-            writer.Reset();
-            reader.Dispose();
+            this.writer.Reset();
+            this.reader.Dispose();
         }
 
         /// <summary>
@@ -21,8 +21,8 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         /// <returns></returns>
         public NetworkReader GetReader()
         {
-            reader.Reset(writer.ToArraySegment());
-            return reader;
+            this.reader.Reset(this.writer.ToArraySegment());
+            return this.reader;
         }
     }
 }

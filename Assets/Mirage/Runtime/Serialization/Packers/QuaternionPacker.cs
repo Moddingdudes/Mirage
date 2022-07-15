@@ -59,10 +59,10 @@ namespace Mirage.Serialization
         public QuaternionPacker(int quaternionBitLength = 10)
         {
             // (this.BitLength - 1) because pack sign by itself
-            bitCountPerElement = quaternionBitLength;
-            totalBitCount = 2 + (quaternionBitLength * 3);
-            floatPacker = new FloatPacker(MaxValue, quaternionBitLength);
-            readMask = (uint)BitMask.Mask(bitCountPerElement);
+            this.bitCountPerElement = quaternionBitLength;
+            this.totalBitCount = 2 + (quaternionBitLength * 3);
+            this.floatPacker = new FloatPacker(MaxValue, quaternionBitLength);
+            this.readMask = (uint)BitMask.Mask(this.bitCountPerElement);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -86,11 +86,11 @@ namespace Mirage.Serialization
             // todo, should we be rounding down for abc? because if they are rounded up their sum may be greater than largest
 
             writer.Write(
-                 (ulong)index << bitCountPerElement * 3 |
-                 (ulong)floatPacker.PackNoClamp(a) << bitCountPerElement * 2 |
-                 (ulong)floatPacker.PackNoClamp(b) << bitCountPerElement |
-                 floatPacker.PackNoClamp(c),
-                 totalBitCount);
+                 (ulong)index << this.bitCountPerElement * 3 |
+                 (ulong)this.floatPacker.PackNoClamp(a) << this.bitCountPerElement * 2 |
+                 (ulong)this.floatPacker.PackNoClamp(b) << this.bitCountPerElement |
+                 this.floatPacker.PackNoClamp(c),
+                 this.totalBitCount);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -194,13 +194,13 @@ namespace Mirage.Serialization
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Quaternion Unpack(NetworkReader reader)
         {
-            var combine = reader.Read(totalBitCount);
+            var combine = reader.Read(this.totalBitCount);
 
-            var index = (uint)(combine >> bitCountPerElement * 3);
+            var index = (uint)(combine >> this.bitCountPerElement * 3);
 
-            var a = floatPacker.Unpack((uint)(combine >> bitCountPerElement * 2) & readMask);
-            var b = floatPacker.Unpack((uint)(combine >> bitCountPerElement * 1) & readMask);
-            var c = floatPacker.Unpack((uint)combine & readMask);
+            var a = this.floatPacker.Unpack((uint)(combine >> this.bitCountPerElement * 2) & this.readMask);
+            var b = this.floatPacker.Unpack((uint)(combine >> this.bitCountPerElement * 1) & this.readMask);
+            var c = this.floatPacker.Unpack((uint)combine & this.readMask);
 
             var l2 = 1 - ((a * a) + (b * b) + (c * c));
             var largest = (float)Math.Sqrt(l2);

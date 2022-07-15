@@ -8,8 +8,8 @@ namespace Mirage.Tests.Runtime
         [ServerRpc]
         public void Send2Args(int arg1, string arg2)
         {
-            cmdArg1 = arg1;
-            cmdArg2 = arg2;
+            this.cmdArg1 = arg1;
+            this.cmdArg2 = arg2;
         }
 
 
@@ -17,8 +17,8 @@ namespace Mirage.Tests.Runtime
         [ServerRpc]
         public void SendWithSender(int arg1, INetworkPlayer sender = null)
         {
-            cmdArg1 = arg1;
-            cmdSender = sender;
+            this.cmdArg1 = arg1;
+            this.cmdSender = sender;
         }
 
         public NetworkIdentity cmdNi;
@@ -26,7 +26,7 @@ namespace Mirage.Tests.Runtime
         [ServerRpc]
         public void CmdNetworkIdentity(NetworkIdentity ni)
         {
-            cmdNi = ni;
+            this.cmdNi = ni;
         }
 
         public int rpcArg1;
@@ -35,8 +35,8 @@ namespace Mirage.Tests.Runtime
         [ClientRpc]
         public void RpcTest(int arg1, string arg2)
         {
-            rpcArg1 = arg1;
-            rpcArg2 = arg2;
+            this.rpcArg1 = arg1;
+            this.rpcArg2 = arg2;
         }
 
         public int targetRpcArg1;
@@ -46,9 +46,9 @@ namespace Mirage.Tests.Runtime
         [ClientRpc(target = Mirage.RpcTarget.Player)]
         public void ClientConnRpcTest(INetworkPlayer player, int arg1, string arg2)
         {
-            targetRpcPlayer = player;
-            targetRpcArg1 = arg1;
-            targetRpcArg2 = arg2;
+            this.targetRpcPlayer = player;
+            this.targetRpcArg1 = arg1;
+            this.targetRpcArg2 = arg2;
         }
 
         public int rpcOwnerArg1;
@@ -57,8 +57,8 @@ namespace Mirage.Tests.Runtime
         [ClientRpc(target = Mirage.RpcTarget.Owner)]
         public void RpcOwnerTest(int arg1, string arg2)
         {
-            rpcOwnerArg1 = arg1;
-            rpcOwnerArg2 = arg2;
+            this.rpcOwnerArg1 = arg1;
+            this.rpcOwnerArg2 = arg2;
         }
     }
 }

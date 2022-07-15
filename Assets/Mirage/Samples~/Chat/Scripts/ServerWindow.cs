@@ -11,12 +11,12 @@ namespace Mirage.Examples.Chat
 
         public void StartClient()
         {
-            NetworkManager.Client.Connect(serverIp);
+            this.NetworkManager.Client.Connect(this.serverIp);
         }
 
         public void StartHost()
         {
-            NetworkManager.Server.StartServer(NetworkManager.Client);
+            this.NetworkManager.Server.StartServer(this.NetworkManager.Client);
         }
 
         public void SetServerIp(string serverIp)

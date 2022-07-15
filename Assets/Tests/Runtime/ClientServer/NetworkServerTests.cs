@@ -15,7 +15,7 @@ namespace Mirage.Tests.Runtime.ClientServer
 
         public override void ExtraSetup()
         {
-            message = new WovenTestMessage
+            this.message = new WovenTestMessage
             {
                 IntValue = 1,
                 DoubleValue = 1.0,
@@ -27,9 +27,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void InitializeTest()
         {
-            Assert.That(server.Players, Has.Count.EqualTo(1));
-            Assert.That(server.Active);
-            Assert.That(server.LocalClientActive, Is.False);
+            Assert.That(this.server.Players, Has.Count.EqualTo(1));
+            Assert.That(this.server.Active);
+            Assert.That(this.server.LocalClientActive, Is.False);
         }
 
         [Test]
@@ -37,7 +37,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             var expection = Assert.Throws<InvalidOperationException>(() =>
             {
-                server.StartServer();
+                this.server.StartServer();
             });
             Assert.That(expection, Has.Message.EqualTo("Server is already active"));
         }
@@ -45,12 +45,12 @@ namespace Mirage.Tests.Runtime.ClientServer
         [UnityTest]
         public IEnumerator ReadyMessageSetsClientReadyTest() => UniTask.ToCoroutine(async () =>
         {
-            clientPlayer.Send(new SceneReadyMessage());
+            this.clientPlayer.Send(new SceneReadyMessage());
 
-            await AsyncUtil.WaitUntilWithTimeout(() => serverPlayer.SceneIsReady);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.serverPlayer.SceneIsReady);
 
             // ready?
-            Assert.That(serverPlayer.SceneIsReady, Is.True);
+            Assert.That(this.serverPlayer.SceneIsReady, Is.True);
         });
 
         [UnityTest]
@@ -58,9 +58,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             var invoked = false;
 
-            ClientMessageHandler.RegisterHandler<WovenTestMessage>(msg => invoked = true);
+            this.ClientMessageHandler.RegisterHandler<WovenTestMessage>(msg => invoked = true);
 
-            server.SendToAll(message);
+            this.server.SendToAll(this.message);
 
             // todo assert correct message was sent using Substitute for socket or player
             // connectionToServer.ProcessMessagesAsync().Forget();
@@ -73,9 +73,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             var invoked = false;
 
-            ClientMessageHandler.RegisterHandler<WovenTestMessage>(msg => invoked = true);
+            this.ClientMessageHandler.RegisterHandler<WovenTestMessage>(msg => invoked = true);
 
-            serverIdentity.Owner.Send(message);
+            this.serverIdentity.Owner.Send(this.message);
 
             // todo assert correct message was sent using Substitute for socket or player
             // connectionToServer.ProcessMessagesAsync().Forget();
@@ -88,8 +88,8 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             var invoked = false;
 
-            ServerMessageHandler.RegisterHandler<WovenTestMessage>(msg => invoked = true);
-            clientPlayer.Send(message);
+            this.ServerMessageHandler.RegisterHandler<WovenTestMessage>(msg => invoked = true);
+            this.clientPlayer.Send(this.message);
 
             await AsyncUtil.WaitUntilWithTimeout(() => invoked);
 
@@ -100,9 +100,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             var invoked = false;
 
-            ServerMessageHandler.RegisterHandler<WovenTestMessage>((conn, msg) => invoked = true);
+            this.ServerMessageHandler.RegisterHandler<WovenTestMessage>((conn, msg) => invoked = true);
 
-            clientPlayer.Send(message);
+            this.clientPlayer.Send(this.message);
 
             await AsyncUtil.WaitUntilWithTimeout(() => invoked);
         });
@@ -112,10 +112,10 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             var func = Substitute.For<MessageDelegate<WovenTestMessage>>();
 
-            ServerMessageHandler.RegisterHandler(func);
-            ServerMessageHandler.UnregisterHandler<WovenTestMessage>();
+            this.ServerMessageHandler.RegisterHandler(func);
+            this.ServerMessageHandler.UnregisterHandler<WovenTestMessage>();
 
-            clientPlayer.Send(message);
+            this.clientPlayer.Send(this.message);
 
             await UniTask.Delay(1);
 
@@ -126,21 +126,21 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void NumPlayersTest()
         {
-            Assert.That(server.NumberOfPlayers, Is.EqualTo(1));
+            Assert.That(this.server.NumberOfPlayers, Is.EqualTo(1));
         }
 
         [Test]
         public void VariableTest()
         {
-            Assert.That(server.MaxConnections, Is.EqualTo(4));
+            Assert.That(this.server.MaxConnections, Is.EqualTo(4));
         }
 
         [UnityTest]
         public IEnumerator StopStateTest() => UniTask.ToCoroutine(async () =>
         {
-            server.Stop();
+            this.server.Stop();
 
-            await AsyncUtil.WaitUntilWithTimeout(() => !server.Active);
+            await AsyncUtil.WaitUntilWithTimeout(() => !this.server.Active);
         });
 
         [UnityTest]
@@ -148,11 +148,11 @@ namespace Mirage.Tests.Runtime.ClientServer
 
         {
             var func1 = Substitute.For<UnityAction>();
-            server.Stopped.AddListener(func1);
+            this.server.Stopped.AddListener(func1);
 
-            server.Stop();
+            this.server.Stop();
 
-            await AsyncUtil.WaitUntilWithTimeout(() => !server.Active);
+            await AsyncUtil.WaitUntilWithTimeout(() => !this.server.Active);
 
             func1.Received(1).Invoke();
         });
@@ -160,13 +160,13 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator ApplicationQuitTest() => UniTask.ToCoroutine(async () =>
         {
             var func1 = Substitute.For<UnityAction>();
-            server.Stopped.AddListener(func1);
+            this.server.Stopped.AddListener(func1);
 
             await UniTask.Delay(1);
 
             Application.Quit();
 
-            await AsyncUtil.WaitUntilWithTimeout(() => !server.Active);
+            await AsyncUtil.WaitUntilWithTimeout(() => !this.server.Active);
 
             func1.Received(1).Invoke();
         });
@@ -176,7 +176,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             var serverPlayer = base.serverPlayer;
             var disconnectCalled = 0;
-            server.Disconnected.AddListener(player =>
+            this.server.Disconnected.AddListener(player =>
             {
                 disconnectCalled++;
                 Assert.That(player, Is.EqualTo(serverPlayer));
@@ -185,7 +185,7 @@ namespace Mirage.Tests.Runtime.ClientServer
             });
 
 
-            client.Disconnect();
+            this.client.Disconnect();
             // wait a tick for messages to be processed
             yield return null;
 

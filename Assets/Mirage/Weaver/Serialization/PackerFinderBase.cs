@@ -13,16 +13,16 @@ namespace Mirage.Weaver.Serialization
             if (attribute == null)
                 return default;
 
-            var settings = GetSettings(fieldType, attribute);
-            var packMethod = GetPackMethod(fieldType);
-            var unpackMethod = GetUnpackMethod(fieldType);
+            var settings = this.GetSettings(fieldType, attribute);
+            var packMethod = this.GetPackMethod(fieldType);
+            var unpackMethod = this.GetUnpackMethod(fieldType);
             // field might be created by another finder, so we can re-use it
             if (!TryGetPackerField(holder, fieldName, out var packerField))
             {
-                packerField = CreatePackerField(module, fieldName, holder, settings);
+                packerField = this.CreatePackerField(module, fieldName, holder, settings);
             }
 
-            return new PackerSerializer(packerField, packMethod, unpackMethod, IsIntType);
+            return new PackerSerializer(packerField, packMethod, unpackMethod, this.IsIntType);
         }
 
         protected abstract bool IsIntType { get; }

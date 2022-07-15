@@ -28,13 +28,13 @@ namespace Mirage.Tests.Runtime
         [SetUp]
         public override void ExtraSetup()
         {
-            gameObject = new GameObject();
-            identity = gameObject.AddComponent<NetworkIdentity>();
-            identity.Server = server;
-            identity.ServerObjectManager = serverObjectManager;
+            this.gameObject = new GameObject();
+            this.identity = this.gameObject.AddComponent<NetworkIdentity>();
+            this.identity.Server = this.server;
+            this.identity.ServerObjectManager = this.serverObjectManager;
 
-            player1 = Substitute.For<INetworkPlayer>();
-            player2 = Substitute.For<INetworkPlayer>();
+            this.player1 = Substitute.For<INetworkPlayer>();
+            this.player2 = Substitute.For<INetworkPlayer>();
         }
 
         [TearDown]
@@ -42,34 +42,34 @@ namespace Mirage.Tests.Runtime
         {
             // set isServer is false. otherwise Destroy instead of
             // DestroyImmediate is called internally, giving an error in Editor
-            Object.DestroyImmediate(gameObject);
+            Object.DestroyImmediate(this.gameObject);
         }
 
 
         [Test]
         public void AddAllReadyServerConnectionsToObservers()
         {
-            player1.SceneIsReady.Returns(true);
-            player2.SceneIsReady.Returns(false);
+            this.player1.SceneIsReady.Returns(true);
+            this.player2.SceneIsReady.Returns(false);
 
             // add some server connections
-            server.AddTestPlayer(player1);
-            server.AddTestPlayer(player2);
+            this.server.AddTestPlayer(this.player1);
+            this.server.AddTestPlayer(this.player2);
 
             // add a host connection
-            server.AddLocalConnection(client, Substitute.For<SocketLayer.IConnection>());
-            server.InvokeLocalConnected();
-            server.LocalPlayer.SceneIsReady = true;
+            this.server.AddLocalConnection(this.client, Substitute.For<SocketLayer.IConnection>());
+            this.server.InvokeLocalConnected();
+            this.server.LocalPlayer.SceneIsReady = true;
 
             // call OnStartServer so that observers dict is created
-            identity.StartServer();
+            this.identity.StartServer();
 
             // add all to observers. should have the two ready connections then.
-            identity.AddAllReadyServerConnectionsToObservers();
-            Assert.That(identity.observers, Is.EquivalentTo(new[] { player1, server.LocalPlayer, serverPlayer }));
+            this.identity.AddAllReadyServerConnectionsToObservers();
+            Assert.That(this.identity.observers, Is.EquivalentTo(new[] { this.player1, this.server.LocalPlayer, this.serverPlayer }));
 
             // clean up
-            server.Stop();
+            this.server.Stop();
         }
 
         // RebuildObservers should always add the own ready connection
@@ -79,19 +79,19 @@ namespace Mirage.Tests.Runtime
         {
             // add at least one observers component, otherwise it will just add
             // all server connections
-            gameObject.AddComponent<RebuildEmptyObserversNetworkBehaviour>();
+            this.gameObject.AddComponent<RebuildEmptyObserversNetworkBehaviour>();
 
             // add own player connection
             (var serverPlayer, var _) = PipedConnections(Substitute.For<IMessageReceiver>(), Substitute.For<IMessageReceiver>());
             serverPlayer.SceneIsReady = true;
-            identity.Owner = serverPlayer;
+            this.identity.Owner = serverPlayer;
 
             // call OnStartServer so that observers dict is created
-            identity.StartServer();
+            this.identity.StartServer();
 
             // rebuild should at least add own ready player
-            identity.RebuildObservers(true);
-            Assert.That(identity.observers, Does.Contain(identity.Owner));
+            this.identity.RebuildObservers(true);
+            Assert.That(this.identity.observers, Does.Contain(this.identity.Owner));
         }
     }
 }

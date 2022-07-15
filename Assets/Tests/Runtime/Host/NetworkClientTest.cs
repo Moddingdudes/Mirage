@@ -11,70 +11,70 @@ namespace Mirage.Tests.Runtime.Host
         [Test]
         public void IsConnectedTest()
         {
-            Assert.That(client.IsConnected);
+            Assert.That(this.client.IsConnected);
         }
 
         [Test]
         public void ConnectionTest()
         {
-            Assert.That(client.Player != null);
+            Assert.That(this.client.Player != null);
         }
 
         [UnityTest]
         public IEnumerator ClientDisconnectTest() => UniTask.ToCoroutine(async () =>
         {
-            client.Disconnect();
+            this.client.Disconnect();
 
-            await AsyncUtil.WaitUntilWithTimeout(() => client.connectState == ConnectState.Disconnected);
-            await AsyncUtil.WaitUntilWithTimeout(() => !client.Active);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.client.connectState == ConnectState.Disconnected);
+            await AsyncUtil.WaitUntilWithTimeout(() => !this.client.Active);
         });
 
         [Test]
         public void ConnectionClearHandlersTest()
         {
-            Assert.That(ClientMessageHandler.messageHandlers.Count > 0);
+            Assert.That(this.ClientMessageHandler.messageHandlers.Count > 0);
 
-            ClientMessageHandler.ClearHandlers();
+            this.ClientMessageHandler.ClearHandlers();
 
-            Assert.That(ClientMessageHandler.messageHandlers.Count == 0);
+            Assert.That(this.ClientMessageHandler.messageHandlers.Count == 0);
         }
 
         [Test]
         public void IsLocalClientHostTest()
         {
-            Assert.That(client.IsLocalClient, Is.True);
+            Assert.That(this.client.IsLocalClient, Is.True);
         }
 
         [UnityTest]
         public IEnumerator IsLocalClientShutdownTest() => UniTask.ToCoroutine(async () =>
         {
-            client.Disconnect();
+            this.client.Disconnect();
 
-            await AsyncUtil.WaitUntilWithTimeout(() => !client.IsLocalClient);
+            await AsyncUtil.WaitUntilWithTimeout(() => !this.client.IsLocalClient);
         });
 
         [Test]
         public void ConnectedNotNullTest()
         {
-            Assert.That(client.Connected, Is.Not.Null);
+            Assert.That(this.client.Connected, Is.Not.Null);
         }
 
         [Test]
         public void AuthenticatedNotNullTest()
         {
-            Assert.That(client.Authenticated, Is.Not.Null);
+            Assert.That(this.client.Authenticated, Is.Not.Null);
         }
 
         [Test]
         public void DisconnectedNotNullTest()
         {
-            Assert.That(client.Disconnected, Is.Not.Null);
+            Assert.That(this.client.Disconnected, Is.Not.Null);
         }
 
         [Test]
         public void TimeNotNullTest()
         {
-            Assert.That(client.World.Time, Is.Not.Null);
+            Assert.That(this.client.World.Time, Is.Not.Null);
         }
     }
 }

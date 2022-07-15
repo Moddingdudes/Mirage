@@ -9,12 +9,12 @@ namespace Mirage.Tests.Runtime.Serialization
 
         public MockQuest(int id)
         {
-            Id = id;
+            this.Id = id;
         }
 
         public MockQuest()
         {
-            Id = 0;
+            this.Id = 0;
         }
     }
 

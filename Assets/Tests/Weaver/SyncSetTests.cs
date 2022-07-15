@@ -8,31 +8,31 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void SyncSetByteValid()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncSetGenericAbstractInheritance()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncSetGenericInheritance()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncSetInheritance()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncSetStruct()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
     }
 }

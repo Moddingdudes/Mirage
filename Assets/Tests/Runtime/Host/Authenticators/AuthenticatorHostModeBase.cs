@@ -11,26 +11,26 @@ namespace Mirage.Tests.Runtime.Host.Authenticators
 
         public sealed override void ExtraSetup()
         {
-            AddAuthenticator();
+            this.AddAuthenticator();
 
             // reset fields
-            serverAuthCalled = 0;
-            clientAuthCalled = 0;
+            this.serverAuthCalled = 0;
+            this.clientAuthCalled = 0;
 
-            server.Authenticated.AddListener(_ => serverAuthCalled++);
-            client.Authenticated.AddListener(_ => clientAuthCalled++);
+            this.server.Authenticated.AddListener(_ => this.serverAuthCalled++);
+            this.client.Authenticated.AddListener(_ => this.clientAuthCalled++);
         }
 
         [Test]
         public void AuthenticatedCalledOnceOnServer()
         {
-            Assert.That(serverAuthCalled, Is.EqualTo(1));
+            Assert.That(this.serverAuthCalled, Is.EqualTo(1));
         }
 
         [Test]
         public void AuthenticatedCalledOnceOnClient()
         {
-            Assert.That(clientAuthCalled, Is.EqualTo(1));
+            Assert.That(this.clientAuthCalled, Is.EqualTo(1));
         }
     }
 }

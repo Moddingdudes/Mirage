@@ -26,12 +26,12 @@ namespace Mirage.Tests.Runtime.ClientServer.GenericBehaviours.NoMiddle
         [UnityTest]
         public IEnumerator CanSyncValues()
         {
-            serverComponent.a = 10;
-            serverComponent.b = 12.5f;
+            this.serverComponent.a = 10;
+            this.serverComponent.b = 12.5f;
             yield return new WaitForSeconds(0.2f);
 
-            Assert.That(clientComponent.a, Is.EqualTo(10));
-            Assert.That(clientComponent.b, Is.EqualTo(12.5f));
+            Assert.That(this.clientComponent.a, Is.EqualTo(10));
+            Assert.That(this.clientComponent.b, Is.EqualTo(12.5f));
         }
     }
 }
@@ -57,14 +57,14 @@ namespace Mirage.Tests.Runtime.ClientServer.GenericBehaviours.SyncVarMiddle
         [UnityTest]
         public IEnumerator CanSyncValues()
         {
-            serverComponent.a = 10;
-            serverComponent.b = 20;
-            serverComponent.c = 12.5f;
+            this.serverComponent.a = 10;
+            this.serverComponent.b = 20;
+            this.serverComponent.c = 12.5f;
             yield return new WaitForSeconds(0.2f);
 
-            Assert.That(clientComponent.a, Is.EqualTo(10));
-            Assert.That(clientComponent.b, Is.EqualTo(20));
-            Assert.That(clientComponent.c, Is.EqualTo(12.5f));
+            Assert.That(this.clientComponent.a, Is.EqualTo(10));
+            Assert.That(this.clientComponent.b, Is.EqualTo(20));
+            Assert.That(this.clientComponent.c, Is.EqualTo(12.5f));
         }
     }
 }

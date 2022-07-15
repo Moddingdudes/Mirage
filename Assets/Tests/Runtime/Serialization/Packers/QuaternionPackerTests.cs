@@ -31,8 +31,8 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         public void IdentityIsUnpackedAsIdentity()
         {
             var packer = new QuaternionPacker(10);
-            packer.Pack(writer, Quaternion.identity);
-            var unpack = packer.Unpack(GetReader());
+            packer.Pack(this.writer, Quaternion.identity);
+            var unpack = packer.Unpack(this.GetReader());
 
             Assert.That(unpack, Is.EqualTo(Quaternion.identity));
         }
@@ -98,7 +98,7 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
 #endif
         public void PackAndUnpack(int bits, Quaternion inValue)
         {
-            RunPackAndUnpack(bits, inValue);
+            this.RunPackAndUnpack(bits, inValue);
         }
 
 
@@ -111,7 +111,7 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         {
             var inValue = GetRandomQuaternion();
 
-            RunPackAndUnpack(bits, inValue);
+            this.RunPackAndUnpack(bits, inValue);
         }
 
         [Test]
@@ -123,7 +123,7 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         {
             var inValueNotNormalized = GetRandomQuaternionNotNormalized();
 
-            RunPackAndUnpack(bits, inValueNotNormalized);
+            this.RunPackAndUnpack(bits, inValueNotNormalized);
         }
 
         private void RunPackAndUnpack(int bits, Quaternion inValueNotNormalized)
@@ -138,9 +138,9 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
 
             var packer = new QuaternionPacker(bits);
 
-            packer.Pack(writer, inValueNotNormalized);
+            packer.Pack(this.writer, inValueNotNormalized);
 
-            var outValue = packer.Unpack(GetReader());
+            var outValue = packer.Unpack(this.GetReader());
             //Debug.Log($"Packed: ({inValue.x:0.000},{inValue.y:0.000},{inValue.z:0.000},{inValue.w:0.000}) " +
             //          $"UnPacked: ({outValue.x:0.000},{outValue.y:0.000},{outValue.z:0.000},{outValue.w:0.000})");
 

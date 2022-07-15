@@ -29,44 +29,44 @@ namespace Mirage.Examples.Tanks
         [SyncVar]
         public bool isReady;
 
-        public bool IsDead => health <= 0;
+        public bool IsDead => this.health <= 0;
         public TextMesh nameText;
 
         private void Update()
         {
             if (Camera.main)
             {
-                nameText.text = playerName;
-                nameText.transform.rotation = Camera.main.transform.rotation;
+                this.nameText.text = this.playerName;
+                this.nameText.transform.rotation = Camera.main.transform.rotation;
             }
 
             // movement for local player
-            if (!IsLocalPlayer)
+            if (!this.IsLocalPlayer)
                 return;
 
             //Set local players name color to green
-            nameText.color = Color.green;
+            this.nameText.color = Color.green;
 
-            if (!allowMovement)
+            if (!this.allowMovement)
                 return;
 
-            if (IsDead)
+            if (this.IsDead)
                 return;
 
             // rotate
             var horizontal = Input.GetAxis("Horizontal");
-            transform.Rotate(0, horizontal * rotationSpeed * Time.deltaTime, 0);
+            this.transform.Rotate(0, horizontal * this.rotationSpeed * Time.deltaTime, 0);
 
             // move
             var vertical = Input.GetAxis("Vertical");
-            var forward = transform.TransformDirection(Vector3.forward);
-            agent.velocity = forward * Mathf.Max(vertical, 0) * agent.speed;
-            animator.SetBool("Moving", agent.velocity != Vector3.zero);
+            var forward = this.transform.TransformDirection(Vector3.forward);
+            this.agent.velocity = forward * Mathf.Max(vertical, 0) * this.agent.speed;
+            this.animator.SetBool("Moving", this.agent.velocity != Vector3.zero);
 
             // shoot
-            if (Input.GetKeyDown(shootKey))
+            if (Input.GetKeyDown(this.shootKey))
             {
-                CmdFire();
+                this.CmdFire();
             }
         }
 
@@ -74,25 +74,25 @@ namespace Mirage.Examples.Tanks
         [ServerRpc]
         private void CmdFire()
         {
-            var projectile = Instantiate(projectilePrefab, projectileMount.position, transform.rotation);
-            projectile.GetComponent<Projectile>().source = gameObject;
-            ServerObjectManager.Spawn(projectile);
-            RpcOnFire();
+            var projectile = Instantiate(this.projectilePrefab, this.projectileMount.position, this.transform.rotation);
+            projectile.GetComponent<Projectile>().source = this.gameObject;
+            this.ServerObjectManager.Spawn(projectile);
+            this.RpcOnFire();
         }
 
         // this is called on the tank that fired for all observers
         [ClientRpc]
         private void RpcOnFire()
         {
-            animator.SetTrigger("Shoot");
+            this.animator.SetTrigger("Shoot");
         }
 
         public void SendReadyToServer(string playername)
         {
-            if (!IsLocalPlayer)
+            if (!this.IsLocalPlayer)
                 return;
 
-            CmdReady(playername);
+            this.CmdReady(playername);
         }
 
         [ServerRpc]
@@ -100,14 +100,14 @@ namespace Mirage.Examples.Tanks
         {
             if (string.IsNullOrEmpty(playername))
             {
-                playerName = "PLAYER" + Random.Range(1, 99);
+                this.playerName = "PLAYER" + Random.Range(1, 99);
             }
             else
             {
-                playerName = playername;
+                this.playerName = playername;
             }
 
-            isReady = true;
+            this.isReady = true;
         }
     }
 }

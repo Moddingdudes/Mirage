@@ -14,36 +14,36 @@ namespace Mirage.Tests.Runtime.Host
 
         public override void ExtraSetup()
         {
-            bundle = AssetBundle.LoadFromFile("Assets/Tests/Runtime/TestScene/testscene");
+            this.bundle = AssetBundle.LoadFromFile("Assets/Tests/Runtime/TestScene/testscene");
 
-            spawner = networkManagerGo.AddComponent<CharacterSpawner>();
+            this.spawner = this.networkManagerGo.AddComponent<CharacterSpawner>();
 
-            spawner.Client = client;
-            spawner.Server = server;
-            spawner.SceneManager = sceneManager;
-            spawner.ClientObjectManager = clientObjectManager;
-            spawner.ServerObjectManager = serverObjectManager;
+            this.spawner.Client = this.client;
+            this.spawner.Server = this.server;
+            this.spawner.SceneManager = this.sceneManager;
+            this.spawner.ClientObjectManager = this.clientObjectManager;
+            this.spawner.ServerObjectManager = this.serverObjectManager;
 
-            player = new GameObject();
-            var identity = player.AddComponent<NetworkIdentity>();
-            spawner.PlayerPrefab = identity;
+            this.player = new GameObject();
+            var identity = this.player.AddComponent<NetworkIdentity>();
+            this.spawner.PlayerPrefab = identity;
 
-            spawner.AutoSpawn = false;
+            this.spawner.AutoSpawn = false;
         }
 
         public override void ExtraTearDown()
         {
-            bundle.Unload(true);
-            Object.Destroy(player);
+            this.bundle.Unload(true);
+            Object.Destroy(this.player);
         }
 
         [UnityTest]
         public IEnumerator DontAutoSpawnTest() => UniTask.ToCoroutine(async () =>
         {
             var invokeAddPlayerMessage = false;
-            ServerMessageHandler.RegisterHandler<AddCharacterMessage>(msg => invokeAddPlayerMessage = true);
+            this.ServerMessageHandler.RegisterHandler<AddCharacterMessage>(msg => invokeAddPlayerMessage = true);
 
-            sceneManager.ServerLoadSceneNormal("Assets/Mirror/Tests/Runtime/testScene.unity");
+            this.sceneManager.ServerLoadSceneNormal("Assets/Mirror/Tests/Runtime/testScene.unity");
             // wait for messages to be processed
             await UniTask.Yield();
 
@@ -55,9 +55,9 @@ namespace Mirage.Tests.Runtime.Host
         public IEnumerator ManualSpawnTest() => UniTask.ToCoroutine(async () =>
         {
             var invokeAddPlayerMessage = false;
-            ServerMessageHandler.RegisterHandler<AddCharacterMessage>(msg => invokeAddPlayerMessage = true);
+            this.ServerMessageHandler.RegisterHandler<AddCharacterMessage>(msg => invokeAddPlayerMessage = true);
 
-            spawner.RequestServerSpawnPlayer();
+            this.spawner.RequestServerSpawnPlayer();
 
             // wait for messages to be processed
             await UniTask.Yield();

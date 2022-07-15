@@ -27,9 +27,9 @@ namespace Mirage.SocketLayer.Tests.AckSystemTests
         protected byte[] createRandomData(int id)
         {
             // random size messages
-            var buffer = new byte[rand.Next(2, 12)];
+            var buffer = new byte[this.rand.Next(2, 12)];
             // fill array with random
-            rand.NextBytes(buffer);
+            this.rand.NextBytes(buffer);
 
             // first bytes can be ID
             buffer[0] = (byte)id;
@@ -76,7 +76,7 @@ namespace Mirage.SocketLayer.Tests.AckSystemTests
         {
             var clone = new byte[length];
             Buffer.BlockCopy(packet, 0, clone, 0, length);
-            packets.Add(clone);
+            this.packets.Add(clone);
         }
     }
 
@@ -91,8 +91,8 @@ namespace Mirage.SocketLayer.Tests.AckSystemTests
         public List<byte[]> messages;
 
         /// <summary>Sent messages</summary>
-        public byte[] message(int i) => messages[i];
+        public byte[] message(int i) => this.messages[i];
         /// <summary>received packet</summary>
-        public byte[] packet(int i) => connection.packets[i];
+        public byte[] packet(int i) => this.connection.packets[i];
     }
 }

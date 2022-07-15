@@ -22,8 +22,8 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void UsesDefaultValue()
         {
-            Assert.That(serverComponent.myColor, Is.EqualTo(SampleBehaviorWithEnum.DefaultValue));
-            Assert.That(clientComponent.myColor, Is.EqualTo(SampleBehaviorWithEnum.DefaultValue));
+            Assert.That(this.serverComponent.myColor, Is.EqualTo(SampleBehaviorWithEnum.DefaultValue));
+            Assert.That(this.clientComponent.myColor, Is.EqualTo(SampleBehaviorWithEnum.DefaultValue));
         }
     }
 }

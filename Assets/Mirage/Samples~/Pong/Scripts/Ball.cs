@@ -9,16 +9,16 @@ namespace Mirage.Examples.Pong
 
         private void Awake()
         {
-            Identity.OnStartServer.AddListener(OnStartServer);
+            this.Identity.OnStartServer.AddListener(this.OnStartServer);
         }
 
         public void OnStartServer()
         {
             // only simulate ball physics on server
-            rigidbody2d.simulated = true;
+            this.rigidbody2d.simulated = true;
 
             // Serve the ball from left player
-            rigidbody2d.velocity = Vector2.right * speed;
+            this.rigidbody2d.velocity = Vector2.right * this.speed;
         }
 
         private float HitFactor(Vector2 ballPos, Vector2 racketPos, float racketHeight)
@@ -46,7 +46,7 @@ namespace Mirage.Examples.Pong
             if (col.transform.GetComponent<Player>())
             {
                 // Calculate y direction via hit Factor
-                var y = HitFactor(transform.position,
+                var y = this.HitFactor(this.transform.position,
                                     col.transform.position,
                                     col.collider.bounds.size.y);
 
@@ -57,7 +57,7 @@ namespace Mirage.Examples.Pong
                 var dir = new Vector2(x, y).normalized;
 
                 // Set Velocity with dir * speed
-                rigidbody2d.velocity = dir * speed;
+                this.rigidbody2d.velocity = dir * this.speed;
             }
         }
     }

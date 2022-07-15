@@ -25,7 +25,7 @@ namespace Mirage.Tests.Runtime.ClientServer
 
         public void OnSyncedBaseValueWithHook(int oldValue, int newValue)
         {
-            onBaseValueChanged?.Invoke(oldValue, newValue);
+            this.onBaseValueChanged?.Invoke(oldValue, newValue);
         }
     }
 
@@ -48,7 +48,7 @@ namespace Mirage.Tests.Runtime.ClientServer
 
         public void OnSyncedMiddleValueWithHook(int oldValue, int newValue)
         {
-            onMiddleValueChanged?.Invoke(oldValue, newValue);
+            this.onMiddleValueChanged?.Invoke(oldValue, newValue);
         }
     }
 
@@ -67,7 +67,7 @@ namespace Mirage.Tests.Runtime.ClientServer
 
         public void OnSyncedImplementValueWithHook(int oldValue, int newValue)
         {
-            onImplementValueChanged?.Invoke(oldValue, newValue);
+            this.onImplementValueChanged?.Invoke(oldValue, newValue);
         }
     }
 
@@ -76,184 +76,184 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void IsZeroByDefault()
         {
-            Assert.AreEqual(clientComponent.baseValue, 0);
-            Assert.AreEqual(clientComponent.baseValueWithHook, 0);
-            Assert.AreEqual(clientComponent.middleValue, 0);
-            Assert.AreEqual(clientComponent.middleValueWithHook, 0);
-            Assert.AreEqual(clientComponent.implementValue, 0);
-            Assert.AreEqual(clientComponent.implementValueWithHook, 0);
-            Assert.IsNull(clientComponent.target);
-            Assert.IsNull(clientComponent.targetIdentity);
-            Assert.IsNull(clientComponent.middleTarget);
-            Assert.IsNull(clientComponent.middleIdentity);
-            Assert.IsNull(clientComponent.implementTarget);
-            Assert.IsNull(clientComponent.implementIdentity);
+            Assert.AreEqual(this.clientComponent.baseValue, 0);
+            Assert.AreEqual(this.clientComponent.baseValueWithHook, 0);
+            Assert.AreEqual(this.clientComponent.middleValue, 0);
+            Assert.AreEqual(this.clientComponent.middleValueWithHook, 0);
+            Assert.AreEqual(this.clientComponent.implementValue, 0);
+            Assert.AreEqual(this.clientComponent.implementValueWithHook, 0);
+            Assert.IsNull(this.clientComponent.target);
+            Assert.IsNull(this.clientComponent.targetIdentity);
+            Assert.IsNull(this.clientComponent.middleTarget);
+            Assert.IsNull(this.clientComponent.middleIdentity);
+            Assert.IsNull(this.clientComponent.implementTarget);
+            Assert.IsNull(this.clientComponent.implementIdentity);
         }
 
         [UnityTest]
         public IEnumerator ChangeValue() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.baseValue = 2;
+            this.serverComponent.baseValue = 2;
 
-            await UniTask.WaitUntil(() => clientComponent.baseValue != 0);
+            await UniTask.WaitUntil(() => this.clientComponent.baseValue != 0);
 
-            Assert.AreEqual(clientComponent.baseValue, 2);
+            Assert.AreEqual(this.clientComponent.baseValue, 2);
         });
 
         [UnityTest]
         public IEnumerator ChangeValueHook() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.baseValueWithHook = 2;
-            clientComponent.onBaseValueChanged += (oldValue, newValue) =>
+            this.serverComponent.baseValueWithHook = 2;
+            this.clientComponent.onBaseValueChanged += (oldValue, newValue) =>
             {
                 Assert.AreEqual(0, oldValue);
                 Assert.AreEqual(2, newValue);
             };
 
-            await UniTask.WaitUntil(() => clientComponent.baseValueWithHook != 0);
+            await UniTask.WaitUntil(() => this.clientComponent.baseValueWithHook != 0);
         });
 
         [UnityTest]
         public IEnumerator ChangeTarget() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.target = serverComponent;
+            this.serverComponent.target = this.serverComponent;
 
-            await UniTask.WaitUntil(() => clientComponent.target != null);
+            await UniTask.WaitUntil(() => this.clientComponent.target != null);
 
-            Assert.That(clientComponent.target, Is.SameAs(clientComponent));
+            Assert.That(this.clientComponent.target, Is.SameAs(this.clientComponent));
         });
 
         [UnityTest]
         public IEnumerator ChangeNetworkIdentity() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.targetIdentity = serverIdentity;
+            this.serverComponent.targetIdentity = this.serverIdentity;
 
-            await UniTask.WaitUntil(() => clientComponent.targetIdentity != null);
+            await UniTask.WaitUntil(() => this.clientComponent.targetIdentity != null);
 
-            Assert.That(clientComponent.targetIdentity, Is.SameAs(clientIdentity));
+            Assert.That(this.clientComponent.targetIdentity, Is.SameAs(this.clientIdentity));
         });
 
         [UnityTest]
         public IEnumerator ChangeMiddleValue() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.middleValue = 2;
+            this.serverComponent.middleValue = 2;
 
-            await UniTask.WaitUntil(() => clientComponent.middleValue != 0);
+            await UniTask.WaitUntil(() => this.clientComponent.middleValue != 0);
 
-            Assert.AreEqual(clientComponent.middleValue, 2);
+            Assert.AreEqual(this.clientComponent.middleValue, 2);
         });
 
         [UnityTest]
         public IEnumerator ChangeMiddleValueHook() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.middleValueWithHook = 2;
-            clientComponent.onMiddleValueChanged += (oldValue, newValue) =>
+            this.serverComponent.middleValueWithHook = 2;
+            this.clientComponent.onMiddleValueChanged += (oldValue, newValue) =>
             {
                 Assert.AreEqual(0, oldValue);
                 Assert.AreEqual(2, newValue);
             };
 
-            await UniTask.WaitUntil(() => clientComponent.middleValueWithHook != 0);
+            await UniTask.WaitUntil(() => this.clientComponent.middleValueWithHook != 0);
         });
 
         [UnityTest]
         public IEnumerator ChangeMiddleTarget() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.middleTarget = serverComponent;
+            this.serverComponent.middleTarget = this.serverComponent;
 
-            await UniTask.WaitUntil(() => clientComponent.middleTarget != null);
+            await UniTask.WaitUntil(() => this.clientComponent.middleTarget != null);
 
-            Assert.That(clientComponent.middleTarget, Is.SameAs(clientComponent));
+            Assert.That(this.clientComponent.middleTarget, Is.SameAs(this.clientComponent));
         });
 
         [UnityTest]
         public IEnumerator ChangeMiddleNetworkIdentity() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.middleIdentity = serverIdentity;
+            this.serverComponent.middleIdentity = this.serverIdentity;
 
-            await UniTask.WaitUntil(() => clientComponent.middleIdentity != null);
+            await UniTask.WaitUntil(() => this.clientComponent.middleIdentity != null);
 
-            Assert.That(clientComponent.middleIdentity, Is.SameAs(clientIdentity));
+            Assert.That(this.clientComponent.middleIdentity, Is.SameAs(this.clientIdentity));
         });
 
         [UnityTest]
         public IEnumerator ChangeImplementValue() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.implementValue = 2;
+            this.serverComponent.implementValue = 2;
 
-            await UniTask.WaitUntil(() => clientComponent.implementValue != 0);
+            await UniTask.WaitUntil(() => this.clientComponent.implementValue != 0);
 
-            Assert.AreEqual(clientComponent.implementValue, 2);
+            Assert.AreEqual(this.clientComponent.implementValue, 2);
         });
 
         [UnityTest]
         public IEnumerator ChangeImplementValueHook() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.implementValueWithHook = 2;
-            clientComponent.onImplementValueChanged += (oldValue, newValue) =>
+            this.serverComponent.implementValueWithHook = 2;
+            this.clientComponent.onImplementValueChanged += (oldValue, newValue) =>
             {
                 Assert.AreEqual(0, oldValue);
                 Assert.AreEqual(2, newValue);
             };
 
-            await UniTask.WaitUntil(() => clientComponent.implementValueWithHook != 0);
+            await UniTask.WaitUntil(() => this.clientComponent.implementValueWithHook != 0);
         });
 
         [UnityTest]
         public IEnumerator ChangeImplementTarget() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.implementTarget = serverComponent;
+            this.serverComponent.implementTarget = this.serverComponent;
 
-            await UniTask.WaitUntil(() => clientComponent.implementTarget != null);
+            await UniTask.WaitUntil(() => this.clientComponent.implementTarget != null);
 
-            Assert.That(clientComponent.implementTarget, Is.SameAs(clientComponent));
+            Assert.That(this.clientComponent.implementTarget, Is.SameAs(this.clientComponent));
         });
 
         [UnityTest]
         public IEnumerator ChangeImplementNetworkIdentity() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.implementIdentity = serverIdentity;
+            this.serverComponent.implementIdentity = this.serverIdentity;
 
-            await UniTask.WaitUntil(() => clientComponent.implementIdentity != null);
+            await UniTask.WaitUntil(() => this.clientComponent.implementIdentity != null);
 
-            Assert.That(clientComponent.implementIdentity, Is.SameAs(clientIdentity));
+            Assert.That(this.clientComponent.implementIdentity, Is.SameAs(this.clientIdentity));
         });
 
         [UnityTest]
         public IEnumerator SpawnWithValue() => UniTask.ToCoroutine(async () =>
         {
             // create an object, set the target and spawn it
-            var newObject = UnityEngine.Object.Instantiate(playerPrefab);
+            var newObject = UnityEngine.Object.Instantiate(this.playerPrefab);
             var newBehavior = newObject.GetComponent<GenericBehaviourWithSyncVarDeeperImplement>();
             newBehavior.baseValue = 2;
             newBehavior.middleValue = 22;
             newBehavior.implementValue = 222;
-            newBehavior.target = serverComponent;
-            newBehavior.targetIdentity = serverIdentity;
-            newBehavior.middleTarget = serverComponent;
-            newBehavior.middleIdentity = serverIdentity;
-            newBehavior.implementTarget = serverComponent;
-            newBehavior.implementIdentity = serverIdentity;
-            serverObjectManager.Spawn(newObject);
+            newBehavior.target = this.serverComponent;
+            newBehavior.targetIdentity = this.serverIdentity;
+            newBehavior.middleTarget = this.serverComponent;
+            newBehavior.middleIdentity = this.serverIdentity;
+            newBehavior.implementTarget = this.serverComponent;
+            newBehavior.implementIdentity = this.serverIdentity;
+            this.serverObjectManager.Spawn(newObject);
 
             // wait until the client spawns it
             var newObjectId = newBehavior.NetId;
-            var newClientObject = await AsyncUtil.WaitUntilSpawn(client.World, newObjectId);
+            var newClientObject = await AsyncUtil.WaitUntilSpawn(this.client.World, newObjectId);
 
             // check if the target was set correctly in the client
             var newClientBehavior = newClientObject.GetComponent<GenericBehaviourWithSyncVarDeeperImplement>();
             Assert.AreEqual(newClientBehavior.baseValue, 2);
             Assert.AreEqual(newClientBehavior.middleValue, 22);
             Assert.AreEqual(newClientBehavior.implementValue, 222);
-            Assert.That(newClientBehavior.target, Is.SameAs(clientComponent));
-            Assert.That(newClientBehavior.targetIdentity, Is.SameAs(clientIdentity));
-            Assert.That(newClientBehavior.middleTarget, Is.SameAs(clientComponent));
-            Assert.That(newClientBehavior.middleIdentity, Is.SameAs(clientIdentity));
-            Assert.That(newClientBehavior.implementTarget, Is.SameAs(clientComponent));
-            Assert.That(newClientBehavior.implementIdentity, Is.SameAs(clientIdentity));
+            Assert.That(newClientBehavior.target, Is.SameAs(this.clientComponent));
+            Assert.That(newClientBehavior.targetIdentity, Is.SameAs(this.clientIdentity));
+            Assert.That(newClientBehavior.middleTarget, Is.SameAs(this.clientComponent));
+            Assert.That(newClientBehavior.middleIdentity, Is.SameAs(this.clientIdentity));
+            Assert.That(newClientBehavior.implementTarget, Is.SameAs(this.clientComponent));
+            Assert.That(newClientBehavior.implementIdentity, Is.SameAs(this.clientIdentity));
 
             // cleanup
-            serverObjectManager.Destroy(newObject);
+            this.serverObjectManager.Destroy(newObject);
         });
     }
 }

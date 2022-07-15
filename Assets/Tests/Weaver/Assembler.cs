@@ -17,8 +17,8 @@ namespace Mirage.Tests.Weaver
         public CompiledAssembly(string assemblyPath, AssemblyBuilder assemblyBuilder)
         {
             this.assemblyPath = assemblyPath;
-            Defines = assemblyBuilder.defaultDefines;
-            References = assemblyBuilder.defaultReferences;
+            this.Defines = assemblyBuilder.defaultDefines;
+            this.References = assemblyBuilder.defaultReferences;
         }
 
         public InMemoryAssembly InMemoryAssembly
@@ -26,21 +26,21 @@ namespace Mirage.Tests.Weaver
             get
             {
 
-                if (inMemoryAssembly == null)
+                if (this.inMemoryAssembly == null)
                 {
-                    var peData = File.ReadAllBytes(assemblyPath);
+                    var peData = File.ReadAllBytes(this.assemblyPath);
 
-                    var pdbFileName = Path.GetFileNameWithoutExtension(assemblyPath) + ".pdb";
+                    var pdbFileName = Path.GetFileNameWithoutExtension(this.assemblyPath) + ".pdb";
 
-                    var pdbData = File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(assemblyPath), pdbFileName));
+                    var pdbData = File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(this.assemblyPath), pdbFileName));
 
-                    inMemoryAssembly = new InMemoryAssembly(peData, pdbData);
+                    this.inMemoryAssembly = new InMemoryAssembly(peData, pdbData);
                 }
-                return inMemoryAssembly;
+                return this.inMemoryAssembly;
             }
         }
 
-        public string Name => Path.GetFileNameWithoutExtension(assemblyPath);
+        public string Name => Path.GetFileNameWithoutExtension(this.assemblyPath);
 
         public string[] References { get; set; }
 
@@ -50,7 +50,7 @@ namespace Mirage.Tests.Weaver
     public class Assembler
     {
         public string OutputFile { get; set; }
-        public string ProjectPathFile => Path.Combine(WeaverTestLocator.OutputDirectory, OutputFile);
+        public string ProjectPathFile => Path.Combine(WeaverTestLocator.OutputDirectory, this.OutputFile);
         public List<CompilerMessage> CompilerMessages { get; private set; }
         public bool CompilerErrors { get; private set; }
 
@@ -58,7 +58,7 @@ namespace Mirage.Tests.Weaver
 
         public Assembler()
         {
-            CompilerMessages = new List<CompilerMessage>();
+            this.CompilerMessages = new List<CompilerMessage>();
         }
 
         // Add a range of source files to compile
@@ -74,26 +74,26 @@ namespace Mirage.Tests.Weaver
         public void DeleteOutput()
         {
             // "x.dll" shortest possible dll name
-            if (OutputFile.Length < 5)
+            if (this.OutputFile.Length < 5)
             {
                 return;
             }
 
             try
             {
-                File.Delete(ProjectPathFile);
+                File.Delete(this.ProjectPathFile);
             }
             catch { /* Do Nothing */ }
 
             try
             {
-                File.Delete(Path.ChangeExtension(ProjectPathFile, ".pdb"));
+                File.Delete(Path.ChangeExtension(this.ProjectPathFile, ".pdb"));
             }
             catch { /* Do Nothing */ }
 
             try
             {
-                File.Delete(Path.ChangeExtension(ProjectPathFile, ".dll.mdb"));
+                File.Delete(Path.ChangeExtension(this.ProjectPathFile, ".dll.mdb"));
             }
             catch { /* Do Nothing */ }
         }
@@ -110,7 +110,7 @@ namespace Mirage.Tests.Weaver
 
             // This will compile scripts with the same references as files in the asset folder.
             // This means that the dll will get references to all asmdef just as if it was the default "Assembly-CSharp.dll"
-            var assemblyBuilder = new AssemblyBuilder(ProjectPathFile, sourceFiles.ToArray())
+            var assemblyBuilder = new AssemblyBuilder(this.ProjectPathFile, this.sourceFiles.ToArray())
             {
                 referencesOptions = ReferencesOptions.UseEngineModules
             };

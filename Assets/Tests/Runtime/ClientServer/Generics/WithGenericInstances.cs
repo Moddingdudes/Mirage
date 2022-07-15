@@ -55,21 +55,21 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num1 = 32;
             const int num2 = 48;
-            serverComponent.myList.Add(new MyStruct<int> { value = num1 });
-            serverComponent.myList.Add(new MyStruct<int> { value = num2 });
+            this.serverComponent.myList.Add(new MyStruct<int> { value = num1 });
+            this.serverComponent.myList.Add(new MyStruct<int> { value = num2 });
 
             yield return new WaitForSeconds(0.4f);
 
-            Assert.That(clientComponent.myList.Count, Is.EqualTo(2));
-            Assert.That(clientComponent.myList[0].value, Is.EqualTo(num1));
-            Assert.That(clientComponent.myList[1].value, Is.EqualTo(num2));
+            Assert.That(this.clientComponent.myList.Count, Is.EqualTo(2));
+            Assert.That(this.clientComponent.myList[0].value, Is.EqualTo(num1));
+            Assert.That(this.clientComponent.myList[1].value, Is.EqualTo(num2));
 
-            serverComponent.myList.Remove(new MyStruct<int> { value = num1 });
+            this.serverComponent.myList.Remove(new MyStruct<int> { value = num1 });
 
             yield return new WaitForSeconds(0.4f);
 
-            Assert.That(clientComponent.myList.Count, Is.EqualTo(1));
-            Assert.That(clientComponent.myList[0].value, Is.EqualTo(num2));
+            Assert.That(this.clientComponent.myList.Count, Is.EqualTo(1));
+            Assert.That(this.clientComponent.myList[0].value, Is.EqualTo(num2));
         }
 
         [UnityTest]
@@ -77,8 +77,8 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var sub = Substitute.For<Action<int>>();
-            clientComponent.structParam += sub;
-            serverComponent.MyRpc(new MyStruct<int> { value = num });
+            this.clientComponent.structParam += sub;
+            this.serverComponent.MyRpc(new MyStruct<int> { value = num });
 
             yield return null;
             yield return null;
@@ -91,8 +91,8 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var sub = Substitute.For<Action<int>>();
-            clientComponent.holderParam += sub;
-            serverComponent.MyRpcHolder(new MyHolder
+            this.clientComponent.holderParam += sub;
+            this.serverComponent.MyRpcHolder(new MyHolder
             {
                 inner = new MyStruct<int>
                 {
@@ -110,11 +110,11 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         public IEnumerator CanSyncVar()
         {
             const int num = 32;
-            serverComponent.myVar = new MyStruct<int> { value = num };
+            this.serverComponent.myVar = new MyStruct<int> { value = num };
 
             yield return new WaitForSeconds(0.4f);
 
-            Assert.That(clientComponent.myVar.value, Is.EqualTo(num));
+            Assert.That(this.clientComponent.myVar.value, Is.EqualTo(num));
         }
 
         [UnityTest]
@@ -122,12 +122,12 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var sub = Substitute.For<Action<int, int>>();
-            clientComponent.onSyncHook += sub;
-            serverComponent.varWithHook = new MyStruct<int> { value = num };
+            this.clientComponent.onSyncHook += sub;
+            this.serverComponent.varWithHook = new MyStruct<int> { value = num };
 
             yield return new WaitForSeconds(0.4f);
 
-            Assert.That(clientComponent.varWithHook.value, Is.EqualTo(num));
+            Assert.That(this.clientComponent.varWithHook.value, Is.EqualTo(num));
             sub.Received(1).Invoke(0, num);
         }
 
@@ -136,12 +136,12 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var sub = Substitute.For<Action<MyStruct<int>, MyStruct<int>>>();
-            clientComponent.syncEvent += sub;
-            serverComponent.varWithEvent = new MyStruct<int> { value = num };
+            this.clientComponent.syncEvent += sub;
+            this.serverComponent.varWithEvent = new MyStruct<int> { value = num };
 
             yield return new WaitForSeconds(0.4f);
 
-            Assert.That(clientComponent.varWithEvent.value, Is.EqualTo(num));
+            Assert.That(this.clientComponent.varWithEvent.value, Is.EqualTo(num));
             sub.Received(1).Invoke(new MyStruct<int>(), new MyStruct<int> { value = num });
         }
     }

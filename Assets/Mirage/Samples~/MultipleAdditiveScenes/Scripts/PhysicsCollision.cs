@@ -12,13 +12,13 @@ namespace Mirage.Examples.MultipleAdditiveScenes
 
         private void OnValidate()
         {
-            if (rigidbody3D == null)
-                rigidbody3D = GetComponent<Rigidbody>();
+            if (this.rigidbody3D == null)
+                this.rigidbody3D = this.GetComponent<Rigidbody>();
         }
 
         private void Start()
         {
-            rigidbody3D.isKinematic = !IsServer;
+            this.rigidbody3D.isKinematic = !this.IsServer;
         }
 
         [Server(error = false)]
@@ -34,10 +34,10 @@ namespace Mirage.Examples.MultipleAdditiveScenes
                 direction = direction.normalized;
 
                 // push this away from player...a bit less force for host player
-                if (other.gameObject.GetComponent<NetworkIdentity>().Owner == Server.LocalPlayer)
-                    rigidbody3D.AddForce(direction * force * .5f);
+                if (other.gameObject.GetComponent<NetworkIdentity>().Owner == this.Server.LocalPlayer)
+                    this.rigidbody3D.AddForce(direction * this.force * .5f);
                 else
-                    rigidbody3D.AddForce(direction * force);
+                    this.rigidbody3D.AddForce(direction * this.force);
             }
         }
     }

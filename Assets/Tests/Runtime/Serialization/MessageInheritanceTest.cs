@@ -46,28 +46,28 @@ namespace Mirage.Tests.Runtime.Serialization
         [TearDown]
         public void TearDown()
         {
-            writer.Reset();
-            reader.Dispose();
+            this.writer.Reset();
+            this.reader.Dispose();
         }
 
 
         [Test]
         public void SendsVauesInParentAndChildClass()
         {
-            writer.Write(new ChildMessage
+            this.writer.Write(new ChildMessage
             {
                 parentValue = 3,
                 childValue = 4
             });
 
-            reader.Reset(writer.ToArraySegment());
-            var received = reader.Read<ChildMessage>();
+            this.reader.Reset(this.writer.ToArraySegment());
+            var received = this.reader.Read<ChildMessage>();
 
             Assert.AreEqual(3, received.parentValue);
             Assert.AreEqual(4, received.childValue);
 
-            var writeLength = writer.ByteLength;
-            var readLength = reader.BytePosition;
+            var writeLength = this.writer.ByteLength;
+            var readLength = this.reader.BytePosition;
             Assert.That(writeLength == readLength, $"OnSerializeAll and OnDeserializeAll calls write the same amount of data\n    writeLength={writeLength}\n    readLength={readLength}");
         }
 
@@ -77,23 +77,23 @@ namespace Mirage.Tests.Runtime.Serialization
             const int state = 2;
             const string message = "hello world";
             const int responseId = 5;
-            writer.Write(new ResponseMessage
+            this.writer.Write(new ResponseMessage
             {
                 state = state,
                 message = message,
                 responseId = responseId,
             });
 
-            reader.Reset(writer.ToArraySegment());
+            this.reader.Reset(this.writer.ToArraySegment());
 
-            var received = reader.Read<ResponseMessage>();
+            var received = this.reader.Read<ResponseMessage>();
 
             Assert.AreEqual(state, received.state);
             Assert.AreEqual(message, received.message);
             Assert.AreEqual(responseId, received.responseId);
 
-            var writeLength = writer.ByteLength;
-            var readLength = reader.BytePosition;
+            var writeLength = this.writer.ByteLength;
+            var readLength = this.reader.BytePosition;
             Assert.That(writeLength == readLength, $"OnSerializeAll and OnDeserializeAll calls write the same amount of data\n    writeLength={writeLength}\n    readLength={readLength}");
         }
 
@@ -103,23 +103,23 @@ namespace Mirage.Tests.Runtime.Serialization
             const int state = 2;
             const string message = "hello world";
             const int responseId = 5;
-            writer.Write(new ResponseMessageReverse
+            this.writer.Write(new ResponseMessageReverse
             {
                 state = state,
                 message = message,
                 responseId = responseId,
             });
 
-            reader.Reset(writer.ToArraySegment());
+            this.reader.Reset(this.writer.ToArraySegment());
 
-            var received = reader.Read<ResponseMessageReverse>();
+            var received = this.reader.Read<ResponseMessageReverse>();
 
             Assert.AreEqual(state, received.state);
             Assert.AreEqual(message, received.message);
             Assert.AreEqual(responseId, received.responseId);
 
-            var writeLength = writer.ByteLength;
-            var readLength = reader.BytePosition;
+            var writeLength = this.writer.ByteLength;
+            var readLength = this.reader.BytePosition;
             Assert.That(writeLength == readLength, $"OnSerializeAll and OnDeserializeAll calls write the same amount of data\n    writeLength={writeLength}\n    readLength={readLength}");
         }
     }

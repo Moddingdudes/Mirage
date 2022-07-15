@@ -8,25 +8,25 @@ namespace Mirage
         [Server]
         public void SetClientReady()
         {
-            IsReady = true;
+            this.IsReady = true;
         }
 
         [Server]
         public void SetClientNotReady()
         {
-            IsReady = false;
+            this.IsReady = false;
         }
 
         [Client]
         public void Ready()
         {
-            ReadyRpc();
+            this.ReadyRpc();
         }
 
         [ServerRpc]
         private void ReadyRpc()
         {
-            IsReady = true;
+            this.IsReady = true;
         }
     }
 }

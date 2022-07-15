@@ -68,7 +68,7 @@ namespace Mirage.Weaver
                 worker.Append(worker.Create(OpCodes.Callvirt, (INetworkClient nb) => nb.Player));
             }
 
-            ReadArguments(md, worker, readerParameter, senderParameter: null, hasNetworkConnection, paramSerializers);
+            this.ReadArguments(md, worker, readerParameter, senderParameter: null, hasNetworkConnection, paramSerializers);
 
             // invoke actual ServerRpc function
             worker.Append(worker.Create(OpCodes.Callvirt, userCodeFunc.MakeHostInstanceSelfGeneric()));
@@ -132,7 +132,7 @@ namespace Mirage.Weaver
         /// </remarks>
         private MethodDefinition GenerateStub(MethodDefinition md, CustomAttribute clientRpcAttr, int rpcIndex, ValueSerializer[] paramSerializers)
         {
-            var rpc = SubstituteMethod(md);
+            var rpc = this.SubstituteMethod(md);
 
             var worker = md.Body.GetILProcessor();
 
@@ -140,7 +140,7 @@ namespace Mirage.Weaver
             // {
             //    call the body
             // }
-            CallBody(worker, rpc);
+            this.CallBody(worker, rpc);
 
             // NetworkWriter writer = NetworkWriterPool.GetWriter()
             var writer = md.AddLocal<PooledNetworkWriter>();
@@ -148,7 +148,7 @@ namespace Mirage.Weaver
             worker.Append(worker.Create(OpCodes.Stloc, writer));
 
             // write all the arguments that the user passed to the Rpc call
-            WriteArguments(worker, md, writer, paramSerializers, RemoteCallType.ClientRpc);
+            this.WriteArguments(worker, md, writer, paramSerializers, RemoteCallType.ClientRpc);
 
             var rpcName = md.FullName;
 
@@ -175,7 +175,7 @@ namespace Mirage.Weaver
 
             worker.Append(worker.Create(OpCodes.Call, sendMethod));
 
-            NetworkWriterHelper.CallRelease(module, worker, writer);
+            NetworkWriterHelper.CallRelease(this.module, worker, writer);
 
             worker.Append(worker.Create(OpCodes.Ret));
 
@@ -206,9 +206,9 @@ namespace Mirage.Weaver
 
         private void CallBody(ILProcessor worker, MethodDefinition rpc)
         {
-            IsClient(worker, () =>
+            this.IsClient(worker, () =>
             {
-                InvokeBody(worker, rpc);
+                this.InvokeBody(worker, rpc);
             });
         }
 
@@ -239,19 +239,19 @@ namespace Mirage.Weaver
 
         public ClientRpcMethod ProcessRpc(MethodDefinition md, CustomAttribute clientRpcAttr, int rpcIndex)
         {
-            ValidateMethod(md, RemoteCallType.ClientRpc);
-            ValidateParameters(md, RemoteCallType.ClientRpc);
-            ValidateReturnType(md, RemoteCallType.ClientRpc);
-            ValidateAttribute(md, clientRpcAttr);
+            this.ValidateMethod(md, RemoteCallType.ClientRpc);
+            this.ValidateParameters(md, RemoteCallType.ClientRpc);
+            this.ValidateReturnType(md, RemoteCallType.ClientRpc);
+            this.ValidateAttribute(md, clientRpcAttr);
 
             var clientTarget = clientRpcAttr.GetField(nameof(ClientRpcAttribute.target), RpcTarget.Observers);
             var excludeOwner = clientRpcAttr.GetField(nameof(ClientRpcAttribute.excludeOwner), false);
 
-            var paramSerializers = GetValueSerializers(md);
+            var paramSerializers = this.GetValueSerializers(md);
 
-            var userCodeFunc = GenerateStub(md, clientRpcAttr, rpcIndex, paramSerializers);
+            var userCodeFunc = this.GenerateStub(md, clientRpcAttr, rpcIndex, paramSerializers);
 
-            var skeletonFunc = GenerateSkeleton(md, userCodeFunc, clientRpcAttr, paramSerializers);
+            var skeletonFunc = this.GenerateSkeleton(md, userCodeFunc, clientRpcAttr, paramSerializers);
 
             return new ClientRpcMethod
             {

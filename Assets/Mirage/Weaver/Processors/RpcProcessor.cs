@@ -87,16 +87,16 @@ namespace Mirage.Weaver
 
                 try
                 {
-                    serializers[i] = ValueSerializerFinder.GetSerializer(method, method.Parameters[i], writers, readers);
+                    serializers[i] = ValueSerializerFinder.GetSerializer(method, method.Parameters[i], this.writers, this.readers);
                 }
                 catch (SerializeFunctionException e)
                 {
-                    logger.Error(e, method.DebugInformation.SequencePoints.FirstOrDefault());
+                    this.logger.Error(e, method.DebugInformation.SequencePoints.FirstOrDefault());
                     error = true;
                 }
                 catch (ValueSerializerException e)
                 {
-                    logger.Error(e.Message, method);
+                    this.logger.Error(e.Message, method);
                     error = true;
                 }
             }
@@ -128,7 +128,7 @@ namespace Mirage.Weaver
                 // try/catch for each arg so that it will give error for each
                 var param = method.Parameters[i];
                 var serializer = paramSerializers[i];
-                WriteArgument(worker, writer, param, serializer);
+                this.WriteArgument(worker, writer, param, serializer);
             }
         }
 
@@ -144,7 +144,7 @@ namespace Mirage.Weaver
             if (IsNetworkPlayer(param.ParameterType))
                 return;
 
-            serializer.AppendWriteParameter(module, worker, writer, param);
+            serializer.AppendWriteParameter(this.module, worker, writer, param);
         }
 
         public void ReadArguments(MethodDefinition method, ILProcessor worker, ParameterDefinition readerParameter, ParameterDefinition senderParameter, bool skipFirst, ValueSerializer[] paramSerializers)
@@ -160,7 +160,7 @@ namespace Mirage.Weaver
             {
                 var param = method.Parameters[i];
                 var serializer = paramSerializers[i];
-                ReadArgument(worker, readerParameter, senderParameter, param, serializer);
+                this.ReadArgument(worker, readerParameter, senderParameter, param, serializer);
             }
         }
 
@@ -180,7 +180,7 @@ namespace Mirage.Weaver
                 return;
             }
 
-            serializer.AppendRead(module, worker, readerParameter, param.ParameterType);
+            serializer.AppendRead(this.module, worker, readerParameter, param.ParameterType);
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace Mirage.Weaver
             for (var i = 0; i < method.Parameters.Count; i++)
             {
                 var param = method.Parameters[i];
-                ValidateParameter(method, param, callType, i == 0);
+                this.ValidateParameter(method, param, callType, i == 0);
             }
         }
 
@@ -330,7 +330,7 @@ namespace Mirage.Weaver
 
             (method.DebugInformation.Scope, generatedMethod.DebugInformation.Scope) = (generatedMethod.DebugInformation.Scope, method.DebugInformation.Scope);
 
-            FixRemoteCallToBaseMethod(method.DeclaringType, method, generatedMethod);
+            this.FixRemoteCallToBaseMethod(method.DeclaringType, method, generatedMethod);
             return generatedMethod;
         }
 
@@ -355,7 +355,7 @@ namespace Mirage.Weaver
                     continue;
 
                 // method (base or overload) is not an rpc, dont try to change it
-                if (!calledMethod.HasCustomAttribute(AttributeType))
+                if (!calledMethod.HasCustomAttribute(this.AttributeType))
                     continue;
 
                 var targetName = UserCodeMethodName(calledMethod);

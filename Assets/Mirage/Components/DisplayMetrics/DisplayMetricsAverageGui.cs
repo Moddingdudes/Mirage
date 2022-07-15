@@ -19,36 +19,36 @@ namespace Mirage.DisplayMetrics
 
         private void Start()
         {
-            style = new GUIStyle();
-            tex = new Texture2D(1, 1);
-            tex.SetPixel(0, 0, background);
-            tex.Apply();
-            style.normal.background = tex;
+            this.style = new GUIStyle();
+            this.tex = new Texture2D(1, 1);
+            this.tex.SetPixel(0, 0, this.background);
+            this.tex.Apply();
+            this.style.normal.background = this.tex;
         }
         private void OnDestroy()
         {
-            if (tex != null)
+            if (this.tex != null)
             {
-                Destroy(tex);
+                Destroy(this.tex);
             }
         }
 
         private void OnValidate()
         {
-            if (tex != null)
+            if (this.tex != null)
             {
-                tex.SetPixel(0, 0, background);
-                tex.Apply();
+                this.tex.SetPixel(0, 0, this.background);
+                this.tex.Apply();
             }
         }
 
         private void OnGUI()
         {
-            if (Metrics == null) { return; }
+            if (this.Metrics == null) { return; }
 
-            using (new GUILayout.AreaScope(offset, GUIContent.none, style))
+            using (new GUILayout.AreaScope(this.offset, GUIContent.none, this.style))
             {
-                DrawAverage();
+                this.DrawAverage();
             }
         }
 
@@ -62,7 +62,7 @@ namespace Mirage.DisplayMetrics
             double receiveCount = 0;
             double receiveBytes = 0;
 
-            var array = Metrics.buffer;
+            var array = this.Metrics.buffer;
             var count = 0;
             for (var i = 0; i < array.Length; i++)
             {

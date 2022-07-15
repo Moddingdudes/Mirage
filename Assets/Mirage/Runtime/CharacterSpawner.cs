@@ -36,26 +36,26 @@ namespace Mirage
         // Start is called before the first frame update
         public virtual void Awake()
         {
-            if (PlayerPrefab == null)
+            if (this.PlayerPrefab == null)
             {
                 throw new InvalidOperationException("Assign a player in the CharacterSpawner");
             }
-            if (Client != null)
+            if (this.Client != null)
             {
-                if (SceneManager != null)
+                if (this.SceneManager != null)
                 {
-                    SceneManager.OnClientFinishedSceneChange.AddListener(OnClientFinishedSceneChange);
+                    this.SceneManager.OnClientFinishedSceneChange.AddListener(this.OnClientFinishedSceneChange);
                 }
                 else
                 {
-                    Client.Authenticated.AddListener(OnClientAuthenticated);
-                    Client.Connected.AddListener(OnClientConnected);
+                    this.Client.Authenticated.AddListener(this.OnClientAuthenticated);
+                    this.Client.Connected.AddListener(this.OnClientConnected);
                 }
             }
-            if (Server != null)
+            if (this.Server != null)
             {
-                Server.Started.AddListener(OnServerStarted);
-                if (ServerObjectManager == null)
+                this.Server.Started.AddListener(this.OnServerStarted);
+                if (this.ServerObjectManager == null)
                 {
                     throw new InvalidOperationException("Assign a ServerObjectManager");
                 }
@@ -64,22 +64,22 @@ namespace Mirage
 
         private void OnDestroy()
         {
-            if (Client != null && SceneManager != null)
+            if (this.Client != null && this.SceneManager != null)
             {
-                SceneManager.OnClientFinishedSceneChange.RemoveListener(OnClientFinishedSceneChange);
-                Client.Authenticated.RemoveListener(OnClientAuthenticated);
+                this.SceneManager.OnClientFinishedSceneChange.RemoveListener(this.OnClientFinishedSceneChange);
+                this.Client.Authenticated.RemoveListener(this.OnClientAuthenticated);
             }
-            if (Server != null)
+            if (this.Server != null)
             {
-                Server.Started.RemoveListener(OnServerStarted);
+                this.Server.Started.RemoveListener(this.OnServerStarted);
             }
         }
 
         internal void OnClientConnected(INetworkPlayer player)
         {
-            if (ClientObjectManager != null)
+            if (this.ClientObjectManager != null)
             {
-                ClientObjectManager.RegisterPrefab(PlayerPrefab);
+                this.ClientObjectManager.RegisterPrefab(this.PlayerPrefab);
             }
             else
             {
@@ -89,12 +89,12 @@ namespace Mirage
 
         private void OnClientAuthenticated(INetworkPlayer _)
         {
-            Client.Send(new AddCharacterMessage());
+            this.Client.Send(new AddCharacterMessage());
         }
 
         private void OnServerStarted()
         {
-            Server.MessageHandler.RegisterHandler<AddCharacterMessage>(OnServerAddPlayerInternal);
+            this.Server.MessageHandler.RegisterHandler<AddCharacterMessage>(this.OnServerAddPlayerInternal);
         }
 
         /// <summary>
@@ -105,13 +105,13 @@ namespace Mirage
         /// <param name="sceneOperation">The type of scene load that happened.</param>
         public virtual void OnClientFinishedSceneChange(Scene scene, SceneOperation sceneOperation)
         {
-            if (AutoSpawn && sceneOperation == SceneOperation.Normal)
-                RequestServerSpawnPlayer();
+            if (this.AutoSpawn && sceneOperation == SceneOperation.Normal)
+                this.RequestServerSpawnPlayer();
         }
 
         public virtual void RequestServerSpawnPlayer()
         {
-            Client.Send(new AddCharacterMessage());
+            this.Client.Send(new AddCharacterMessage());
         }
 
         private void OnServerAddPlayerInternal(INetworkPlayer player, AddCharacterMessage msg)
@@ -123,11 +123,11 @@ namespace Mirage
                 // player already has character on server, but client asked for it
                 // so we respawn it here so that client recieves it again
                 // this can happen when client loads normally, but server addititively
-                ServerObjectManager.Spawn(player.Identity);
+                this.ServerObjectManager.Spawn(player.Identity);
             }
             else
             {
-                OnServerAddPlayer(player);
+                this.OnServerAddPlayer(player);
             }
         }
 
@@ -138,20 +138,20 @@ namespace Mirage
         /// <param name="player">Connection from client.</param>
         public virtual void OnServerAddPlayer(INetworkPlayer player)
         {
-            var startPos = GetStartPosition();
+            var startPos = this.GetStartPosition();
             var character = startPos != null
-                ? Instantiate(PlayerPrefab, startPos.position, startPos.rotation)
-                : Instantiate(PlayerPrefab);
+                ? Instantiate(this.PlayerPrefab, startPos.position, startPos.rotation)
+                : Instantiate(this.PlayerPrefab);
 
-            SetCharacterName(player, character);
-            ServerObjectManager.AddCharacter(player, character.gameObject);
+            this.SetCharacterName(player, character);
+            this.ServerObjectManager.AddCharacter(player, character.gameObject);
         }
 
         protected virtual void SetCharacterName(INetworkPlayer player, NetworkIdentity character)
         {
             // When spawning a player game object, Unity defaults to something like "MyPlayerObject(clone)"
             // which sucks... So let's override it and make it easier to debug. Credit to Mirror for the nice touch.
-            character.name = $"{PlayerPrefab.name} {player.Address}";
+            character.name = $"{this.PlayerPrefab.name} {player.Address}";
         }
 
         /// <summary>
@@ -161,17 +161,17 @@ namespace Mirage
         /// <returns>Returns the transform to spawn a player at, or null.</returns>
         public virtual Transform GetStartPosition()
         {
-            if (startPositions.Count == 0)
+            if (this.startPositions.Count == 0)
                 return null;
 
-            if (playerSpawnMethod == PlayerSpawnMethod.Random)
+            if (this.playerSpawnMethod == PlayerSpawnMethod.Random)
             {
-                return startPositions[UnityEngine.Random.Range(0, startPositions.Count)];
+                return this.startPositions[UnityEngine.Random.Range(0, this.startPositions.Count)];
             }
             else
             {
-                var startPosition = startPositions[startPositionIndex];
-                startPositionIndex = (startPositionIndex + 1) % startPositions.Count;
+                var startPosition = this.startPositions[this.startPositionIndex];
+                this.startPositionIndex = (this.startPositionIndex + 1) % this.startPositions.Count;
                 return startPosition;
             }
         }

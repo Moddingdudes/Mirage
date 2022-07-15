@@ -28,44 +28,44 @@ namespace Mirage.Weaver
         public NetworkBehaviourProcessor(TypeDefinition td, Readers readers, Writers writers, PropertySiteProcessor propertySiteProcessor, IWeaverLogger logger)
         {
             Weaver.DebugLog(td, "NetworkBehaviourProcessor");
-            netBehaviourSubclass = td;
+            this.netBehaviourSubclass = td;
             this.logger = logger;
-            serverRpcProcessor = new ServerRpcProcessor(netBehaviourSubclass.Module, readers, writers, logger);
-            clientRpcProcessor = new ClientRpcProcessor(netBehaviourSubclass.Module, readers, writers, logger);
-            syncVarProcessor = new SyncVarProcessor(netBehaviourSubclass.Module, readers, writers, propertySiteProcessor);
-            syncObjectProcessor = new SyncObjectProcessor(readers, writers, logger);
+            this.serverRpcProcessor = new ServerRpcProcessor(this.netBehaviourSubclass.Module, readers, writers, logger);
+            this.clientRpcProcessor = new ClientRpcProcessor(this.netBehaviourSubclass.Module, readers, writers, logger);
+            this.syncVarProcessor = new SyncVarProcessor(this.netBehaviourSubclass.Module, readers, writers, propertySiteProcessor);
+            this.syncObjectProcessor = new SyncObjectProcessor(readers, writers, logger);
 
             // no max for rpcs, index is sent as var int, so more rpc just means bigger header size (still smaller than 4 byte hash)
-            rpcCounter = new ConstFieldTracker("RPC_COUNT", td, int.MaxValue, "Rpc");
+            this.rpcCounter = new ConstFieldTracker("RPC_COUNT", td, int.MaxValue, "Rpc");
         }
 
         // return true if modified
         public bool Process()
         {
             // only process once
-            if (WasProcessed(netBehaviourSubclass))
+            if (WasProcessed(this.netBehaviourSubclass))
             {
                 return false;
             }
-            Weaver.DebugLog(netBehaviourSubclass, $"Found NetworkBehaviour {netBehaviourSubclass.FullName}");
+            Weaver.DebugLog(this.netBehaviourSubclass, $"Found NetworkBehaviour {this.netBehaviourSubclass.FullName}");
 
-            Weaver.DebugLog(netBehaviourSubclass, "Process Start");
-            MarkAsProcessed(netBehaviourSubclass);
+            Weaver.DebugLog(this.netBehaviourSubclass, "Process Start");
+            MarkAsProcessed(this.netBehaviourSubclass);
 
             try
             {
-                syncVarProcessor.ProcessSyncVars(netBehaviourSubclass, logger);
+                this.syncVarProcessor.ProcessSyncVars(this.netBehaviourSubclass, this.logger);
             }
             catch (NetworkBehaviourException e)
             {
-                logger.Error(e);
+                this.logger.Error(e);
             }
 
-            syncObjectProcessor.ProcessSyncObjects(netBehaviourSubclass);
+            this.syncObjectProcessor.ProcessSyncObjects(this.netBehaviourSubclass);
 
-            ProcessRpcs();
+            this.ProcessRpcs();
 
-            Weaver.DebugLog(netBehaviourSubclass, "Process Done");
+            Weaver.DebugLog(this.netBehaviourSubclass, "Process Done");
             return true;
         }
 
@@ -91,10 +91,10 @@ namespace Mirage.Weaver
 
         private void RegisterRpcs(List<RpcMethod> rpcs)
         {
-            SetRpcCount(rpcs.Count);
-            Weaver.DebugLog(netBehaviourSubclass, "  GenerateConstants ");
+            this.SetRpcCount(rpcs.Count);
+            Weaver.DebugLog(this.netBehaviourSubclass, "  GenerateConstants ");
 
-            netBehaviourSubclass.AddToConstructor(logger, (worker) =>
+            this.netBehaviourSubclass.AddToConstructor(this.logger, (worker) =>
             {
                 RegisterRpc.RegisterAll(worker, rpcs);
             });
@@ -103,29 +103,29 @@ namespace Mirage.Weaver
         private void SetRpcCount(int count)
         {
             // set const so that child classes know count of base classes
-            rpcCounter.Set(count);
+            this.rpcCounter.Set(count);
 
             // override virtual method so returns total
-            var method = netBehaviourSubclass.AddMethod(nameof(NetworkBehaviour.GetRpcCount), MethodAttributes.Virtual | MethodAttributes.Family, typeof(int));
+            var method = this.netBehaviourSubclass.AddMethod(nameof(NetworkBehaviour.GetRpcCount), MethodAttributes.Virtual | MethodAttributes.Family, typeof(int));
             var worker = method.Body.GetILProcessor();
             // write count of base+current so that `GetInBase` call will return total
-            worker.Emit(OpCodes.Ldc_I4, rpcCounter.GetInBase() + count);
+            worker.Emit(OpCodes.Ldc_I4, this.rpcCounter.GetInBase() + count);
             worker.Emit(OpCodes.Ret);
         }
 
         private void ProcessRpcs()
         {
             // copy the list of methods because we will be adding methods in the loop
-            var methods = new List<MethodDefinition>(netBehaviourSubclass.Methods);
+            var methods = new List<MethodDefinition>(this.netBehaviourSubclass.Methods);
 
             var rpcs = new List<RpcMethod>();
 
-            var index = rpcCounter.GetInBase();
+            var index = this.rpcCounter.GetInBase();
             foreach (var md in methods)
             {
                 try
                 {
-                    var rpc = CheckAndProcessRpc(md, index);
+                    var rpc = this.CheckAndProcessRpc(md, index);
                     if (rpc != null)
                     {
                         // increment only if rpc was count
@@ -135,11 +135,11 @@ namespace Mirage.Weaver
                 }
                 catch (RpcException e)
                 {
-                    logger.Error(e);
+                    this.logger.Error(e);
                 }
             }
 
-            RegisterRpcs(rpcs);
+            this.RegisterRpcs(rpcs);
         }
 
         private RpcMethod CheckAndProcessRpc(MethodDefinition md, int index)
@@ -148,11 +148,11 @@ namespace Mirage.Weaver
             {
                 if (md.HasCustomAttribute<ClientRpcAttribute>()) throw new RpcException("Method should not have both ServerRpc and ClientRpc", md);
 
-                return serverRpcProcessor.ProcessRpc(md, serverAttribute, index);
+                return this.serverRpcProcessor.ProcessRpc(md, serverAttribute, index);
             }
             else if (md.TryGetCustomAttribute<ClientRpcAttribute>(out var clientAttribute))
             {
-                return clientRpcProcessor.ProcessRpc(md, clientAttribute, index);
+                return this.clientRpcProcessor.ProcessRpc(md, clientAttribute, index);
             }
             return null;
         }

@@ -17,43 +17,43 @@ namespace Mirage.SocketLayer.Tests.PeerTests
         [SetUp]
         public void SetUp()
         {
-            server = new PeerInstanceWithSocket(new Config { MaxConnections = ClientCount });
-            clients = new PeerInstanceWithSocket[ClientCount];
+            this.server = new PeerInstanceWithSocket(new Config { MaxConnections = ClientCount });
+            this.clients = new PeerInstanceWithSocket[ClientCount];
             for (var i = 0; i < ClientCount; i++)
             {
-                clients[i] = new PeerInstanceWithSocket();
+                this.clients[i] = new PeerInstanceWithSocket();
             }
         }
 
         [Test]
         public void ServerAcceptsAllClients()
         {
-            server.peer.Bind(TestEndPoint.CreateSubstitute());
+            this.server.peer.Bind(TestEndPoint.CreateSubstitute());
 
             var connectAction = Substitute.For<Action<IConnection>>();
-            server.peer.OnConnected += connectAction;
+            this.server.peer.OnConnected += connectAction;
 
             for (var i = 0; i < ClientCount; i++)
             {
                 // tell client i to connect
-                clients[i].peer.Connect(server.endPoint);
+                this.clients[i].peer.Connect(this.server.endPoint);
                 var clientConnectAction = Substitute.For<Action<IConnection>>();
-                clients[i].peer.OnConnected += clientConnectAction;
+                this.clients[i].peer.OnConnected += clientConnectAction;
 
                 // no change untill update
-                Assert.That(server.socket.Sent.Count, Is.EqualTo(i));
+                Assert.That(this.server.socket.Sent.Count, Is.EqualTo(i));
                 connectAction.ReceivedWithAnyArgs(i).Invoke(default);
 
                 // run tick on server, should read packet from client i
-                server.peer.UpdateTest();
+                this.server.peer.UpdateTest();
 
                 // server invokes connect event 
                 connectAction.ReceivedWithAnyArgs(i + 1).Invoke(default);
 
                 // sever send accept packet
-                Assert.That(server.socket.Sent.Count, Is.EqualTo(i + 1));
-                var lastSent = server.socket.Sent.Last();
-                Assert.That(lastSent.endPoint, Is.EqualTo(clients[i].socket.endPoint));
+                Assert.That(this.server.socket.Sent.Count, Is.EqualTo(i + 1));
+                var lastSent = this.server.socket.Sent.Last();
+                Assert.That(lastSent.endPoint, Is.EqualTo(this.clients[i].socket.endPoint));
                 // check first 2 bytes of message
                 Assert.That(ArgCollection.AreEquivalentIgnoringLength(lastSent.data, new byte[2] {
                     (byte)PacketType.Command,
@@ -62,7 +62,7 @@ namespace Mirage.SocketLayer.Tests.PeerTests
 
                 // no change on cleint till update
                 clientConnectAction.ReceivedWithAnyArgs(0).Invoke(default);
-                clients[i].peer.UpdateTest();
+                this.clients[i].peer.UpdateTest();
                 clientConnectAction.ReceivedWithAnyArgs(1).Invoke(default);
             }
         }
@@ -70,22 +70,22 @@ namespace Mirage.SocketLayer.Tests.PeerTests
         [Test]
         public void EachServerConnectionIsANewInstance()
         {
-            server.peer.Bind(TestEndPoint.CreateSubstitute());
+            this.server.peer.Bind(TestEndPoint.CreateSubstitute());
             var serverConnections = new List<IConnection>();
 
             Action<IConnection> connectAction = (conn) =>
             {
                 serverConnections.Add(conn);
             };
-            server.peer.OnConnected += connectAction;
+            this.server.peer.OnConnected += connectAction;
 
             for (var i = 0; i < ClientCount; i++)
             {
                 // tell client i to connect
-                clients[i].peer.Connect(server.endPoint);
+                this.clients[i].peer.Connect(this.server.endPoint);
 
                 // run tick on server, should read packet from client i
-                server.peer.UpdateTest();
+                this.server.peer.UpdateTest();
 
                 Assert.That(serverConnections, Is.Unique);
             }

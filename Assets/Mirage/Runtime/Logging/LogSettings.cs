@@ -18,32 +18,32 @@ namespace Mirage.Logging
         // called when component is added to GameObject
         private void Reset()
         {
-            if (settings != null) { return; }
+            if (this.settings != null) { return; }
 
             var existingSettings = EditorLogSettingsLoader.FindLogSettings();
             if (existingSettings != null)
             {
                 Undo.RecordObject(this, "adding existing settings");
-                settings = existingSettings;
+                this.settings = existingSettings;
             }
         }
 #endif
 
         private void Awake()
         {
-            RefreshDictionary();
+            this.RefreshDictionary();
         }
 
         private void OnValidate()
         {
-            RefreshDictionary();
+            this.RefreshDictionary();
         }
 
         private void RefreshDictionary()
         {
-            if (settings != null)
+            if (this.settings != null)
             {
-                settings.LoadIntoLogFactory();
+                this.settings.LoadIntoLogFactory();
             }
             else
             {

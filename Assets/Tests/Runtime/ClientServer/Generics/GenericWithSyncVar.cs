@@ -39,16 +39,16 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
             const int num1 = 11;
             const int num2 = 12;
             const int num3 = 13;
-            serverComponent.baseValue = num1;
-            serverComponent.value = num2;
-            serverComponent.moreValue = num3;
+            this.serverComponent.baseValue = num1;
+            this.serverComponent.value = num2;
+            this.serverComponent.moreValue = num3;
 
             yield return null;
             yield return null;
 
-            Assert.That(clientComponent.baseValue, Is.EqualTo(num1));
-            Assert.That(clientComponent.value, Is.EqualTo(num2));
-            Assert.That(clientComponent.moreValue, Is.EqualTo(num3));
+            Assert.That(this.clientComponent.baseValue, Is.EqualTo(num1));
+            Assert.That(this.clientComponent.value, Is.EqualTo(num2));
+            Assert.That(this.clientComponent.moreValue, Is.EqualTo(num3));
         }
     }
     public class GenericWithSyncVarObject : ClientServerSetup<GenericWithSyncVar_behaviourObject>
@@ -66,16 +66,16 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
             const int num1 = 11;
             const int num2 = 12;
             const int num3 = 13;
-            serverComponent.baseValue = num1;
-            serverComponent.value = num2;
-            serverComponent.moreValue = num3;
+            this.serverComponent.baseValue = num1;
+            this.serverComponent.value = num2;
+            this.serverComponent.moreValue = num3;
 
             yield return null;
             yield return null;
 
-            Assert.That(clientComponent.baseValue, Is.EqualTo(num1));
-            Assert.That(clientComponent.value, Is.EqualTo(num2));
-            Assert.That(clientComponent.moreValue, Is.EqualTo(num3));
+            Assert.That(this.clientComponent.baseValue, Is.EqualTo(num1));
+            Assert.That(this.clientComponent.value, Is.EqualTo(num2));
+            Assert.That(this.clientComponent.moreValue, Is.EqualTo(num3));
         }
     }
 }

@@ -12,8 +12,8 @@ namespace Mirage.Examples.Pong
         {
             // only let the local player control the racket.
             // don't control other player's rackets
-            if (IsLocalPlayer)
-                rigidbody2d.velocity = new Vector2(0, Input.GetAxisRaw("Vertical")) * speed * Time.fixedDeltaTime;
+            if (this.IsLocalPlayer)
+                this.rigidbody2d.velocity = new Vector2(0, Input.GetAxisRaw("Vertical")) * this.speed * Time.fixedDeltaTime;
         }
     }
 }

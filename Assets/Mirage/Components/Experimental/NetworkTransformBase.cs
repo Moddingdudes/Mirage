@@ -97,12 +97,12 @@ namespace Mirage.Experimental
             public Vector3 localScale;
             public float movementSpeed;
 
-            public bool IsValid => timeStamp != 0;
+            public bool IsValid => this.timeStamp != 0;
         }
 
         // Is this a client with authority over this transform?
         // This component could be on the player object or any object that has been assigned authority to this client.
-        private bool IsOwnerWithClientAuthority => HasAuthority && clientAuthority;
+        private bool IsOwnerWithClientAuthority => this.HasAuthority && this.clientAuthority;
 
         // interpolation start and goal
         public DataPoint start = new DataPoint();
@@ -112,43 +112,43 @@ namespace Mirage.Experimental
         {
             // if server then always sync to others.
             // let the clients know that this has moved
-            if (IsServer && HasEitherMovedRotatedScaled())
+            if (this.IsServer && this.HasEitherMovedRotatedScaled())
             {
-                RpcMove(TargetTransform.localPosition, TargetTransform.localRotation, TargetTransform.localScale);
+                this.RpcMove(this.TargetTransform.localPosition, this.TargetTransform.localRotation, this.TargetTransform.localScale);
             }
 
-            if (IsClient)
+            if (this.IsClient)
             {
                 // send to server if we have local authority (and aren't the server)
                 // -> only if connectionToServer has been initialized yet too
-                if (IsOwnerWithClientAuthority)
+                if (this.IsOwnerWithClientAuthority)
                 {
-                    if (!IsServer && HasEitherMovedRotatedScaled())
+                    if (!this.IsServer && this.HasEitherMovedRotatedScaled())
                     {
                         // serialize
                         // local position/rotation for VR support
                         // send to server
-                        CmdClientToServerSync(TargetTransform.localPosition, TargetTransform.localRotation, TargetTransform.localScale);
+                        this.CmdClientToServerSync(this.TargetTransform.localPosition, this.TargetTransform.localRotation, this.TargetTransform.localScale);
                     }
                 }
-                else if (goal.IsValid)
+                else if (this.goal.IsValid)
                 {
                     // teleport or interpolate
-                    if (NeedsTeleport())
+                    if (this.NeedsTeleport())
                     {
                         // local position/rotation for VR support
-                        ApplyPositionRotationScale(goal.localPosition, goal.localRotation, goal.localScale);
+                        this.ApplyPositionRotationScale(this.goal.localPosition, this.goal.localRotation, this.goal.localScale);
 
                         // reset data points so we don't keep interpolating
-                        start = new DataPoint();
-                        goal = new DataPoint();
+                        this.start = new DataPoint();
+                        this.goal = new DataPoint();
                     }
                     else
                     {
                         // local position/rotation for VR support
-                        ApplyPositionRotationScale(InterpolatePosition(start, goal, TargetTransform.localPosition),
-                                                   InterpolateRotation(start, goal, TargetTransform.localRotation),
-                                                   InterpolateScale(start, goal, TargetTransform.localScale));
+                        this.ApplyPositionRotationScale(this.InterpolatePosition(this.start, this.goal, this.TargetTransform.localPosition),
+                                                   this.InterpolateRotation(this.start, this.goal, this.TargetTransform.localRotation),
+                                                   this.InterpolateScale(this.start, this.goal, this.TargetTransform.localScale));
                     }
                 }
             }
@@ -160,13 +160,13 @@ namespace Mirage.Experimental
             // Save last for next frame to compare only if change was detected, otherwise
             // slow moving objects might never sync because of C#'s float comparison tolerance.
             // See also: https://github.com/vis2k/Mirror/pull/428)
-            var changed = HasMoved || HasRotated || HasScaled;
+            var changed = this.HasMoved || this.HasRotated || this.HasScaled;
             if (changed)
             {
                 // local position/rotation for VR support
-                if (syncPosition) lastPosition = TargetTransform.localPosition;
-                if (syncRotation) lastRotation = TargetTransform.localRotation;
-                if (syncScale) lastScale = TargetTransform.localScale;
+                if (this.syncPosition) this.lastPosition = this.TargetTransform.localPosition;
+                if (this.syncRotation) this.lastRotation = this.TargetTransform.localRotation;
+                if (this.syncScale) this.lastScale = this.TargetTransform.localScale;
             }
             return changed;
         }
@@ -175,11 +175,11 @@ namespace Mirage.Experimental
         // SqrMagnitude is faster than Distance per Unity docs
         // https://docs.unity3d.com/ScriptReference/Vector3-sqrMagnitude.html
 
-        private bool HasMoved => syncPosition && Vector3.SqrMagnitude(lastPosition - TargetTransform.localPosition) > localPositionSensitivity * localPositionSensitivity;
+        private bool HasMoved => this.syncPosition && Vector3.SqrMagnitude(this.lastPosition - this.TargetTransform.localPosition) > this.localPositionSensitivity * this.localPositionSensitivity;
 
-        private bool HasRotated => syncRotation && Quaternion.Angle(lastRotation, TargetTransform.localRotation) > localRotationSensitivity;
+        private bool HasRotated => this.syncRotation && Quaternion.Angle(this.lastRotation, this.TargetTransform.localRotation) > this.localRotationSensitivity;
 
-        private bool HasScaled => syncScale && Vector3.SqrMagnitude(lastScale - TargetTransform.localScale) > localScaleSensitivity * localScaleSensitivity;
+        private bool HasScaled => this.syncScale && Vector3.SqrMagnitude(this.lastScale - this.TargetTransform.localScale) > this.localScaleSensitivity * this.localScaleSensitivity;
 
         // teleport / lag / stuck detection
         // - checking distance is not enough since there could be just a tiny fence between us and the goal
@@ -187,8 +187,8 @@ namespace Mirage.Experimental
         private bool NeedsTeleport()
         {
             // calculate time between the two data points
-            var startTime = start.IsValid ? start.timeStamp : Time.time - Time.fixedDeltaTime;
-            var goalTime = goal.IsValid ? goal.timeStamp : Time.time;
+            var startTime = this.start.IsValid ? this.start.timeStamp : Time.time - Time.fixedDeltaTime;
+            var goalTime = this.goal.IsValid ? this.goal.timeStamp : Time.time;
             var difference = goalTime - startTime;
             var timeSinceGoalReceived = Time.time - goalTime;
             return timeSinceGoalReceived > difference * 5;
@@ -199,26 +199,26 @@ namespace Mirage.Experimental
         private void CmdClientToServerSync(Vector3 position, Quaternion rotation, Vector3 scale)
         {
             // Ignore messages from client if not in client authority mode
-            if (!clientAuthority)
+            if (!this.clientAuthority)
                 return;
 
             // deserialize payload
-            SetGoal(position, rotation, scale);
+            this.SetGoal(position, rotation, scale);
 
             // server-only mode does no interpolation to save computations, but let's set the position directly
-            if (IsServer && !IsClient)
-                ApplyPositionRotationScale(goal.localPosition, goal.localRotation, goal.localScale);
+            if (this.IsServer && !this.IsClient)
+                this.ApplyPositionRotationScale(this.goal.localPosition, this.goal.localRotation, this.goal.localScale);
 
-            RpcMove(position, rotation, scale);
+            this.RpcMove(position, rotation, scale);
         }
 
         [ClientRpc]
         private void RpcMove(Vector3 position, Quaternion rotation, Vector3 scale)
         {
-            if (HasAuthority && excludeOwnerUpdate) return;
+            if (this.HasAuthority && this.excludeOwnerUpdate) return;
 
-            if (!IsServer)
-                SetGoal(position, rotation, scale);
+            if (!this.IsServer)
+                this.SetGoal(position, rotation, scale);
         }
 
         // serialization is needed by OnSerialize and by manual sending from authority
@@ -235,19 +235,19 @@ namespace Mirage.Experimental
             };
 
             // movement speed: based on how far it moved since last time has to be calculated before 'start' is overwritten
-            temp.movementSpeed = EstimateMovementSpeed(goal, temp, TargetTransform, Time.fixedDeltaTime);
+            temp.movementSpeed = EstimateMovementSpeed(this.goal, temp, this.TargetTransform, Time.fixedDeltaTime);
 
             // reassign start wisely
             // first ever data point? then make something up for previous one so that we can start interpolation without waiting for next.
-            if (start.timeStamp == 0)
+            if (this.start.timeStamp == 0)
             {
-                start = new DataPoint
+                this.start = new DataPoint
                 {
                     timeStamp = Time.time - Time.fixedDeltaTime,
                     // local position/rotation for VR support
-                    localPosition = TargetTransform.localPosition,
-                    localRotation = TargetTransform.localRotation,
-                    localScale = TargetTransform.localScale,
+                    localPosition = this.TargetTransform.localPosition,
+                    localRotation = this.TargetTransform.localRotation,
+                    localScale = this.TargetTransform.localScale,
                     movementSpeed = temp.movementSpeed
                 };
             }
@@ -281,24 +281,24 @@ namespace Mirage.Experimental
             //
             else
             {
-                var oldDistance = Vector3.Distance(start.localPosition, goal.localPosition);
-                var newDistance = Vector3.Distance(goal.localPosition, temp.localPosition);
+                var oldDistance = Vector3.Distance(this.start.localPosition, this.goal.localPosition);
+                var newDistance = Vector3.Distance(this.goal.localPosition, temp.localPosition);
 
-                start = goal;
+                this.start = this.goal;
 
                 // local position/rotation for VR support
                 // teleport / lag / obstacle detection: only continue at current position if we aren't too far away
                 // XC  < AB + BC (see comments above)
-                if (Vector3.Distance(TargetTransform.localPosition, start.localPosition) < oldDistance + newDistance)
+                if (Vector3.Distance(this.TargetTransform.localPosition, this.start.localPosition) < oldDistance + newDistance)
                 {
-                    start.localPosition = TargetTransform.localPosition;
-                    start.localRotation = TargetTransform.localRotation;
-                    start.localScale = TargetTransform.localScale;
+                    this.start.localPosition = this.TargetTransform.localPosition;
+                    this.start.localRotation = this.TargetTransform.localRotation;
+                    this.start.localScale = this.TargetTransform.localScale;
                 }
             }
 
             // set new destination in any case. new data is best data.
-            goal = temp;
+            this.goal = temp;
         }
 
         // try to estimate movement speed for a data point based on how far it moved since the previous one
@@ -318,15 +318,15 @@ namespace Mirage.Experimental
         private void ApplyPositionRotationScale(Vector3 position, Quaternion rotation, Vector3 scale)
         {
             // local position/rotation for VR support
-            if (syncPosition) TargetTransform.localPosition = position;
-            if (syncRotation) TargetTransform.localRotation = rotation;
-            if (syncScale) TargetTransform.localScale = scale;
+            if (this.syncPosition) this.TargetTransform.localPosition = position;
+            if (this.syncRotation) this.TargetTransform.localRotation = rotation;
+            if (this.syncScale) this.TargetTransform.localScale = scale;
         }
 
         // where are we in the timeline between start and goal? [0,1]
         private Vector3 InterpolatePosition(DataPoint start, DataPoint goal, Vector3 currentPosition)
         {
-            if (!interpolatePosition)
+            if (!this.interpolatePosition)
                 return currentPosition;
 
             if (start.movementSpeed != 0)
@@ -348,7 +348,7 @@ namespace Mirage.Experimental
 
         private Quaternion InterpolateRotation(DataPoint start, DataPoint goal, Quaternion defaultRotation)
         {
-            if (!interpolateRotation)
+            if (!this.interpolateRotation)
                 return defaultRotation;
 
             if (start.localRotation != goal.localRotation)
@@ -362,7 +362,7 @@ namespace Mirage.Experimental
 
         private Vector3 InterpolateScale(DataPoint start, DataPoint goal, Vector3 currentScale)
         {
-            if (!interpolateScale)
+            if (!this.interpolateScale)
                 return currentScale;
 
             if (start.localScale != goal.localScale)
@@ -395,11 +395,11 @@ namespace Mirage.Experimental
         private void OnDrawGizmos()
         {
             // draw start and goal points and a line between them
-            if (start.localPosition != goal.localPosition)
+            if (this.start.localPosition != this.goal.localPosition)
             {
-                DrawDataPointGizmo(start, Color.yellow);
-                DrawDataPointGizmo(goal, Color.green);
-                DrawLineBetweenDataPoints(start, goal, Color.cyan);
+                DrawDataPointGizmo(this.start, Color.yellow);
+                DrawDataPointGizmo(this.goal, Color.green);
+                DrawLineBetweenDataPoints(this.start, this.goal, Color.cyan);
             }
         }
 

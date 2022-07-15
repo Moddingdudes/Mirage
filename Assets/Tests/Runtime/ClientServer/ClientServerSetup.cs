@@ -38,8 +38,8 @@ namespace Mirage.Tests.Runtime.ClientServer
         /// <para>NOT the local player</para>
         /// </summary>
         protected INetworkPlayer serverPlayer;
-        protected MessageHandler ClientMessageHandler => client.MessageHandler;
-        protected MessageHandler ServerMessageHandler => server.MessageHandler;
+        protected MessageHandler ClientMessageHandler => this.client.MessageHandler;
+        protected MessageHandler ServerMessageHandler => this.server.MessageHandler;
 
         public virtual void ExtraSetup() { }
         public virtual UniTask LateSetup() => UniTask.CompletedTask;
@@ -53,84 +53,84 @@ namespace Mirage.Tests.Runtime.ClientServer
         [UnitySetUp]
         public IEnumerator Setup() => UniTask.ToCoroutine(async () =>
         {
-            serverGo = new GameObject("server", typeof(NetworkSceneManager), typeof(ServerObjectManager), typeof(NetworkServer));
-            clientGo = new GameObject("client", typeof(NetworkSceneManager), typeof(ClientObjectManager), typeof(NetworkClient));
-            socketFactory = serverGo.AddComponent<TestSocketFactory>();
+            this.serverGo = new GameObject("server", typeof(NetworkSceneManager), typeof(ServerObjectManager), typeof(NetworkServer));
+            this.clientGo = new GameObject("client", typeof(NetworkSceneManager), typeof(ClientObjectManager), typeof(NetworkClient));
+            this.socketFactory = this.serverGo.AddComponent<TestSocketFactory>();
 
             await UniTask.Delay(1);
 
-            server = serverGo.GetComponent<NetworkServer>();
-            client = clientGo.GetComponent<NetworkClient>();
+            this.server = this.serverGo.GetComponent<NetworkServer>();
+            this.client = this.clientGo.GetComponent<NetworkClient>();
 
-            if (ServerConfig != null) server.PeerConfig = ServerConfig;
-            if (ClientConfig != null) client.PeerConfig = ClientConfig;
+            if (this.ServerConfig != null) this.server.PeerConfig = this.ServerConfig;
+            if (this.ClientConfig != null) this.client.PeerConfig = this.ClientConfig;
 
-            server.SocketFactory = socketFactory;
-            client.SocketFactory = socketFactory;
+            this.server.SocketFactory = this.socketFactory;
+            this.client.SocketFactory = this.socketFactory;
 
-            serverSceneManager = serverGo.GetComponent<NetworkSceneManager>();
-            clientSceneManager = clientGo.GetComponent<NetworkSceneManager>();
-            serverSceneManager.Server = server;
-            clientSceneManager.Client = client;
-            serverSceneManager.Start();
-            clientSceneManager.Start();
+            this.serverSceneManager = this.serverGo.GetComponent<NetworkSceneManager>();
+            this.clientSceneManager = this.clientGo.GetComponent<NetworkSceneManager>();
+            this.serverSceneManager.Server = this.server;
+            this.clientSceneManager.Client = this.client;
+            this.serverSceneManager.Start();
+            this.clientSceneManager.Start();
 
-            serverObjectManager = serverGo.GetComponent<ServerObjectManager>();
-            serverObjectManager.Server = server;
-            serverObjectManager.NetworkSceneManager = serverSceneManager;
-            serverObjectManager.Start();
+            this.serverObjectManager = this.serverGo.GetComponent<ServerObjectManager>();
+            this.serverObjectManager.Server = this.server;
+            this.serverObjectManager.NetworkSceneManager = this.serverSceneManager;
+            this.serverObjectManager.Start();
 
-            clientObjectManager = clientGo.GetComponent<ClientObjectManager>();
-            clientObjectManager.Client = client;
-            clientObjectManager.NetworkSceneManager = clientSceneManager;
-            clientObjectManager.Start();
+            this.clientObjectManager = this.clientGo.GetComponent<ClientObjectManager>();
+            this.clientObjectManager.Client = this.client;
+            this.clientObjectManager.NetworkSceneManager = this.clientSceneManager;
+            this.clientObjectManager.Start();
 
-            ExtraSetup();
+            this.ExtraSetup();
 
             // create and register a prefab
-            playerPrefab = new GameObject("player (unspawned)", typeof(NetworkIdentity), typeof(T));
-            var identity = playerPrefab.GetComponent<NetworkIdentity>();
+            this.playerPrefab = new GameObject("player (unspawned)", typeof(NetworkIdentity), typeof(T));
+            var identity = this.playerPrefab.GetComponent<NetworkIdentity>();
             identity.PrefabHash = Guid.NewGuid().GetHashCode();
-            clientObjectManager.RegisterPrefab(identity);
+            this.clientObjectManager.RegisterPrefab(identity);
 
             // wait for client and server to initialize themselves
             await UniTask.Delay(1);
 
             // start the server
             var started = new UniTaskCompletionSource();
-            server.Started.AddListener(() => started.TrySetResult());
-            server.StartServer();
+            this.server.Started.AddListener(() => started.TrySetResult());
+            this.server.StartServer();
 
             await started.Task;
 
-            if (AutoConnectClient)
+            if (this.AutoConnectClient)
             {
                 // now start the client
-                client.Connect("localhost");
+                this.client.Connect("localhost");
 
-                await AsyncUtil.WaitUntilWithTimeout(() => server.Players.Count > 0);
+                await AsyncUtil.WaitUntilWithTimeout(() => this.server.Players.Count > 0);
 
                 // get the connections so that we can spawn players
-                serverPlayer = server.Players.First();
-                clientPlayer = client.Player;
+                this.serverPlayer = this.server.Players.First();
+                this.clientPlayer = this.client.Player;
 
                 // create a player object in the server
-                serverPlayerGO = Object.Instantiate(playerPrefab);
-                serverPlayerGO.name = "player (server)";
-                serverIdentity = serverPlayerGO.GetComponent<NetworkIdentity>();
-                serverComponent = serverPlayerGO.GetComponent<T>();
-                serverObjectManager.AddCharacter(serverPlayer, serverPlayerGO);
+                this.serverPlayerGO = Object.Instantiate(this.playerPrefab);
+                this.serverPlayerGO.name = "player (server)";
+                this.serverIdentity = this.serverPlayerGO.GetComponent<NetworkIdentity>();
+                this.serverComponent = this.serverPlayerGO.GetComponent<T>();
+                this.serverObjectManager.AddCharacter(this.serverPlayer, this.serverPlayerGO);
 
                 // wait for client to spawn it
-                await AsyncUtil.WaitUntilWithTimeout(() => clientPlayer.HasCharacter);
+                await AsyncUtil.WaitUntilWithTimeout(() => this.clientPlayer.HasCharacter);
 
-                clientIdentity = clientPlayer.Identity;
-                clientPlayerGO = clientIdentity.gameObject;
-                clientPlayerGO.name = "player (client)";
-                clientComponent = clientPlayerGO.GetComponent<T>();
+                this.clientIdentity = this.clientPlayer.Identity;
+                this.clientPlayerGO = this.clientIdentity.gameObject;
+                this.clientPlayerGO.name = "player (client)";
+                this.clientComponent = this.clientPlayerGO.GetComponent<T>();
             }
 
-            await LateSetup();
+            await this.LateSetup();
         });
 
         public virtual void ExtraTearDown() { }
@@ -139,19 +139,19 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator ShutdownHost() => UniTask.ToCoroutine(async () =>
         {
             // check active, it might have been stopped by tests
-            if (client.Active) client.Disconnect();
-            if (server.Active) server.Stop();
+            if (this.client.Active) this.client.Disconnect();
+            if (this.server.Active) this.server.Stop();
 
-            await AsyncUtil.WaitUntilWithTimeout(() => !client.Active);
-            await AsyncUtil.WaitUntilWithTimeout(() => !server.Active);
+            await AsyncUtil.WaitUntilWithTimeout(() => !this.client.Active);
+            await AsyncUtil.WaitUntilWithTimeout(() => !this.server.Active);
 
-            Object.DestroyImmediate(playerPrefab);
-            Object.DestroyImmediate(serverGo);
-            Object.DestroyImmediate(clientGo);
-            Object.DestroyImmediate(serverPlayerGO);
-            Object.DestroyImmediate(clientPlayerGO);
+            Object.DestroyImmediate(this.playerPrefab);
+            Object.DestroyImmediate(this.serverGo);
+            Object.DestroyImmediate(this.clientGo);
+            Object.DestroyImmediate(this.serverPlayerGO);
+            Object.DestroyImmediate(this.clientPlayerGO);
 
-            foreach (var obj in toDestroy)
+            foreach (var obj in this.toDestroy)
             {
                 if (obj != null)
                 {
@@ -159,7 +159,7 @@ namespace Mirage.Tests.Runtime.ClientServer
                 }
             }
 
-            ExtraTearDown();
+            this.ExtraTearDown();
         });
 
 
@@ -171,7 +171,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         protected GameObject InstantiateForTest(GameObject prefab)
         {
             var obj = Object.Instantiate(prefab);
-            toDestroy.Add(obj);
+            this.toDestroy.Add(obj);
             return obj;
         }
         /// <summary>
@@ -183,7 +183,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         protected TObj InstantiateForTest<TObj>(TObj prefab) where TObj : Component
         {
             var obj = Object.Instantiate(prefab);
-            toDestroy.Add(obj.gameObject);
+            this.toDestroy.Add(obj.gameObject);
             return obj;
         }
 
@@ -193,9 +193,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         /// <returns></returns>
         protected NetworkIdentity CreateNetworkIdentity()
         {
-            playerPrefab = new GameObject("A NetworkIdentity", typeof(NetworkIdentity));
-            toDestroy.Add(playerPrefab);
-            return playerPrefab.GetComponent<NetworkIdentity>();
+            this.playerPrefab = new GameObject("A NetworkIdentity", typeof(NetworkIdentity));
+            this.toDestroy.Add(this.playerPrefab);
+            return this.playerPrefab.GetComponent<NetworkIdentity>();
         }
     }
 }

@@ -23,28 +23,28 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void ChangingInitOnlyVarWontSetBehaviourDirty()
         {
-            serverComponent.weaponIndex = 10;
-            Assert.That(serverComponent.IsDirty(), Is.False);
+            this.serverComponent.weaponIndex = 10;
+            Assert.That(this.serverComponent.IsDirty(), Is.False);
 
-            serverComponent.otherValue = 5.2f;
-            Assert.That(serverComponent.IsDirty(), Is.False);
+            this.serverComponent.otherValue = 5.2f;
+            Assert.That(this.serverComponent.IsDirty(), Is.False);
 
-            serverComponent.health = 20;
-            Assert.That(serverComponent.IsDirty(), Is.True);
+            this.serverComponent.health = 20;
+            Assert.That(this.serverComponent.IsDirty(), Is.True);
         }
 
         [UnityTest]
         public IEnumerator InitOnlyIsntSentToClient()
         {
-            serverComponent.weaponIndex = 10;
-            serverComponent.health = 50;
-            serverComponent.otherValue = 5.2f;
+            this.serverComponent.weaponIndex = 10;
+            this.serverComponent.health = 50;
+            this.serverComponent.otherValue = 5.2f;
 
             yield return new WaitForSeconds(0.2f);
 
-            Assert.That(clientComponent.weaponIndex, Is.EqualTo(1), "Should not have changed");
-            Assert.That(clientComponent.health, Is.EqualTo(50));
-            Assert.That(clientComponent.otherValue, Is.EqualTo(13f));
+            Assert.That(this.clientComponent.weaponIndex, Is.EqualTo(1), "Should not have changed");
+            Assert.That(this.clientComponent.health, Is.EqualTo(50));
+            Assert.That(this.clientComponent.otherValue, Is.EqualTo(13f));
         }
 
         [UnityTest]
@@ -54,7 +54,7 @@ namespace Mirage.Tests.Runtime.ClientServer
             var identity = prefab.GetComponent<NetworkIdentity>();
             identity.PrefabHash = Guid.NewGuid().GetHashCode();
 
-            clientObjectManager.RegisterPrefab(identity);
+            this.clientObjectManager.RegisterPrefab(identity);
 
             var clone = GameObject.Instantiate(prefab);
             var behaviour = clone.GetComponent<SyncVarInitialOnly>();
@@ -62,13 +62,13 @@ namespace Mirage.Tests.Runtime.ClientServer
             behaviour.health = 20;
             behaviour.otherValue = 5.2f;
 
-            serverObjectManager.Spawn(clone);
+            this.serverObjectManager.Spawn(clone);
             var netId = behaviour.NetId;
 
             yield return null;
             yield return null;
 
-            client.World.TryGetIdentity(netId, out var clientClient);
+            this.client.World.TryGetIdentity(netId, out var clientClient);
             var clientBehaviour = clientClient.GetComponent<SyncVarInitialOnly>();
 
             Assert.That(clientBehaviour.weaponIndex, Is.EqualTo(3));

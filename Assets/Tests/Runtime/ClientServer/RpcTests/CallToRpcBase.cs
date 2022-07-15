@@ -55,9 +55,9 @@ namespace Mirage.Tests.Runtime.ClientServer.RpcTests
             const int num = 32;
             var sub = Substitute.For<Action<int>>();
             var baseSub = Substitute.For<Action<int>>();
-            serverComponent.serverRpcCalled += sub;
-            serverComponent.baseServerRpcCalled += baseSub;
-            clientComponent.MyRpc(num, default(INetworkPlayer));
+            this.serverComponent.serverRpcCalled += sub;
+            this.serverComponent.baseServerRpcCalled += baseSub;
+            this.clientComponent.MyRpc(num, default(INetworkPlayer));
 
             yield return null;
             yield return null;
@@ -72,9 +72,9 @@ namespace Mirage.Tests.Runtime.ClientServer.RpcTests
             const int num = 32;
             var sub = Substitute.For<Action<int>>();
             var baseSub = Substitute.For<Action<int>>();
-            clientComponent.clientRpcCalled += sub;
-            clientComponent.baseClientRpcCalled += baseSub;
-            serverComponent.MyRpc(num);
+            this.clientComponent.clientRpcCalled += sub;
+            this.clientComponent.baseClientRpcCalled += baseSub;
+            this.serverComponent.MyRpc(num);
 
             yield return null;
             yield return null;

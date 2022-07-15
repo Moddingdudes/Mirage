@@ -14,8 +14,8 @@ namespace Mirage.Tests.Runtime
         [SetUp]
         public virtual void SetUp()
         {
-            connection = Substitute.For<SocketLayer.IConnection>();
-            player = new NetworkPlayer(connection);
+            this.connection = Substitute.For<SocketLayer.IConnection>();
+            this.player = new NetworkPlayer(this.connection);
         }
     }
 
@@ -27,13 +27,13 @@ namespace Mirage.Tests.Runtime
             var character = new GameObject("EventCalledWhenIdentityChanged").AddComponent<NetworkIdentity>();
 
             var action = Substitute.For<Action<NetworkIdentity>>();
-            player.OnIdentityChanged += action;
-            player.Identity = character;
+            this.player.OnIdentityChanged += action;
+            this.player.Identity = character;
 
             action.Received(1).Invoke(character);
             action.ClearReceivedCalls();
 
-            player.Identity = null;
+            this.player.Identity = null;
             action.Received(1).Invoke(null);
         }
 
@@ -43,20 +43,20 @@ namespace Mirage.Tests.Runtime
             var character = new GameObject("EventNotCalledWhenIdentityIsSame").AddComponent<NetworkIdentity>();
 
             var action = Substitute.For<Action<NetworkIdentity>>();
-            player.OnIdentityChanged += action;
-            player.Identity = character;
+            this.player.OnIdentityChanged += action;
+            this.player.Identity = character;
             action.ClearReceivedCalls();
 
             // set to same value
-            player.Identity = character;
+            this.player.Identity = character;
             action.DidNotReceive().Invoke(Arg.Any<NetworkIdentity>());
         }
 
         [Test]
         public void HasCharacterReturnsFalseIfIdentityIsSet()
         {
-            Debug.Assert(player.Identity == null, "player had an identity, this test is invalid");
-            Assert.That(player.HasCharacter, Is.False);
+            Debug.Assert(this.player.Identity == null, "player had an identity, this test is invalid");
+            Assert.That(this.player.HasCharacter, Is.False);
         }
 
         [Test]
@@ -64,10 +64,10 @@ namespace Mirage.Tests.Runtime
         {
             var character = new GameObject("HasCharacterReturnsTrueIfIdentityIsSet").AddComponent<NetworkIdentity>();
 
-            player.Identity = character;
+            this.player.Identity = character;
 
-            Debug.Assert(player.Identity != null, "player did not have identity, this test is invalid");
-            Assert.That(player.HasCharacter, Is.True);
+            Debug.Assert(this.player.Identity != null, "player did not have identity, this test is invalid");
+            Assert.That(this.player.HasCharacter, Is.True);
 
             GameObject.Destroy(character.gameObject);
         }
@@ -81,39 +81,39 @@ namespace Mirage.Tests.Runtime
         public void SendCallsSendOnConnection(int channel)
         {
             var message = new byte[] { 0, 1, 2 };
-            player.Send(new ArraySegment<byte>(message), channel);
+            this.player.Send(new ArraySegment<byte>(message), channel);
             if (channel == Channel.Reliable)
             {
-                connection.Received(1).SendReliable(Arg.Is<ArraySegment<byte>>(arg => arg.SequenceEqual(message)));
+                this.connection.Received(1).SendReliable(Arg.Is<ArraySegment<byte>>(arg => arg.SequenceEqual(message)));
             }
             else if (channel == Channel.Unreliable)
             {
-                connection.Received(1).SendUnreliable(Arg.Is<ArraySegment<byte>>(arg => arg.SequenceEqual(message)));
+                this.connection.Received(1).SendUnreliable(Arg.Is<ArraySegment<byte>>(arg => arg.SequenceEqual(message)));
             }
         }
 
         [Test]
         public void DisconnectCallsDisconnectOnConnection()
         {
-            player.Disconnect();
-            connection.Received(1).Disconnect();
+            this.player.Disconnect();
+            this.connection.Received(1).Disconnect();
         }
 
         [Test]
         public void DisconnectStopsMessagesBeingSentToConnection()
         {
-            player.Disconnect();
-            player.Send(new ArraySegment<byte>(new byte[] { 0, 1, 2 }));
-            connection.DidNotReceive().SendReliable(Arg.Any<byte[]>());
-            connection.DidNotReceive().SendUnreliable(Arg.Any<byte[]>());
+            this.player.Disconnect();
+            this.player.Send(new ArraySegment<byte>(new byte[] { 0, 1, 2 }));
+            this.connection.DidNotReceive().SendReliable(Arg.Any<byte[]>());
+            this.connection.DidNotReceive().SendUnreliable(Arg.Any<byte[]>());
         }
         [Test]
         public void MarkAsDisconnectedStopsMessagesBeingSentToConnection()
         {
-            player.MarkAsDisconnected();
-            player.Send(new ArraySegment<byte>(new byte[] { 0, 1, 2 }));
-            connection.DidNotReceive().SendReliable(Arg.Any<byte[]>());
-            connection.DidNotReceive().SendUnreliable(Arg.Any<byte[]>());
+            this.player.MarkAsDisconnected();
+            this.player.Send(new ArraySegment<byte>(new byte[] { 0, 1, 2 }));
+            this.connection.DidNotReceive().SendReliable(Arg.Any<byte[]>());
+            this.connection.DidNotReceive().SendUnreliable(Arg.Any<byte[]>());
         }
     }
 }

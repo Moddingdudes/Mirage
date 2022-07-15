@@ -45,8 +45,8 @@ namespace Mirage.Tests.Runtime.Serialization
         [TearDown]
         public void TearDown()
         {
-            writer.Reset();
-            reader.Dispose();
+            this.writer.Reset();
+            this.reader.Dispose();
         }
 
         [Test]
@@ -54,10 +54,10 @@ namespace Mirage.Tests.Runtime.Serialization
         {
             var byteEnum = MyByte.B;
 
-            writer.Write(byteEnum);
+            this.writer.Write(byteEnum);
 
             // should only be 1 byte
-            Assert.That(writer.ByteLength, Is.EqualTo(1));
+            Assert.That(this.writer.ByteLength, Is.EqualTo(1));
         }
 
         [Test]
@@ -65,17 +65,17 @@ namespace Mirage.Tests.Runtime.Serialization
         {
             var shortEnum = MyShort.G;
 
-            writer.Write(shortEnum);
+            this.writer.Write(shortEnum);
 
             // should only be 1 byte
-            Assert.That(writer.ByteLength, Is.EqualTo(2));
+            Assert.That(this.writer.ByteLength, Is.EqualTo(2));
         }
 
         [Test]
         public void CustomWriterIsUsedForEnum()
         {
             var customEnum = MyCustom.O;
-            var clientMsg = SerializeAndDeserializeMessage(customEnum);
+            var clientMsg = this.SerializeAndDeserializeMessage(customEnum);
 
             // custom writer should write N if it sees O
             Assert.That(clientMsg, Is.EqualTo(MyCustom.N));
@@ -83,10 +83,10 @@ namespace Mirage.Tests.Runtime.Serialization
 
         private T SerializeAndDeserializeMessage<T>(T msg)
         {
-            writer.Write(msg);
+            this.writer.Write(msg);
 
-            reader.Reset(writer.ToArraySegment());
-            return reader.Read<T>();
+            this.reader.Reset(this.writer.ToArraySegment());
+            return this.reader.Read<T>();
         }
     }
 }

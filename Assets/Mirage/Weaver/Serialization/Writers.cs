@@ -21,14 +21,14 @@ namespace Mirage.Weaver
 
         protected override MethodReference GetGenericFunction()
         {
-            var genericType = module.ImportReference(typeof(GenericTypesSerializationExtensions)).Resolve();
+            var genericType = this.module.ImportReference(typeof(GenericTypesSerializationExtensions)).Resolve();
             var method = genericType.GetMethod(nameof(GenericTypesSerializationExtensions.Write));
-            return module.ImportReference(method);
+            return this.module.ImportReference(method);
         }
 
         protected override MethodReference GetNetworkBehaviourFunction(TypeReference typeReference)
         {
-            var writeMethod = GenerateWriterFunc(typeReference);
+            var writeMethod = this.GenerateWriterFunc(typeReference);
             var worker = writeMethod.worker;
 
             worker.Append(worker.Create(OpCodes.Ldarg_0));
@@ -41,11 +41,11 @@ namespace Mirage.Weaver
 
         protected override MethodReference GenerateEnumFunction(TypeReference typeReference)
         {
-            var writerMethod = GenerateWriterFunc(typeReference);
+            var writerMethod = this.GenerateWriterFunc(typeReference);
 
             var worker = writerMethod.worker;
 
-            var underlyingWriter = TryGetFunction(typeReference.Resolve().GetEnumUnderlyingType(), null);
+            var underlyingWriter = this.TryGetFunction(typeReference.Resolve().GetEnumUnderlyingType(), null);
 
             worker.Append(worker.Create(OpCodes.Ldarg_0));
             worker.Append(worker.Create(OpCodes.Ldarg_1));
@@ -75,7 +75,7 @@ namespace Mirage.Weaver
         {
             var functionName = "_Write_" + typeReference.FullName;
             // create new writer for this type
-            var definition = module.GeneratedClass().AddMethod(functionName,
+            var definition = this.module.GeneratedClass().AddMethod(functionName,
                     MethodAttributes.Public |
                     MethodAttributes.Static |
                     MethodAttributes.HideBySig);
@@ -84,7 +84,7 @@ namespace Mirage.Weaver
             var typeParameter = definition.AddParam(typeReference, "value");
             definition.Body.InitLocals = true;
 
-            Register(typeReference, definition);
+            this.Register(typeReference, definition);
 
             var worker = definition.Body.GetILProcessor();
             return new WriteMethod(definition, writerParameter, typeParameter, worker);
@@ -92,14 +92,14 @@ namespace Mirage.Weaver
 
         protected override MethodReference GenerateClassOrStructFunction(TypeReference typeReference)
         {
-            var writerFunc = GenerateWriterFunc(typeReference);
+            var writerFunc = this.GenerateWriterFunc(typeReference);
 
             var worker = writerFunc.definition.Body.GetILProcessor();
 
             if (!typeReference.Resolve().IsValueType)
-                WriteNullCheck(worker);
+                this.WriteNullCheck(worker);
 
-            WriteAllFields(typeReference, writerFunc);
+            this.WriteAllFields(typeReference, writerFunc);
 
             worker.Append(worker.Create(OpCodes.Ret));
             return writerFunc.definition;
@@ -119,14 +119,14 @@ namespace Mirage.Weaver
             worker.Append(worker.Create(OpCodes.Brtrue, labelNotNull));
             worker.Append(worker.Create(OpCodes.Ldarg_0));
             worker.Append(worker.Create(OpCodes.Ldc_I4_0));
-            worker.Append(worker.Create(OpCodes.Call, TryGetFunction<bool>(null)));
+            worker.Append(worker.Create(OpCodes.Call, this.TryGetFunction<bool>(null)));
             worker.Append(worker.Create(OpCodes.Ret));
             worker.Append(labelNotNull);
 
             // write.WriteBoolean(true);
             worker.Append(worker.Create(OpCodes.Ldarg_0));
             worker.Append(worker.Create(OpCodes.Ldc_I4_1));
-            worker.Append(worker.Create(OpCodes.Call, TryGetFunction<bool>(null)));
+            worker.Append(worker.Create(OpCodes.Call, this.TryGetFunction<bool>(null)));
         }
 
         /// <summary>
@@ -147,10 +147,10 @@ namespace Mirage.Weaver
                 // - fieldRef (imported) to emit IL codes
 
                 var fieldType = fieldDef.GetFieldTypeIncludingGeneric(type);
-                var fieldRef = module.ImportField(fieldDef, type);
+                var fieldRef = this.module.ImportField(fieldDef, type);
 
-                var valueSerialize = ValueSerializerFinder.GetSerializer(module, fieldDef, fieldType, this, null);
-                valueSerialize.AppendWriteField(module, writerFunc.worker, writerFunc.writerParameter, writerFunc.typeParameter, fieldRef);
+                var valueSerialize = ValueSerializerFinder.GetSerializer(this.module, fieldDef, fieldType, this, null);
+                valueSerialize.AppendWriteField(this.module, writerFunc.worker, writerFunc.writerParameter, writerFunc.typeParameter, fieldRef);
             }
         }
 
@@ -158,11 +158,11 @@ namespace Mirage.Weaver
         {
             // make sure element has a writer
             // collection writers use the generic writer, so this will make sure one exists
-            _ = GetFunction_Thorws(elementType);
+            _ = this.GetFunction_Thorws(elementType);
 
-            var writerMethod = GenerateWriterFunc(typeReference);
+            var writerMethod = this.GenerateWriterFunc(typeReference);
 
-            var collectionWriter = module.ImportReference(genericExpression).GetElementMethod();
+            var collectionWriter = this.module.ImportReference(genericExpression).GetElementMethod();
 
             var methodRef = new GenericInstanceMethod(collectionWriter);
             methodRef.GenericArguments.Add(elementType);
@@ -187,15 +187,15 @@ namespace Mirage.Weaver
         /// <param name="worker"></param>
         internal void InitializeWriters(ILProcessor worker)
         {
-            var genericWriterClassRef = module.ImportReference(typeof(Writer<>));
+            var genericWriterClassRef = this.module.ImportReference(typeof(Writer<>));
 
             var writerProperty = typeof(Writer<>).GetProperty(nameof(Writer<int>.Write));
-            var fieldRef = module.ImportReference(writerProperty.GetSetMethod());
-            var networkWriterRef = module.ImportReference(typeof(NetworkWriter));
-            var actionRef = module.ImportReference(typeof(Action<,>));
-            var actionConstructorRef = module.ImportReference(typeof(Action<,>).GetConstructors()[0]);
+            var fieldRef = this.module.ImportReference(writerProperty.GetSetMethod());
+            var networkWriterRef = this.module.ImportReference(typeof(NetworkWriter));
+            var actionRef = this.module.ImportReference(typeof(Action<,>));
+            var actionConstructorRef = this.module.ImportReference(typeof(Action<,>).GetConstructors()[0]);
 
-            foreach (var writerMethod in funcs.Values)
+            foreach (var writerMethod in this.funcs.Values)
             {
 
                 var dataType = writerMethod.Parameters[1].ParameterType;

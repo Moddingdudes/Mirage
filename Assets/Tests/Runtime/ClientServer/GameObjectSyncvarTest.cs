@@ -19,17 +19,17 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             // out of the box, target should be null in the client
 
-            Assert.That(clientComponent.target, Is.Null);
+            Assert.That(this.clientComponent.target, Is.Null);
         }
 
         [UnityTest]
         public IEnumerator ChangeTarget() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.target = serverPlayerGO;
+            this.serverComponent.target = this.serverPlayerGO;
 
-            await AsyncUtil.WaitUntilWithTimeout(() => clientComponent.target != null);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.clientComponent.target != null);
 
-            Assert.That(clientComponent.target, Is.SameAs(clientPlayerGO));
+            Assert.That(this.clientComponent.target, Is.SameAs(this.clientPlayerGO));
         });
 
         [Test]
@@ -44,34 +44,34 @@ namespace Mirage.Tests.Runtime.ClientServer
 
             var goSyncvar = new GameObjectSyncvar
             {
-                objectLocator = client.World,
-                netId = serverIdentity.NetId,
+                objectLocator = this.client.World,
+                netId = this.serverIdentity.NetId,
                 gameObject = null,
             };
 
-            Assert.That(goSyncvar.Value, Is.SameAs(clientPlayerGO));
+            Assert.That(goSyncvar.Value, Is.SameAs(this.clientPlayerGO));
         }
 
         [UnityTest]
         public IEnumerator SpawnWithTarget() => UniTask.ToCoroutine(async () =>
         {
             // create an object, set the target and spawn it
-            var newObject = Object.Instantiate(playerPrefab);
+            var newObject = Object.Instantiate(this.playerPrefab);
             var newBehavior = newObject.GetComponent<SampleBehaviorWithGO>();
-            newBehavior.target = serverPlayerGO;
-            serverObjectManager.Spawn(newObject);
+            newBehavior.target = this.serverPlayerGO;
+            this.serverObjectManager.Spawn(newObject);
 
             // wait until the client spawns it
             var newObjectId = newBehavior.NetId;
 
-            var newClientObject = await AsyncUtil.WaitUntilSpawn(client.World, newObjectId);
+            var newClientObject = await AsyncUtil.WaitUntilSpawn(this.client.World, newObjectId);
 
             // check if the target was set correctly in the client
             var newClientBehavior = newClientObject.GetComponent<SampleBehaviorWithGO>();
-            Assert.That(newClientBehavior.target, Is.SameAs(clientPlayerGO));
+            Assert.That(newClientBehavior.target, Is.SameAs(this.clientPlayerGO));
 
             // cleanup
-            serverObjectManager.Destroy(newObject);
+            this.serverObjectManager.Destroy(newObject);
         });
     }
 }

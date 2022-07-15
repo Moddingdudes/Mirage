@@ -11,43 +11,43 @@ namespace Mirage.Tests.Runtime.Host
         [Test]
         public void IsNetworkActiveTest()
         {
-            Assert.That(manager.IsNetworkActive, Is.True);
+            Assert.That(this.manager.IsNetworkActive, Is.True);
         }
 
         [UnityTest]
         public IEnumerator IsNetworkActiveStopTest() => UniTask.ToCoroutine(async () =>
         {
-            manager.Server.Stop();
+            this.manager.Server.Stop();
 
-            await AsyncUtil.WaitUntilWithTimeout(() => !client.Active);
+            await AsyncUtil.WaitUntilWithTimeout(() => !this.client.Active);
 
-            Assert.That(server.Active, Is.False);
-            Assert.That(client.Active, Is.False);
-            Assert.That(manager.IsNetworkActive, Is.False);
+            Assert.That(this.server.Active, Is.False);
+            Assert.That(this.client.Active, Is.False);
+            Assert.That(this.manager.IsNetworkActive, Is.False);
         });
 
         [UnityTest]
         public IEnumerator StopClientTest() => UniTask.ToCoroutine(async () =>
         {
-            manager.Client.Disconnect();
+            this.manager.Client.Disconnect();
 
-            await AsyncUtil.WaitUntilWithTimeout(() => !client.Active);
+            await AsyncUtil.WaitUntilWithTimeout(() => !this.client.Active);
         });
 
         [Test]
         public void NetworkManagerModeHostTest()
         {
-            Assert.That(manager.NetworkMode == NetworkManagerMode.Host);
+            Assert.That(this.manager.NetworkMode == NetworkManagerMode.Host);
         }
 
         [UnityTest]
         public IEnumerator NetworkManagerModeOfflineHostTest() => UniTask.ToCoroutine(async () =>
         {
-            server.Stop();
+            this.server.Stop();
 
-            await AsyncUtil.WaitUntilWithTimeout(() => !server.Active && !client.Active);
+            await AsyncUtil.WaitUntilWithTimeout(() => !this.server.Active && !this.client.Active);
 
-            Assert.That(manager.NetworkMode == NetworkManagerMode.None);
+            Assert.That(this.manager.NetworkMode == NetworkManagerMode.None);
         });
     }
 }

@@ -18,7 +18,7 @@ namespace Mirage
                 if (sceneObject == null && !string.IsNullOrEmpty(property.stringValue))
                 {
                     // try to load it from the build settings for legacy compatibility
-                    sceneObject = GetBuildSettingsSceneObject(property.stringValue);
+                    sceneObject = this.GetBuildSettingsSceneObject(property.stringValue);
                 }
                 if (sceneObject == null && !string.IsNullOrEmpty(property.stringValue))
                 {

@@ -12,12 +12,12 @@ namespace Mirage.Weaver.SyncVars
 
         public SyncVarHook(MethodDefinition method, SyncHookType hookType)
         {
-            Method = method;
+            this.Method = method;
             this.hookType = hookType;
         }
         public SyncVarHook(EventDefinition @event, SyncHookType hookType)
         {
-            Event = @event;
+            this.Event = @event;
             this.hookType = hookType;
         }
 

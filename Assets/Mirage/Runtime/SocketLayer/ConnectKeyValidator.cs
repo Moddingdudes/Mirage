@@ -15,7 +15,7 @@ namespace Mirage.SocketLayer
         public ConnectKeyValidator(byte[] key)
         {
             this.key = key;
-            KeyLength = key.Length;
+            this.KeyLength = key.Length;
         }
 
         private static byte[] GetKeyBytes(string key)
@@ -35,10 +35,10 @@ namespace Mirage.SocketLayer
 
         public bool Validate(byte[] buffer)
         {
-            for (var i = 0; i < KeyLength; i++)
+            for (var i = 0; i < this.KeyLength; i++)
             {
                 var keyByte = buffer[i + OFFSET];
-                if (keyByte != key[i])
+                if (keyByte != this.key[i])
                     return false;
             }
 
@@ -47,9 +47,9 @@ namespace Mirage.SocketLayer
 
         public void CopyTo(byte[] buffer)
         {
-            for (var i = 0; i < KeyLength; i++)
+            for (var i = 0; i < this.KeyLength; i++)
             {
-                buffer[i + OFFSET] = key[i];
+                buffer[i + OFFSET] = this.key[i];
             }
         }
     }

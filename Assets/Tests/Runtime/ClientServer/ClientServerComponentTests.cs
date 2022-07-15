@@ -14,112 +14,112 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void CheckNotHost()
         {
-            Assert.That(serverPlayerGO, Is.Not.SameAs(clientPlayerGO));
+            Assert.That(this.serverPlayerGO, Is.Not.SameAs(this.clientPlayerGO));
 
-            Assert.That(serverPlayerGO, Is.Not.Null);
-            Assert.That(clientPlayerGO, Is.Not.Null);
+            Assert.That(this.serverPlayerGO, Is.Not.Null);
+            Assert.That(this.clientPlayerGO, Is.Not.Null);
         }
 
         [UnityTest]
         public IEnumerator ServerRpc() => UniTask.ToCoroutine(async () =>
         {
-            clientComponent.Send2Args(1, "hello");
+            this.clientComponent.Send2Args(1, "hello");
 
-            await AsyncUtil.WaitUntilWithTimeout(() => serverComponent.cmdArg1 != 0);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.serverComponent.cmdArg1 != 0);
 
-            Assert.That(serverComponent.cmdArg1, Is.EqualTo(1));
-            Assert.That(serverComponent.cmdArg2, Is.EqualTo("hello"));
+            Assert.That(this.serverComponent.cmdArg1, Is.EqualTo(1));
+            Assert.That(this.serverComponent.cmdArg2, Is.EqualTo("hello"));
         });
 
         [UnityTest]
         public IEnumerator ServerRpcWithSenderOnClient() => UniTask.ToCoroutine(async () =>
         {
-            clientComponent.SendWithSender(1);
+            this.clientComponent.SendWithSender(1);
 
-            await AsyncUtil.WaitUntilWithTimeout(() => serverComponent.cmdArg1 != 0);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.serverComponent.cmdArg1 != 0);
 
-            Assert.That(serverComponent.cmdArg1, Is.EqualTo(1));
-            Assert.That(serverComponent.cmdSender, Is.EqualTo(serverPlayer), "ServerRpc called on client will have client's player (server version)");
+            Assert.That(this.serverComponent.cmdArg1, Is.EqualTo(1));
+            Assert.That(this.serverComponent.cmdSender, Is.EqualTo(this.serverPlayer), "ServerRpc called on client will have client's player (server version)");
         });
 
         [UnityTest]
         public IEnumerator ServerRpcWithSenderOnServer() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.SendWithSender(1);
+            this.serverComponent.SendWithSender(1);
 
-            await AsyncUtil.WaitUntilWithTimeout(() => serverComponent.cmdArg1 != 0);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.serverComponent.cmdArg1 != 0);
 
-            Assert.That(serverComponent.cmdArg1, Is.EqualTo(1));
-            Assert.That(serverComponent.cmdSender, Is.Null, "ServerRPC called on server will have no sender");
+            Assert.That(this.serverComponent.cmdArg1, Is.EqualTo(1));
+            Assert.That(this.serverComponent.cmdSender, Is.Null, "ServerRPC called on server will have no sender");
         });
 
         [UnityTest]
         public IEnumerator ServerRpcWithNetworkIdentity() => UniTask.ToCoroutine(async () =>
         {
-            clientComponent.CmdNetworkIdentity(clientIdentity);
+            this.clientComponent.CmdNetworkIdentity(this.clientIdentity);
 
-            await AsyncUtil.WaitUntilWithTimeout(() => serverComponent.cmdNi != null);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.serverComponent.cmdNi != null);
 
-            Assert.That(serverComponent.cmdNi, Is.SameAs(serverIdentity));
+            Assert.That(this.serverComponent.cmdNi, Is.SameAs(this.serverIdentity));
         });
 
         [UnityTest]
         public IEnumerator ClientRpc() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.RpcTest(1, "hello");
+            this.serverComponent.RpcTest(1, "hello");
             // process spawn message from server
-            await AsyncUtil.WaitUntilWithTimeout(() => clientComponent.rpcArg1 != 0);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.clientComponent.rpcArg1 != 0);
 
-            Assert.That(clientComponent.rpcArg1, Is.EqualTo(1));
-            Assert.That(clientComponent.rpcArg2, Is.EqualTo("hello"));
+            Assert.That(this.clientComponent.rpcArg1, Is.EqualTo(1));
+            Assert.That(this.clientComponent.rpcArg2, Is.EqualTo("hello"));
         });
 
         [UnityTest]
         public IEnumerator ClientConnRpc() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.ClientConnRpcTest(serverPlayer, 1, "hello");
+            this.serverComponent.ClientConnRpcTest(this.serverPlayer, 1, "hello");
             // process spawn message from server
-            await AsyncUtil.WaitUntilWithTimeout(() => clientComponent.targetRpcArg1 != 0);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.clientComponent.targetRpcArg1 != 0);
 
-            Assert.That(clientComponent.targetRpcPlayer, Is.EqualTo(clientPlayer));
-            Assert.That(clientComponent.targetRpcArg1, Is.EqualTo(1));
-            Assert.That(clientComponent.targetRpcArg2, Is.EqualTo("hello"));
+            Assert.That(this.clientComponent.targetRpcPlayer, Is.EqualTo(this.clientPlayer));
+            Assert.That(this.clientComponent.targetRpcArg1, Is.EqualTo(1));
+            Assert.That(this.clientComponent.targetRpcArg2, Is.EqualTo("hello"));
         });
 
         [UnityTest]
         public IEnumerator ClientOwnerRpc() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.RpcOwnerTest(1, "hello");
+            this.serverComponent.RpcOwnerTest(1, "hello");
             // process spawn message from server
-            await AsyncUtil.WaitUntilWithTimeout(() => clientComponent.rpcOwnerArg1 != 0);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.clientComponent.rpcOwnerArg1 != 0);
 
-            Assert.That(clientComponent.rpcOwnerArg1, Is.EqualTo(1));
-            Assert.That(clientComponent.rpcOwnerArg2, Is.EqualTo("hello"));
+            Assert.That(this.clientComponent.rpcOwnerArg1, Is.EqualTo(1));
+            Assert.That(this.clientComponent.rpcOwnerArg2, Is.EqualTo("hello"));
         });
 
         [UnityTest]
         public IEnumerator OnSpawnSpawnHandlerTest() => UniTask.ToCoroutine(async () =>
         {
-            spawnDelegateTestCalled = 0;
+            this.spawnDelegateTestCalled = 0;
             var hash = Guid.NewGuid().GetHashCode();
             var gameObject = new GameObject();
             var identity = gameObject.AddComponent<NetworkIdentity>();
             identity.PrefabHash = hash;
             identity.NetId = (uint)Random.Range(0, int.MaxValue);
 
-            clientObjectManager.RegisterSpawnHandler(hash, SpawnDelegateTest, go => { });
-            clientObjectManager.RegisterPrefab(identity, hash);
-            serverObjectManager.SendSpawnMessage(identity, serverPlayer);
+            this.clientObjectManager.RegisterSpawnHandler(hash, this.SpawnDelegateTest, go => { });
+            this.clientObjectManager.RegisterPrefab(identity, hash);
+            this.serverObjectManager.SendSpawnMessage(identity, this.serverPlayer);
 
-            await AsyncUtil.WaitUntilWithTimeout(() => spawnDelegateTestCalled != 0);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.spawnDelegateTestCalled != 0);
 
-            Assert.That(spawnDelegateTestCalled, Is.EqualTo(1));
+            Assert.That(this.spawnDelegateTestCalled, Is.EqualTo(1));
         });
 
         [UnityTest]
         public IEnumerator OnDestroySpawnHandlerTest() => UniTask.ToCoroutine(async () =>
         {
-            spawnDelegateTestCalled = 0;
+            this.spawnDelegateTestCalled = 0;
             var hash = Guid.NewGuid().GetHashCode();
             var gameObject = new GameObject();
             var identity = gameObject.AddComponent<NetworkIdentity>();
@@ -128,13 +128,13 @@ namespace Mirage.Tests.Runtime.ClientServer
 
             var unspawnDelegate = Substitute.For<UnSpawnDelegate>();
 
-            clientObjectManager.RegisterSpawnHandler(hash, SpawnDelegateTest, unspawnDelegate);
-            clientObjectManager.RegisterPrefab(identity, hash);
-            serverObjectManager.SendSpawnMessage(identity, serverPlayer);
+            this.clientObjectManager.RegisterSpawnHandler(hash, this.SpawnDelegateTest, unspawnDelegate);
+            this.clientObjectManager.RegisterPrefab(identity, hash);
+            this.serverObjectManager.SendSpawnMessage(identity, this.serverPlayer);
 
-            await AsyncUtil.WaitUntilWithTimeout(() => spawnDelegateTestCalled != 0);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.spawnDelegateTestCalled != 0);
 
-            clientObjectManager.OnObjectDestroy(new ObjectDestroyMessage
+            this.clientObjectManager.OnObjectDestroy(new ObjectDestroyMessage
             {
                 netId = identity.NetId
             });
@@ -145,9 +145,9 @@ namespace Mirage.Tests.Runtime.ClientServer
 
         private NetworkIdentity SpawnDelegateTest(SpawnMessage msg)
         {
-            spawnDelegateTestCalled++;
+            this.spawnDelegateTestCalled++;
 
-            var prefab = clientObjectManager.GetPrefab(msg.prefabHash.Value);
+            var prefab = this.clientObjectManager.GetPrefab(msg.prefabHash.Value);
             if (!(prefab is null))
             {
                 return Object.Instantiate(prefab);
@@ -158,12 +158,12 @@ namespace Mirage.Tests.Runtime.ClientServer
         [UnityTest]
         public IEnumerator ClientDisconnectTest() => UniTask.ToCoroutine(async () =>
         {
-            var playerCount = server.Players.Count;
-            client.Disconnect();
+            var playerCount = this.server.Players.Count;
+            this.client.Disconnect();
 
-            await AsyncUtil.WaitUntilWithTimeout(() => client.connectState == ConnectState.Disconnected);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.client.connectState == ConnectState.Disconnected);
             // player could should be 1 less after client disconnects
-            await AsyncUtil.WaitUntilWithTimeout(() => server.Players.Count == playerCount - 1);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.server.Players.Count == playerCount - 1);
         });
     }
 }

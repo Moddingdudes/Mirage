@@ -14,7 +14,7 @@ namespace Mirage.Tests.Runtime.ClientServer.DisconnectTests
             // lower timeout so tests doesn't wait too long
             TimeoutDuration = 2,
         };
-        protected override Config ClientConfig => config;
+        protected override Config ClientConfig => this.config;
 
         public override void ExtraTearDown()
         {
@@ -25,13 +25,13 @@ namespace Mirage.Tests.Runtime.ClientServer.DisconnectTests
         public IEnumerator DisconnectEventWhenClientDisconnects()
         {
             var called = 0;
-            client.Disconnected.AddListener((reason) =>
+            this.client.Disconnected.AddListener((reason) =>
             {
                 called++;
                 Assert.That(reason, Is.EqualTo(ClientStoppedReason.LocalConnectionClosed));
                 Debug.Log("Disconnected");
             });
-            client.Disconnect();
+            this.client.Disconnect();
 
             // wait 2 frames so that messages can go from client->server->client
             yield return null;
@@ -44,14 +44,14 @@ namespace Mirage.Tests.Runtime.ClientServer.DisconnectTests
         public IEnumerator DisconnectEventWhenServerDisconnects()
         {
             var called = 0;
-            client.Disconnected.AddListener((reason) =>
+            this.client.Disconnected.AddListener((reason) =>
             {
                 called++;
                 Assert.That(reason, Is.EqualTo(ClientStoppedReason.RemoteConnectionClosed));
             });
 
             // server's object
-            serverPlayer.Disconnect();
+            this.serverPlayer.Disconnect();
 
             // wait 2 frames so that messages can go from client->server->client
             yield return null;
@@ -64,7 +64,7 @@ namespace Mirage.Tests.Runtime.ClientServer.DisconnectTests
         public IEnumerator DisconnectEventWhenTimeout()
         {
             var called = 0;
-            client.Disconnected.AddListener((reason) =>
+            this.client.Disconnected.AddListener((reason) =>
             {
                 called++;
                 Assert.That(reason, Is.EqualTo(ClientStoppedReason.Timeout));
@@ -72,7 +72,7 @@ namespace Mirage.Tests.Runtime.ClientServer.DisconnectTests
 
             TestSocket.StopAllMessages = true;
             // wait longer than timeout
-            yield return new WaitForSeconds(config.TimeoutDuration * 1.5f);
+            yield return new WaitForSeconds(this.config.TimeoutDuration * 1.5f);
 
             Assert.That(called, Is.EqualTo(1));
         }
@@ -80,13 +80,13 @@ namespace Mirage.Tests.Runtime.ClientServer.DisconnectTests
         [UnityTest]
         public IEnumerator DisconnectEventWhenSentInvalidPacket()
         {
-            (var clientSocket, var serverEndPoint) = GetSocketAndEndPoint();
+            (var clientSocket, var serverEndPoint) = this.GetSocketAndEndPoint();
             var badMessage = CreateInvalidPacket();
 
             clientSocket.Send(serverEndPoint, badMessage, 20);
 
             var called = 0;
-            client.Disconnected.AddListener((reason) =>
+            this.client.Disconnected.AddListener((reason) =>
             {
                 called++;
                 Assert.That(reason, Is.EqualTo(ClientStoppedReason.InvalidPacket));
@@ -101,10 +101,10 @@ namespace Mirage.Tests.Runtime.ClientServer.DisconnectTests
 
         private (ISocket clientSocket, IEndPoint serverEndPoint) GetSocketAndEndPoint()
         {
-            var clientEndPoint = server.Players.First().Connection.EndPoint;
+            var clientEndPoint = this.server.Players.First().Connection.EndPoint;
             var clientSocket = TestSocket.allSockets[clientEndPoint];
 
-            var serverEndPoint = ((TestSocketFactory)server.SocketFactory).serverEndpoint;
+            var serverEndPoint = ((TestSocketFactory)this.server.SocketFactory).serverEndpoint;
 
             return (clientSocket, serverEndPoint);
         }
@@ -135,10 +135,10 @@ namespace Mirage.Tests.Runtime.ClientServer.DisconnectTests
         [UnityTest]
         public IEnumerator DisconnectEventWhenFull()
         {
-            client.Connect("localhost");
+            this.client.Connect("localhost");
 
             var called = 0;
-            client.Disconnected.AddListener((reason) =>
+            this.client.Disconnected.AddListener((reason) =>
             {
                 called++;
                 Assert.That(reason, Is.EqualTo(ClientStoppedReason.ServerFull));
@@ -165,10 +165,10 @@ namespace Mirage.Tests.Runtime.ClientServer.DisconnectTests
         public IEnumerator DisconnectEventWhenTimeout()
         {
             TestSocket.StopAllMessages = true;
-            client.Connect("localhost");
+            this.client.Connect("localhost");
 
             var called = 0;
-            client.Disconnected.AddListener((reason) =>
+            this.client.Disconnected.AddListener((reason) =>
             {
                 called++;
                 Assert.That(reason, Is.EqualTo(ClientStoppedReason.ConnectingTimeout));
@@ -179,7 +179,7 @@ namespace Mirage.Tests.Runtime.ClientServer.DisconnectTests
             var endTime = Time.time + (config.ConnectAttemptInterval * config.MaxConnectAttempts * 1.5f);
             while (Time.time < endTime)
             {
-                if (client.IsConnected)
+                if (this.client.IsConnected)
                 {
                     // early exit if failed
                     Assert.Fail("Client should not have connected");
@@ -193,17 +193,17 @@ namespace Mirage.Tests.Runtime.ClientServer.DisconnectTests
         [UnityTest]
         public IEnumerator DisconnectEventWhenCanceled()
         {
-            client.Connect("localhost");
+            this.client.Connect("localhost");
 
             var called = 0;
-            client.Disconnected.AddListener((reason) =>
+            this.client.Disconnected.AddListener((reason) =>
             {
                 called++;
                 Assert.That(reason, Is.EqualTo(ClientStoppedReason.ConnectingCancel));
             });
 
             // stop connecting
-            client.Disconnect();
+            this.client.Disconnect();
 
             // wait 2 frames so that messages can go from client->server->client
             yield return null;
@@ -222,10 +222,10 @@ namespace Mirage.Tests.Runtime.ClientServer.DisconnectTests
         [UnityTest]
         public IEnumerator DisconnectEventWhenFull()
         {
-            client.Connect("localhost");
+            this.client.Connect("localhost");
 
             var called = 0;
-            client.Disconnected.AddListener((reason) =>
+            this.client.Disconnected.AddListener((reason) =>
             {
                 called++;
                 Assert.That(reason, Is.EqualTo(ClientStoppedReason.KeyInvalid));

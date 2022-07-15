@@ -49,40 +49,40 @@ namespace Mirage
             // Any SyncObject should be added to syncObjects when unity creates an
             // object so we can cheeck length of list so see if sync objects exists
             var syncObjectsField = scriptClass.GetField("syncObjects", BindingFlags.NonPublic | BindingFlags.Instance);
-            var syncObjects = (List<ISyncObject>)syncObjectsField.GetValue(serializedObject.targetObject);
+            var syncObjects = (List<ISyncObject>)syncObjectsField.GetValue(this.serializedObject.targetObject);
 
             return syncObjects.Count > 0;
         }
 
         private void OnEnable()
         {
-            if (target == null) { logger.LogWarning("NetworkBehaviourInspector had no target object"); return; }
+            if (this.target == null) { logger.LogWarning("NetworkBehaviourInspector had no target object"); return; }
 
             // If target's base class is changed from NetworkBehaviour to MonoBehaviour
             // then Unity temporarily keep using this Inspector causing things to break
-            if (!(target is NetworkBehaviour)) { return; }
+            if (!(this.target is NetworkBehaviour)) { return; }
 
-            var scriptClass = target.GetType();
+            var scriptClass = this.target.GetType();
 
-            syncVarNames = new List<string>();
+            this.syncVarNames = new List<string>();
             foreach (var field in InspectorHelper.GetAllFields(scriptClass, typeof(NetworkBehaviour)))
             {
                 if (field.IsSyncVar() && field.IsVisibleField())
                 {
-                    syncVarNames.Add(field.Name);
+                    this.syncVarNames.Add(field.Name);
                 }
             }
 
-            syncListDrawer = new SyncListDrawer(serializedObject.targetObject);
+            this.syncListDrawer = new SyncListDrawer(this.serializedObject.targetObject);
 
-            syncsAnything = SyncsAnything(scriptClass);
+            this.syncsAnything = this.SyncsAnything(scriptClass);
         }
 
         public override void OnInspectorGUI()
         {
-            DrawDefaultInspector();
-            DrawDefaultSyncLists();
-            DrawDefaultSyncSettings();
+            this.DrawDefaultInspector();
+            this.DrawDefaultSyncLists();
+            this.DrawDefaultSyncSettings();
         }
 
         /// <summary>
@@ -91,9 +91,9 @@ namespace Mirage
         protected void DrawDefaultSyncLists()
         {
             // Need this check incase OnEnable returns early
-            if (syncListDrawer == null) { return; }
+            if (this.syncListDrawer == null) { return; }
 
-            syncListDrawer.Draw();
+            this.syncListDrawer.Draw();
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Mirage
         {
             // does it sync anything? then show extra properties
             // (no need to show it if the class only has Cmds/Rpcs and no sync)
-            if (!syncsAnything)
+            if (!this.syncsAnything)
             {
                 return;
             }
@@ -111,11 +111,11 @@ namespace Mirage
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Sync Settings", EditorStyles.boldLabel);
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("syncMode"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("syncInterval"));
+            EditorGUILayout.PropertyField(this.serializedObject.FindProperty("syncMode"));
+            EditorGUILayout.PropertyField(this.serializedObject.FindProperty("syncInterval"));
 
             // apply
-            serializedObject.ApplyModifiedProperties();
+            this.serializedObject.ApplyModifiedProperties();
         }
     }
     public class SyncListDrawer
@@ -126,26 +126,26 @@ namespace Mirage
         public SyncListDrawer(UnityEngine.Object targetObject)
         {
             this.targetObject = targetObject;
-            syncListFields = new List<SyncListField>();
+            this.syncListFields = new List<SyncListField>();
             foreach (var field in InspectorHelper.GetAllFields(targetObject.GetType(), typeof(NetworkBehaviour)))
             {
                 if (field.IsSyncObject() && field.IsVisibleSyncObject())
                 {
-                    syncListFields.Add(new SyncListField(field));
+                    this.syncListFields.Add(new SyncListField(field));
                 }
             }
         }
 
         public void Draw()
         {
-            if (syncListFields.Count == 0) { return; }
+            if (this.syncListFields.Count == 0) { return; }
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Sync Lists", EditorStyles.boldLabel);
 
-            for (var i = 0; i < syncListFields.Count; i++)
+            for (var i = 0; i < this.syncListFields.Count; i++)
             {
-                DrawSyncList(syncListFields[i]);
+                this.DrawSyncList(this.syncListFields[i]);
             }
         }
 
@@ -156,7 +156,7 @@ namespace Mirage
             {
                 using (new EditorGUI.IndentLevelScope())
                 {
-                    var fieldValue = syncListField.field.GetValue(targetObject);
+                    var fieldValue = syncListField.field.GetValue(this.targetObject);
                     if (fieldValue is IEnumerable synclist)
                     {
                         var index = 0;
@@ -182,8 +182,8 @@ namespace Mirage
             public SyncListField(FieldInfo field)
             {
                 this.field = field;
-                visible = false;
-                label = field.Name + "  [" + field.FieldType.Name + "]";
+                this.visible = false;
+                this.label = field.Name + "  [" + field.FieldType.Name + "]";
             }
         }
     }

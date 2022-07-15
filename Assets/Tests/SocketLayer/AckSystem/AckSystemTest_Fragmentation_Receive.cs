@@ -17,28 +17,28 @@ namespace Mirage.SocketLayer.Tests.AckSystemTests
         [SetUp]
         public void SetUp()
         {
-            config = new Config();
+            this.config = new Config();
             var mtu = MAX_PACKET_SIZE;
             var bigSize = (int)(mtu * 1.5f);
 
-            message = CreateBigData(1, bigSize);
+            this.message = this.CreateBigData(1, bigSize);
 
             var sender = new AckTestInstance();
             sender.connection = new SubIRawConnection();
-            sender.ackSystem = new AckSystem(sender.connection, config, MAX_PACKET_SIZE, new Time(), bufferPool);
-            sender.ackSystem.SendReliable(message);
-            packet1 = sender.packet(0);
-            packet2 = sender.packet(1);
+            sender.ackSystem = new AckSystem(sender.connection, this.config, MAX_PACKET_SIZE, new Time(), this.bufferPool);
+            sender.ackSystem.SendReliable(this.message);
+            this.packet1 = sender.packet(0);
+            this.packet2 = sender.packet(1);
 
 
             var connection = new SubIRawConnection();
-            ackSystem = new AckSystem(connection, config, MAX_PACKET_SIZE, new Time(), bufferPool);
+            this.ackSystem = new AckSystem(connection, this.config, MAX_PACKET_SIZE, new Time(), this.bufferPool);
         }
 
         private byte[] CreateBigData(int id, int size)
         {
             var buffer = new byte[size];
-            rand.NextBytes(buffer);
+            this.rand.NextBytes(buffer);
             buffer[0] = (byte)id;
 
             return buffer;
@@ -54,7 +54,7 @@ namespace Mirage.SocketLayer.Tests.AckSystemTests
         [TestCase(5, ExpectedResult = true)]
         public bool ShouldBeInvalidIfFragmentIsOverMax(int differenceToMax)
         {
-            var max = config.MaxReliableFragments;
+            var max = this.config.MaxReliableFragments;
             var badPacket = new byte[AckSystem.MIN_RELIABLE_FRAGMENT_HEADER_SIZE];
             var offset = 0;
             // write as if it is normal packet
@@ -67,34 +67,34 @@ namespace Mirage.SocketLayer.Tests.AckSystemTests
             var fragment = max + differenceToMax;
             ByteUtils.WriteByte(badPacket, ref offset, (byte)fragment);
 
-            return ackSystem.InvalidFragment(badPacket);
+            return this.ackSystem.InvalidFragment(badPacket);
         }
 
 
         [Test]
         public void MessageShouldBeInQueueAfterReceive()
         {
-            ackSystem.ReceiveReliable(packet1, packet1.Length, true);
+            this.ackSystem.ReceiveReliable(this.packet1, this.packet1.Length, true);
 
-            Assert.IsFalse(ackSystem.NextReliablePacket(out var _));
+            Assert.IsFalse(this.ackSystem.NextReliablePacket(out var _));
 
-            ackSystem.ReceiveReliable(packet2, packet2.Length, true);
+            this.ackSystem.ReceiveReliable(this.packet2, this.packet2.Length, true);
 
             var bytesIn1 = MAX_PACKET_SIZE - AckSystem.MIN_RELIABLE_FRAGMENT_HEADER_SIZE;
-            var bytesIn2 = message.Length - bytesIn1;
+            var bytesIn2 = this.message.Length - bytesIn1;
 
-            Assert.IsTrue(ackSystem.NextReliablePacket(out var first));
+            Assert.IsTrue(this.ackSystem.NextReliablePacket(out var first));
 
             Assert.IsTrue(first.isFragment);
             Assert.That(first.buffer.array[0], Is.EqualTo(1), "First fragment should have index 1");
             Assert.That(first.length, Is.EqualTo(bytesIn1 + 1));
-            AssertAreSameFromOffsets(message, 0, first.buffer.array, 1, bytesIn1);
+            AssertAreSameFromOffsets(this.message, 0, first.buffer.array, 1, bytesIn1);
 
-            var second = ackSystem.GetNextFragment();
+            var second = this.ackSystem.GetNextFragment();
             Assert.IsTrue(second.isFragment);
             Assert.That(second.buffer.array[0], Is.EqualTo(0), "Second fragment should have index 0");
             Assert.That(second.length, Is.EqualTo(bytesIn2 + 1));
-            AssertAreSameFromOffsets(message, bytesIn1, second.buffer.array, 1, bytesIn2);
+            AssertAreSameFromOffsets(this.message, bytesIn1, second.buffer.array, 1, bytesIn2);
         }
     }
 }

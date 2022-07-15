@@ -10,7 +10,7 @@ namespace Mirage.Examples.Tanks
 
         private void Awake()
         {
-            Identity.OnStartServer.AddListener(OnStartServer);
+            this.Identity.OnStartServer.AddListener(this.OnStartServer);
         }
 
         [Header("Game Stats")]
@@ -19,21 +19,21 @@ namespace Mirage.Examples.Tanks
 
         public void OnStartServer()
         {
-            Invoke(nameof(DestroySelf), destroyAfter);
+            this.Invoke(nameof(DestroySelf), this.destroyAfter);
         }
 
         // set velocity for server and client. this way we don't have to sync the
         // position, because both the server and the client simulate it.
         private void Start()
         {
-            rigidBody.AddForce(transform.forward * force);
+            this.rigidBody.AddForce(this.transform.forward * this.force);
         }
 
         // destroy for everyone on the server
         [Server]
         private void DestroySelf()
         {
-            ServerObjectManager.Destroy(gameObject);
+            this.ServerObjectManager.Destroy(this.gameObject);
         }
 
         // [Server] because we don't want a warning if OnTriggerEnter is
@@ -42,16 +42,16 @@ namespace Mirage.Examples.Tanks
         private void OnTriggerEnter(Collider co)
         {
             //Hit another player
-            if (co.tag.Equals("Player") && co.gameObject != source)
+            if (co.tag.Equals("Player") && co.gameObject != this.source)
             {
                 //Apply damage
-                co.GetComponent<Tank>().health -= damage;
+                co.GetComponent<Tank>().health -= this.damage;
 
                 //update score on source
-                source.GetComponent<Tank>().score += damage;
+                this.source.GetComponent<Tank>().score += this.damage;
             }
 
-            ServerObjectManager.Destroy(gameObject);
+            this.ServerObjectManager.Destroy(this.gameObject);
         }
     }
 }

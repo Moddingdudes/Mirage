@@ -13,102 +13,102 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void CreatesForStructs()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void CreateForExplicitNetworkMessage()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void CreatesForClass()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void CreatesForClassInherited()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void CreatesForClassWithValidConstructor()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void GivesErrorForClassWithNoValidConstructor()
         {
-            HasError("SomeOtherData can't be deserialized because it has no default constructor",
+            this.HasError("SomeOtherData can't be deserialized because it has no default constructor",
                 "GeneratedReaderWriter.GivesErrorForClassWithNoValidConstructor.SomeOtherData");
         }
 
         [Test]
         public void CreatesForInheritedFromScriptableObject()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void CreatesForStructFromDifferentAssemblies()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void CreatesForClassFromDifferentAssemblies()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void CreatesForClassFromDifferentAssembliesWithValidConstructor()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void CanUseCustomReadWriteForTypesFromDifferentAssemblies()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void GivesErrorWhenUsingUnityAsset()
         {
-            HasError("Material can't be deserialized because it has no default constructor",
+            this.HasError("Material can't be deserialized because it has no default constructor",
                 "UnityEngine.Material");
         }
 
         [Test]
         public void GivesErrorWhenUsingObject()
         {
-            HasError("Cannot generate write function for Object. Use a supported type or provide a custom write function",
+            this.HasError("Cannot generate write function for Object. Use a supported type or provide a custom write function",
                 "UnityEngine.Object");
         }
 
         [Test]
         public void GivesErrorWhenUsingScriptableObject()
         {
-            HasError("Cannot generate write function for ScriptableObject. Use a supported type or provide a custom write function",
+            this.HasError("Cannot generate write function for ScriptableObject. Use a supported type or provide a custom write function",
                 "UnityEngine.ScriptableObject");
         }
 
         [Test]
         public void GivesErrorWhenUsingMonoBehaviour()
         {
-            HasError("Cannot generate write function for component type MonoBehaviour. Use a supported type or provide a custom write function",
+            this.HasError("Cannot generate write function for component type MonoBehaviour. Use a supported type or provide a custom write function",
                 "UnityEngine.MonoBehaviour");
         }
 
         [Test]
         public void GivesErrorWhenUsingTypeInheritedFromMonoBehaviour()
         {
-            HasError("Cannot generate write function for component type MyBehaviour. Use a supported type or provide a custom write function",
+            this.HasError("Cannot generate write function for component type MyBehaviour. Use a supported type or provide a custom write function",
                 "GeneratedReaderWriter.GivesErrorWhenUsingTypeInheritedFromMonoBehaviour.MyBehaviour");
         }
 
@@ -116,105 +116,105 @@ namespace Mirage.Tests.Weaver
         public void ExcludesNonSerializedFields()
         {
             // we test this by having a not allowed type in the class, but mark it with NonSerialized
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void GivesErrorWhenUsingInterface()
         {
-            HasError("Cannot generate write function for interface IData. Use a supported type or provide a custom write function",
+            this.HasError("Cannot generate write function for interface IData. Use a supported type or provide a custom write function",
                 "GeneratedReaderWriter.GivesErrorWhenUsingInterface.IData");
         }
 
         [Test]
         public void CanUseCustomReadWriteForInterfaces()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void GivesErrorWhenUsingAbstractClass()
         {
-            HasError("Cannot generate write function for abstract class DataBase. Use a supported type or provide a custom write function", "GeneratedReaderWriter.GivesErrorWhenUsingAbstractClass.DataBase");
+            this.HasError("Cannot generate write function for abstract class DataBase. Use a supported type or provide a custom write function", "GeneratedReaderWriter.GivesErrorWhenUsingAbstractClass.DataBase");
         }
 
         [Test]
         public void CanUseCustomReadWriteForAbstractClass()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void CanUseCustomReadWriteForAbstractClassUsedInMessage()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void CreatesForEnums()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void CreatesForArraySegment()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void CreatesForStructArraySegment()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void GivesErrorForJaggedArray()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void GivesErrorForMultidimensionalArray()
         {
-            HasError("Int32[0...,0...] is an unsupported type. Multidimensional arrays are not supported",
+            this.HasError("Int32[0...,0...] is an unsupported type. Multidimensional arrays are not supported",
                 "System.Int32[0...,0...]");
         }
 
         [Test]
         public void GivesErrorForInvalidArrayType()
         {
-            HasError("Cannot generate write function for component type MonoBehaviour. Use a supported type or provide a custom write function", "UnityEngine.MonoBehaviour");
+            this.HasError("Cannot generate write function for component type MonoBehaviour. Use a supported type or provide a custom write function", "UnityEngine.MonoBehaviour");
         }
 
         [Test]
         public void GivesErrorForInvalidArraySegmentType()
         {
-            HasError("Cannot generate write function for component type MonoBehaviour. Use a supported type or provide a custom write function", "UnityEngine.MonoBehaviour");
+            this.HasError("Cannot generate write function for component type MonoBehaviour. Use a supported type or provide a custom write function", "UnityEngine.MonoBehaviour");
         }
 
         [Test]
         public void CreatesForList()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void CreatesForStructList()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void GivesErrorForInvalidListType()
         {
-            HasError("Cannot generate write function for component type MonoBehaviour. Use a supported type or provide a custom write function", "UnityEngine.MonoBehaviour");
+            this.HasError("Cannot generate write function for component type MonoBehaviour. Use a supported type or provide a custom write function", "UnityEngine.MonoBehaviour");
         }
 
         [Test]
         public void CreatesForNullable()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
     }
 }

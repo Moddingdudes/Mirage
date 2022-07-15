@@ -70,30 +70,30 @@ namespace Mirage.Events
     {
         [SerializeField] private UnityEvent _event = new UnityEvent();
 
-        protected override UnityEventBase baseEvent => _event;
+        protected override UnityEventBase baseEvent => this._event;
 
         public void AddListener(UnityAction handler)
         {
             // invoke handler if event has been invoked atleast once
-            if (hasInvoked)
+            if (this.hasInvoked)
             {
                 handler.Invoke();
             }
 
             // add handler to inner event so that it can be invoked again
-            _event.AddListener(handler);
+            this._event.AddListener(handler);
         }
 
         public void RemoveListener(UnityAction handler)
         {
-            _event.RemoveListener(handler);
+            this._event.RemoveListener(handler);
         }
 
         public void Invoke()
         {
-            MarkInvoked();
+            this.MarkInvoked();
 
-            _event.Invoke();
+            this._event.Invoke();
         }
     }
 
@@ -108,33 +108,33 @@ namespace Mirage.Events
         where TEvent : UnityEvent<T0>, new()
     {
         [SerializeField] private TEvent _event = new TEvent();
-        protected override UnityEventBase baseEvent => _event;
+        protected override UnityEventBase baseEvent => this._event;
 
         private T0 arg0;
 
         public void AddListener(UnityAction<T0> handler)
         {
             // invoke handler if event has been invoked atleast once
-            if (hasInvoked)
+            if (this.hasInvoked)
             {
-                handler.Invoke(arg0);
+                handler.Invoke(this.arg0);
             }
 
             // add handler to inner event so that it can be invoked again
-            _event.AddListener(handler);
+            this._event.AddListener(handler);
         }
 
         public void RemoveListener(UnityAction<T0> handler)
         {
-            _event.RemoveListener(handler);
+            this._event.RemoveListener(handler);
         }
 
         public void Invoke(T0 arg0)
         {
-            MarkInvoked();
+            this.MarkInvoked();
 
             this.arg0 = arg0;
-            _event.Invoke(arg0);
+            this._event.Invoke(arg0);
         }
     }
 
@@ -149,7 +149,7 @@ namespace Mirage.Events
         where TEvent : UnityEvent<T0, T1>, new()
     {
         [SerializeField] private TEvent _event = new TEvent();
-        protected override UnityEventBase baseEvent => _event;
+        protected override UnityEventBase baseEvent => this._event;
 
         private T0 arg0;
         private T1 arg1;
@@ -157,27 +157,27 @@ namespace Mirage.Events
         public void AddListener(UnityAction<T0, T1> handler)
         {
             // invoke handler if event has been invoked atleast once
-            if (hasInvoked)
+            if (this.hasInvoked)
             {
-                handler.Invoke(arg0, arg1);
+                handler.Invoke(this.arg0, this.arg1);
             }
 
             // add handler to inner event so that it can be invoked again
-            _event.AddListener(handler);
+            this._event.AddListener(handler);
         }
 
         public void RemoveListener(UnityAction<T0, T1> handler)
         {
-            _event.RemoveListener(handler);
+            this._event.RemoveListener(handler);
         }
 
         public void Invoke(T0 arg0, T1 arg1)
         {
-            MarkInvoked();
+            this.MarkInvoked();
 
             this.arg0 = arg0;
             this.arg1 = arg1;
-            _event.Invoke(arg0, arg1);
+            this._event.Invoke(arg0, arg1);
         }
     }
 }

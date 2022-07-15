@@ -12,34 +12,34 @@ namespace Mirage.Weaver.NetworkBehaviours
 
         public FoundNetworkBehaviour(ModuleDefinition module, TypeDefinition td)
         {
-            Module = module;
-            TypeDefinition = td;
+            this.Module = module;
+            this.TypeDefinition = td;
 
-            syncVarCounter = new ConstFieldTracker("SYNC_VAR_COUNT", td, 64, "[SyncVar]");
+            this.syncVarCounter = new ConstFieldTracker("SYNC_VAR_COUNT", td, 64, "[SyncVar]");
         }
 
         public List<FoundSyncVar> SyncVars { get; private set; } = new List<FoundSyncVar>();
 
         public FoundSyncVar AddSyncVar(FieldDefinition fd)
         {
-            var dirtyIndex = syncVarCounter.GetInBase() + SyncVars.Count;
-            var syncVar = new FoundSyncVar(Module, this, fd, dirtyIndex);
-            SyncVars.Add(syncVar);
+            var dirtyIndex = this.syncVarCounter.GetInBase() + this.SyncVars.Count;
+            var syncVar = new FoundSyncVar(this.Module, this, fd, dirtyIndex);
+            this.SyncVars.Add(syncVar);
             return syncVar;
         }
 
         public void SetSyncVarCount()
         {
-            syncVarCounter.Set(SyncVars.Count);
+            this.syncVarCounter.Set(this.SyncVars.Count);
         }
 
         public bool HasManualSerializeOverride()
         {
-            return TypeDefinition.GetMethod(SerializeHelper.MethodName) != null;
+            return this.TypeDefinition.GetMethod(SerializeHelper.MethodName) != null;
         }
         public bool HasManualDeserializeOverride()
         {
-            return TypeDefinition.GetMethod(DeserializeHelper.MethodName) != null;
+            return this.TypeDefinition.GetMethod(DeserializeHelper.MethodName) != null;
         }
     }
 }

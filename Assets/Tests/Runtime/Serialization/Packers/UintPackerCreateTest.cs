@@ -17,8 +17,8 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         public int CreatesUsing2Values(ulong inValue, ulong smallValue, ulong mediumValue)
         {
             var packer = new VarIntPacker(smallValue, mediumValue);
-            packer.PackUlong(writer, inValue);
-            return writer.BitPosition;
+            packer.PackUlong(this.writer, inValue);
+            return this.writer.BitPosition;
         }
 
 
@@ -34,8 +34,8 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         public int CreatesUsing3Values(ulong inValue, ulong smallValue, ulong mediumValue, ulong largeValue)
         {
             var packer = new VarIntPacker(smallValue, mediumValue, largeValue);
-            packer.PackUlong(writer, inValue);
-            return writer.BitPosition;
+            packer.PackUlong(this.writer, inValue);
+            return this.writer.BitPosition;
         }
 
 
@@ -96,15 +96,15 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
             var packer = VarIntPacker.FromBitCount(1, 2, 3, true);
             var exception1 = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                packer.PackUlong(writer, 20);
+                packer.PackUlong(this.writer, 20);
             });
             var exception2 = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                packer.PackUint(writer, 20);
+                packer.PackUint(this.writer, 20);
             });
             var exception3 = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                packer.PackUlong(writer, 20);
+                packer.PackUlong(this.writer, 20);
             });
             var expected = new ArgumentOutOfRangeException("value", 20, $"Value is over max of {7}");
             Assert.That(exception1, Has.Message.EqualTo(expected.Message));
@@ -122,11 +122,11 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
             var packer = VarIntPacker.FromBitCount(1, 2, largeBits, false);
             Assert.DoesNotThrow(() =>
             {
-                packer.PackUlong(writer, inValue);
-                packer.PackUint(writer, (uint)inValue);
-                packer.PackUlong(writer, (ushort)inValue);
+                packer.PackUlong(this.writer, inValue);
+                packer.PackUint(this.writer, (uint)inValue);
+                packer.PackUlong(this.writer, (ushort)inValue);
             });
-            var reader = GetReader();
+            var reader = this.GetReader();
             var unpack1 = packer.UnpackUlong(reader);
             var unpack2 = packer.UnpackUint(reader);
             var unpack3 = packer.UnpackUshort(reader);

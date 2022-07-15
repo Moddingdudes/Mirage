@@ -7,13 +7,13 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void RecursionCount()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void TestingScriptableObjectArraySerialization()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
     }
 }

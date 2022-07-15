@@ -13,29 +13,29 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void IsServer()
         {
-            Assert.That(serverIdentity.IsServer, Is.True);
-            Assert.That(clientIdentity.IsServer, Is.False);
+            Assert.That(this.serverIdentity.IsServer, Is.True);
+            Assert.That(this.clientIdentity.IsServer, Is.False);
         }
 
         [Test]
         public void IsClient()
         {
-            Assert.That(serverIdentity.IsClient, Is.False);
-            Assert.That(clientIdentity.IsClient, Is.True);
+            Assert.That(this.serverIdentity.IsClient, Is.False);
+            Assert.That(this.clientIdentity.IsClient, Is.True);
         }
 
         [Test]
         public void IsLocalPlayer()
         {
-            Assert.That(serverIdentity.IsLocalPlayer, Is.False);
-            Assert.That(clientIdentity.IsLocalPlayer, Is.True);
+            Assert.That(this.serverIdentity.IsLocalPlayer, Is.False);
+            Assert.That(this.clientIdentity.IsLocalPlayer, Is.True);
         }
 
         [Test]
         public void DefaultAuthority()
         {
-            Assert.That(serverIdentity.Owner, Is.EqualTo(serverPlayer));
-            Assert.That(clientIdentity.Owner, Is.Null);
+            Assert.That(this.serverIdentity.Owner, Is.EqualTo(this.serverPlayer));
+            Assert.That(this.clientIdentity.Owner, Is.Null);
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             Assert.Throws<InvalidOperationException>(() =>
             {
-                clientIdentity.AssignClientAuthority(clientPlayer);
+                this.clientIdentity.AssignClientAuthority(this.clientPlayer);
             });
         }
 
@@ -53,7 +53,7 @@ namespace Mirage.Tests.Runtime.ClientServer
             Assert.Throws<InvalidOperationException>(() =>
             {
                 // shoud fail because the server is not active
-                clientIdentity.RemoveClientAuthority();
+                this.clientIdentity.RemoveClientAuthority();
             });
         }
 
@@ -63,14 +63,14 @@ namespace Mirage.Tests.Runtime.ClientServer
             Assert.Throws<InvalidOperationException>(() =>
             {
                 // shoud fail because the server is not active
-                clientIdentity.RemoveClientAuthority();
+                this.clientIdentity.RemoveClientAuthority();
             });
         }
 
         [Test]
         public void IsSceneObject()
         {
-            var clone = CreateNetworkIdentity();
+            var clone = this.CreateNetworkIdentity();
 
             clone.SetSceneId(40);
             Assert.That(clone.IsSceneObject, Is.True);
@@ -78,7 +78,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void IsNotSceneObject()
         {
-            var clone = CreateNetworkIdentity();
+            var clone = this.CreateNetworkIdentity();
 
             clone.SetSceneId(0);
             Assert.That(clone.IsSceneObject, Is.False);
@@ -86,7 +86,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void IsPrefab()
         {
-            var clone = CreateNetworkIdentity();
+            var clone = this.CreateNetworkIdentity();
 
             clone.PrefabHash = 23232;
             Assert.That(clone.IsPrefab, Is.True);
@@ -94,7 +94,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void IsNotPrefab()
         {
-            var clone = CreateNetworkIdentity();
+            var clone = this.CreateNetworkIdentity();
 
             clone.PrefabHash = 0;
             Assert.That(clone.IsPrefab, Is.False);
@@ -102,7 +102,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void IsNotPrefabIfScenObject()
         {
-            var clone = CreateNetworkIdentity();
+            var clone = this.CreateNetworkIdentity();
 
             clone.PrefabHash = 23232;
             clone.SetSceneId(422);
@@ -111,7 +111,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void IsSpawned()
         {
-            var clone = CreateNetworkIdentity();
+            var clone = this.CreateNetworkIdentity();
             clone.NetId = 20;
 
             Assert.That(clone.IsSpawned, Is.True);
@@ -119,7 +119,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void IsNotSpawned()
         {
-            var clone = CreateNetworkIdentity();
+            var clone = this.CreateNetworkIdentity();
             clone.NetId = 0;
 
             Assert.That(clone.IsSpawned, Is.False);
@@ -135,67 +135,67 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             base.ExtraSetup();
 
-            serverIdentity2 = GameObject.Instantiate(playerPrefab).GetComponent<NetworkIdentity>();
-            serverObjectManager.Spawn(serverIdentity2);
+            this.serverIdentity2 = GameObject.Instantiate(this.playerPrefab).GetComponent<NetworkIdentity>();
+            this.serverObjectManager.Spawn(this.serverIdentity2);
 
             await UniTask.DelayFrame(2);
 
-            client.World.TryGetIdentity(serverIdentity2.NetId, out clientIdentity2);
-            Debug.Assert(clientIdentity2 != null);
+            this.client.World.TryGetIdentity(this.serverIdentity2.NetId, out this.clientIdentity2);
+            Debug.Assert(this.clientIdentity2 != null);
         }
 
         public override void ExtraTearDown()
         {
             base.ExtraTearDown();
 
-            if (serverIdentity2 != null)
-                GameObject.Destroy(serverIdentity2);
-            if (clientIdentity2 != null)
-                GameObject.Destroy(clientIdentity2);
+            if (this.serverIdentity2 != null)
+                GameObject.Destroy(this.serverIdentity2);
+            if (this.clientIdentity2 != null)
+                GameObject.Destroy(this.clientIdentity2);
         }
 
         [UnityTest]
         public IEnumerator AssignAuthority()
         {
-            serverIdentity2.AssignClientAuthority(serverPlayer);
-            Assert.That(serverIdentity2.Owner, Is.EqualTo(serverPlayer));
+            this.serverIdentity2.AssignClientAuthority(this.serverPlayer);
+            Assert.That(this.serverIdentity2.Owner, Is.EqualTo(this.serverPlayer));
 
             yield return new WaitForSeconds(0.1f);
-            Assert.That(clientIdentity2.HasAuthority, Is.True);
+            Assert.That(this.clientIdentity2.HasAuthority, Is.True);
         }
 
         [UnityTest]
         public IEnumerator RemoveClientAuthority()
         {
-            serverIdentity2.AssignClientAuthority(serverPlayer);
+            this.serverIdentity2.AssignClientAuthority(this.serverPlayer);
             yield return new WaitForSeconds(0.1f);
 
-            serverIdentity2.RemoveClientAuthority();
-            Assert.That(serverIdentity2.Owner, Is.EqualTo(null));
+            this.serverIdentity2.RemoveClientAuthority();
+            Assert.That(this.serverIdentity2.Owner, Is.EqualTo(null));
 
             yield return new WaitForSeconds(0.1f);
-            Assert.That(clientIdentity2.HasAuthority, Is.False);
+            Assert.That(this.clientIdentity2.HasAuthority, Is.False);
         }
 
         [UnityTest]
         public IEnumerator RemoveClientAuthority_DoesNotResetPosition()
         {
-            serverIdentity2.AssignClientAuthority(serverPlayer);
+            this.serverIdentity2.AssignClientAuthority(this.serverPlayer);
             yield return new WaitForSeconds(0.1f);
 
             // set position on client
             var clientPosition = new Vector3(200, -30, 40);
-            clientIdentity2.transform.position = clientPosition;
-            serverIdentity2.transform.position = Vector3.zero;
+            this.clientIdentity2.transform.position = clientPosition;
+            this.serverIdentity2.transform.position = Vector3.zero;
 
             // remove auth on server
-            serverIdentity2.RemoveClientAuthority();
+            this.serverIdentity2.RemoveClientAuthority();
 
             yield return new WaitForSeconds(0.1f);
             // expect authority to be gone, but position not to be reset
-            Debug.Assert(clientIdentity2.HasAuthority == false);
-            Assert.That(clientIdentity2.transform.position, Is.EqualTo(clientPosition));
-            Assert.That(serverIdentity2.transform.position, Is.EqualTo(Vector3.zero));
+            Debug.Assert(this.clientIdentity2.HasAuthority == false);
+            Assert.That(this.clientIdentity2.transform.position, Is.EqualTo(clientPosition));
+            Assert.That(this.serverIdentity2.transform.position, Is.EqualTo(Vector3.zero));
         }
 
         [Test]
@@ -203,16 +203,16 @@ namespace Mirage.Tests.Runtime.ClientServer
         public void OnAuthorityChanged_Server()
         {
             var hasAuthCalls = new Queue<bool>();
-            serverIdentity2.OnAuthorityChanged.AddListener(hasAuth =>
+            this.serverIdentity2.OnAuthorityChanged.AddListener(hasAuth =>
             {
                 hasAuthCalls.Enqueue(hasAuth);
             });
 
-            serverIdentity2.AssignClientAuthority(serverPlayer);
+            this.serverIdentity2.AssignClientAuthority(this.serverPlayer);
 
             Assert.That(hasAuthCalls.Count, Is.EqualTo(0));
 
-            serverIdentity2.RemoveClientAuthority();
+            this.serverIdentity2.RemoveClientAuthority();
 
             Assert.That(hasAuthCalls.Count, Is.EqualTo(0));
         }
@@ -221,18 +221,18 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator OnAuthorityChanged_Client()
         {
             var hasAuthCalls = new Queue<bool>();
-            clientIdentity2.OnAuthorityChanged.AddListener(hasAuth =>
+            this.clientIdentity2.OnAuthorityChanged.AddListener(hasAuth =>
             {
                 hasAuthCalls.Enqueue(hasAuth);
             });
 
-            serverIdentity2.AssignClientAuthority(serverPlayer);
+            this.serverIdentity2.AssignClientAuthority(this.serverPlayer);
             yield return new WaitForSeconds(0.1f);
 
             Assert.That(hasAuthCalls.Count, Is.EqualTo(1));
             Assert.That(hasAuthCalls.Dequeue(), Is.True);
 
-            serverIdentity2.RemoveClientAuthority();
+            this.serverIdentity2.RemoveClientAuthority();
             yield return new WaitForSeconds(0.1f);
 
             Assert.That(hasAuthCalls.Count, Is.EqualTo(1));
@@ -243,17 +243,17 @@ namespace Mirage.Tests.Runtime.ClientServer
         public void OnOwnerChanged_Server()
         {
             var hasAuthCalls = new Queue<INetworkPlayer>();
-            serverIdentity2.OnOwnerChanged.AddListener(newOwner =>
+            this.serverIdentity2.OnOwnerChanged.AddListener(newOwner =>
             {
                 hasAuthCalls.Enqueue(newOwner);
             });
 
-            serverIdentity2.AssignClientAuthority(serverPlayer);
+            this.serverIdentity2.AssignClientAuthority(this.serverPlayer);
 
             Assert.That(hasAuthCalls.Count, Is.EqualTo(1));
-            Assert.That(hasAuthCalls.Dequeue(), Is.EqualTo(serverPlayer));
+            Assert.That(hasAuthCalls.Dequeue(), Is.EqualTo(this.serverPlayer));
 
-            serverIdentity2.RemoveClientAuthority();
+            this.serverIdentity2.RemoveClientAuthority();
 
             Assert.That(hasAuthCalls.Count, Is.EqualTo(1));
             Assert.That(hasAuthCalls.Dequeue(), Is.Null);
@@ -264,17 +264,17 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator OnOwnerChanged_Client()
         {
             var hasAuthCalls = new Queue<INetworkPlayer>();
-            clientIdentity2.OnOwnerChanged.AddListener(newOwner =>
+            this.clientIdentity2.OnOwnerChanged.AddListener(newOwner =>
             {
                 hasAuthCalls.Enqueue(newOwner);
             });
 
-            serverIdentity2.AssignClientAuthority(serverPlayer);
+            this.serverIdentity2.AssignClientAuthority(this.serverPlayer);
             yield return new WaitForSeconds(0.1f);
 
             Assert.That(hasAuthCalls.Count, Is.EqualTo(0));
 
-            serverIdentity2.RemoveClientAuthority();
+            this.serverIdentity2.RemoveClientAuthority();
             yield return new WaitForSeconds(0.1f);
 
             Assert.That(hasAuthCalls.Count, Is.EqualTo(0));

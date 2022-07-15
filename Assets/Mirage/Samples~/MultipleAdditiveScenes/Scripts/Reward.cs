@@ -14,8 +14,8 @@ namespace Mirage.Examples.MultipleAdditiveScenes
 
         private void OnValidate()
         {
-            if (randomColor == null)
-                randomColor = GetComponent<RandomColor>();
+            if (this.randomColor == null)
+                this.randomColor = this.GetComponent<RandomColor>();
         }
 
         [Server(error = false)]
@@ -23,7 +23,7 @@ namespace Mirage.Examples.MultipleAdditiveScenes
         {
             if (other.gameObject.CompareTag("Player"))
             {
-                ClaimPrize(other.gameObject);
+                this.ClaimPrize(other.gameObject);
             }
         }
 
@@ -31,13 +31,13 @@ namespace Mirage.Examples.MultipleAdditiveScenes
         // This only runs on the server
         public void ClaimPrize(GameObject player)
         {
-            if (available)
+            if (this.available)
             {
                 // This is a fast switch to prevent two players claiming the prize in a bang-bang close contest for it.
                 // First hit turns it off, pending the object being destroyed a few frames later.
-                available = false;
+                this.available = false;
 
-                Color prizeColor = randomColor.color;
+                Color prizeColor = this.randomColor.color;
 
                 // calculate the points from the color ... lighter scores higher as the average approaches 255
                 // UnityEngine.Color RGB values are float fractions of 255
@@ -48,10 +48,10 @@ namespace Mirage.Examples.MultipleAdditiveScenes
                 player.GetComponent<PlayerScore>().score += points;
 
                 // spawn a replacement
-                spawner.SpawnPrize();
+                this.spawner.SpawnPrize();
 
                 // destroy this one
-                ServerObjectManager.Destroy(gameObject);
+                this.ServerObjectManager.Destroy(this.gameObject);
             }
         }
     }

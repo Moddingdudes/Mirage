@@ -48,8 +48,8 @@ namespace Mirage.Tests.Runtime.Serialization
             };
 
             var outValue = new MessageWithCustomWriter();
-            serverComponent.onRpc_CustomWriter += (v) => outValue = v;
-            clientComponent.SendValue_Custom(inValue);
+            this.serverComponent.onRpc_CustomWriter += (v) => outValue = v;
+            this.clientComponent.SendValue_Custom(inValue);
             yield return null;
             yield return null;
             Assert.That(outValue.type, Is.EqualTo(inValue.type));
@@ -71,8 +71,8 @@ namespace Mirage.Tests.Runtime.Serialization
             };
 
             var outValue = new MessageWitAutoWriter();
-            serverComponent.onRpc_AutoWriter += (v) => outValue = v;
-            clientComponent.SendValue_Auto(inValue);
+            this.serverComponent.onRpc_AutoWriter += (v) => outValue = v;
+            this.clientComponent.SendValue_Auto(inValue);
             yield return null;
             yield return null;
             Assert.That(outValue.type, Is.EqualTo(inValue.type));
@@ -94,8 +94,8 @@ namespace Mirage.Tests.Runtime.Serialization
             };
 
             var outValue = new MessageWithNoWriter();
-            serverComponent.onRpc_NoWriter += (v) => outValue = v;
-            clientComponent.SendValue_None(inValue);
+            this.serverComponent.onRpc_NoWriter += (v) => outValue = v;
+            this.clientComponent.SendValue_None(inValue);
             yield return null;
             yield return null;
             Assert.That(outValue.type, Is.EqualTo(inValue.type));

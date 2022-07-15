@@ -7,6 +7,6 @@ namespace Mirage.Experimental
     [HelpURL("https://miragenet.github.io/Mirage/Articles/Components/NetworkTransform.html")]
     public class NetworkTransform : NetworkTransformBase
     {
-        protected override Transform TargetTransform => transform;
+        protected override Transform TargetTransform => this.transform;
     }
 }

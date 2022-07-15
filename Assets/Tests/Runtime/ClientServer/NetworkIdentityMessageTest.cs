@@ -14,16 +14,16 @@ namespace Mirage.Tests.Runtime.ClientServer
         public void MessageFindsNetworkIdentities()
         {
             NetworkIdentity found = null;
-            client.MessageHandler.RegisterHandler((MyMessage msg) =>
+            this.client.MessageHandler.RegisterHandler((MyMessage msg) =>
             {
                 found = msg.player1;
             });
-            serverPlayer.Send(new MyMessage { player1 = serverPlayer.Identity });
+            this.serverPlayer.Send(new MyMessage { player1 = this.serverPlayer.Identity });
 
-            server.Update();
-            client.Update();
+            this.server.Update();
+            this.client.Update();
 
-            Assert.That(found == clientPlayer.Identity, "Could not find client version of object");
+            Assert.That(found == this.clientPlayer.Identity, "Could not find client version of object");
         }
     }
 }

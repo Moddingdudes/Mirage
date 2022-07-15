@@ -19,7 +19,7 @@ namespace Mirage.Tests.Runtime.Host
             var msg = new SpawnMessage();
             var ex = Assert.Throws<InvalidOperationException>(() =>
             {
-                clientObjectManager.OnSpawn(msg);
+                this.clientObjectManager.OnSpawn(msg);
             });
 
             Assert.That(ex.Message, Is.EqualTo($"OnSpawn has empty prefabHash and sceneId for netId: {msg.netId}"));
@@ -28,15 +28,15 @@ namespace Mirage.Tests.Runtime.Host
         [UnityTest]
         public IEnumerator GetPrefabTest() => UniTask.ToCoroutine(async () =>
         {
-            var hash = NewUniqueHash();
+            var hash = this.NewUniqueHash();
             var prefabObject = new GameObject("prefab", typeof(NetworkIdentity));
             var identity = prefabObject.GetComponent<NetworkIdentity>();
 
-            clientObjectManager.RegisterPrefab(identity, hash);
+            this.clientObjectManager.RegisterPrefab(identity, hash);
 
             await UniTask.Delay(1);
 
-            var result = clientObjectManager.GetPrefab(hash);
+            var result = this.clientObjectManager.GetPrefab(hash);
 
             Assert.That(result, Is.SameAs(identity));
 
@@ -52,7 +52,7 @@ namespace Mirage.Tests.Runtime.Host
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                clientObjectManager.RegisterPrefab(identity, TestSpawnDelegate, TestUnspawnDelegate);
+                this.clientObjectManager.RegisterPrefab(identity, this.TestSpawnDelegate, this.TestUnspawnDelegate);
             });
 
             Object.Destroy(prefabObject);
@@ -63,12 +63,12 @@ namespace Mirage.Tests.Runtime.Host
         {
             var prefabObject = new GameObject("prefab", typeof(NetworkIdentity));
             var identity = prefabObject.GetComponent<NetworkIdentity>();
-            identity.PrefabHash = NewUniqueHash();
+            identity.PrefabHash = this.NewUniqueHash();
 
-            clientObjectManager.RegisterPrefab(identity, TestSpawnDelegate, TestUnspawnDelegate);
+            this.clientObjectManager.RegisterPrefab(identity, this.TestSpawnDelegate, this.TestUnspawnDelegate);
 
-            Assert.That(clientObjectManager.spawnHandlers.ContainsKey(identity.PrefabHash));
-            Assert.That(clientObjectManager.unspawnHandlers.ContainsKey(identity.PrefabHash));
+            Assert.That(this.clientObjectManager.spawnHandlers.ContainsKey(identity.PrefabHash));
+            Assert.That(this.clientObjectManager.unspawnHandlers.ContainsKey(identity.PrefabHash));
 
             Object.Destroy(prefabObject);
         }
@@ -78,17 +78,17 @@ namespace Mirage.Tests.Runtime.Host
         {
             var prefabObject = new GameObject("prefab", typeof(NetworkIdentity));
             var identity = prefabObject.GetComponent<NetworkIdentity>();
-            identity.PrefabHash = NewUniqueHash();
+            identity.PrefabHash = this.NewUniqueHash();
 
-            clientObjectManager.RegisterPrefab(identity, TestSpawnDelegate, TestUnspawnDelegate);
+            this.clientObjectManager.RegisterPrefab(identity, this.TestSpawnDelegate, this.TestUnspawnDelegate);
 
-            Assert.That(clientObjectManager.spawnHandlers.ContainsKey(identity.PrefabHash));
-            Assert.That(clientObjectManager.unspawnHandlers.ContainsKey(identity.PrefabHash));
+            Assert.That(this.clientObjectManager.spawnHandlers.ContainsKey(identity.PrefabHash));
+            Assert.That(this.clientObjectManager.unspawnHandlers.ContainsKey(identity.PrefabHash));
 
-            clientObjectManager.UnregisterPrefab(identity);
+            this.clientObjectManager.UnregisterPrefab(identity);
 
-            Assert.That(!clientObjectManager.spawnHandlers.ContainsKey(identity.PrefabHash));
-            Assert.That(!clientObjectManager.unspawnHandlers.ContainsKey(identity.PrefabHash));
+            Assert.That(!this.clientObjectManager.spawnHandlers.ContainsKey(identity.PrefabHash));
+            Assert.That(!this.clientObjectManager.unspawnHandlers.ContainsKey(identity.PrefabHash));
 
             Object.Destroy(prefabObject);
         }
@@ -98,17 +98,17 @@ namespace Mirage.Tests.Runtime.Host
         {
             var prefabObject = new GameObject("prefab", typeof(NetworkIdentity));
             var identity = prefabObject.GetComponent<NetworkIdentity>();
-            identity.PrefabHash = NewUniqueHash();
+            identity.PrefabHash = this.NewUniqueHash();
 
-            clientObjectManager.RegisterPrefab(identity, TestSpawnDelegate, TestUnspawnDelegate);
+            this.clientObjectManager.RegisterPrefab(identity, this.TestSpawnDelegate, this.TestUnspawnDelegate);
 
-            Assert.That(clientObjectManager.spawnHandlers.ContainsKey(identity.PrefabHash));
-            Assert.That(clientObjectManager.unspawnHandlers.ContainsKey(identity.PrefabHash));
+            Assert.That(this.clientObjectManager.spawnHandlers.ContainsKey(identity.PrefabHash));
+            Assert.That(this.clientObjectManager.unspawnHandlers.ContainsKey(identity.PrefabHash));
 
-            clientObjectManager.UnregisterSpawnHandler(identity.PrefabHash);
+            this.clientObjectManager.UnregisterSpawnHandler(identity.PrefabHash);
 
-            Assert.That(!clientObjectManager.spawnHandlers.ContainsKey(identity.PrefabHash));
-            Assert.That(!clientObjectManager.unspawnHandlers.ContainsKey(identity.PrefabHash));
+            Assert.That(!this.clientObjectManager.spawnHandlers.ContainsKey(identity.PrefabHash));
+            Assert.That(!this.clientObjectManager.unspawnHandlers.ContainsKey(identity.PrefabHash));
 
             Object.Destroy(prefabObject);
         }
@@ -126,7 +126,7 @@ namespace Mirage.Tests.Runtime.Host
         [Test]
         public void GetPrefabEmptyNullTest()
         {
-            var result = clientObjectManager.GetPrefab(0);
+            var result = this.clientObjectManager.GetPrefab(0);
 
             Assert.That(result, Is.Null);
         }
@@ -134,7 +134,7 @@ namespace Mirage.Tests.Runtime.Host
         [Test]
         public void GetPrefabNotFoundNullTest()
         {
-            var result = clientObjectManager.GetPrefab(NewUniqueHash());
+            var result = this.clientObjectManager.GetPrefab(this.NewUniqueHash());
 
             Assert.That(result, Is.Null);
         }
@@ -144,9 +144,9 @@ namespace Mirage.Tests.Runtime.Host
         {
             var testGuid = Guid.NewGuid().GetHashCode();
 
-            if (clientObjectManager.prefabs.ContainsKey(testGuid))
+            if (this.clientObjectManager.prefabs.ContainsKey(testGuid))
             {
-                testGuid = NewUniqueHash();
+                testGuid = this.NewUniqueHash();
             }
             return testGuid;
         }
@@ -154,23 +154,23 @@ namespace Mirage.Tests.Runtime.Host
         [Test]
         public void ReplacePlayerHostTest()
         {
-            playerReplacement = new GameObject("replacement", typeof(NetworkIdentity));
-            var replacementIdentity = playerReplacement.GetComponent<NetworkIdentity>();
-            replacementIdentity.PrefabHash = NewUniqueHash();
-            clientObjectManager.RegisterPrefab(replacementIdentity);
+            this.playerReplacement = new GameObject("replacement", typeof(NetworkIdentity));
+            var replacementIdentity = this.playerReplacement.GetComponent<NetworkIdentity>();
+            replacementIdentity.PrefabHash = this.NewUniqueHash();
+            this.clientObjectManager.RegisterPrefab(replacementIdentity);
 
-            serverObjectManager.ReplaceCharacter(server.LocalPlayer, playerReplacement, true);
+            this.serverObjectManager.ReplaceCharacter(this.server.LocalPlayer, this.playerReplacement, true);
 
-            Assert.That(server.LocalClient.Player.Identity, Is.EqualTo(replacementIdentity));
+            Assert.That(this.server.LocalClient.Player.Identity, Is.EqualTo(replacementIdentity));
         }
 
         [Test]
         public void UnSpawnShouldAssertIfCalledInHostMode()
         {
             LogAssert.Expect(LogType.Assert, "UnSpawn should not be called in host mode");
-            clientObjectManager.OnObjectDestroy(new ObjectDestroyMessage
+            this.clientObjectManager.OnObjectDestroy(new ObjectDestroyMessage
             {
-                netId = identity.NetId
+                netId = this.identity.NetId
             });
         }
 
@@ -178,14 +178,14 @@ namespace Mirage.Tests.Runtime.Host
         public void SpawnSceneObjectTest()
         {
             //Setup new scene object for test
-            var hash = NewUniqueHash();
+            var hash = this.NewUniqueHash();
             var prefabObject = new GameObject("prefab", typeof(NetworkIdentity));
             var identity = prefabObject.GetComponent<NetworkIdentity>();
             identity.PrefabHash = hash;
             var sceneId = 10ul;
-            clientObjectManager.spawnableObjects.Add(sceneId, identity);
+            this.clientObjectManager.spawnableObjects.Add(sceneId, identity);
 
-            var result = clientObjectManager.SpawnSceneObject(new SpawnMessage { sceneId = sceneId, prefabHash = hash });
+            var result = this.clientObjectManager.SpawnSceneObject(new SpawnMessage { sceneId = sceneId, prefabHash = hash });
 
             Assert.That(result, Is.SameAs(identity));
 

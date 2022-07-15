@@ -13,32 +13,32 @@ namespace Mirage.SocketLayer.Tests.PeerTests
         public void BindShoudlCallSocketBind()
         {
             var endPoint = TestEndPoint.CreateSubstitute();
-            peer.Bind(endPoint);
+            this.peer.Bind(endPoint);
 
-            socket.Received(1).Bind(Arg.Is(endPoint));
+            this.socket.Received(1).Bind(Arg.Is(endPoint));
         }
 
         [Test]
         public void CloseSendsDisconnectMessageToAllConnections()
         {
             var endPoint = TestEndPoint.CreateSubstitute();
-            peer.Bind(endPoint);
+            this.peer.Bind(endPoint);
 
             var endPoints = new IEndPoint[maxConnections];
             for (var i = 0; i < maxConnections; i++)
             {
                 endPoints[i] = TestEndPoint.CreateSubstitute();
 
-                socket.SetupReceiveCall(connectRequest, endPoints[i]);
-                peer.UpdateTest();
+                this.socket.SetupReceiveCall(this.connectRequest, endPoints[i]);
+                this.peer.UpdateTest();
             }
 
             for (var i = 0; i < maxConnections; i++)
             {
-                socket.ClearReceivedCalls();
+                this.socket.ClearReceivedCalls();
             }
 
-            peer.Close();
+            this.peer.Close();
 
             var disconnectCommand = new byte[3]
             {
@@ -48,7 +48,7 @@ namespace Mirage.SocketLayer.Tests.PeerTests
             };
             for (var i = 0; i < maxConnections; i++)
             {
-                socket.Received(1).Send(
+                this.socket.Received(1).Send(
                     Arg.Is(endPoints[i]),
                     Arg.Is<byte[]>(actual => actual.AreEquivalentIgnoringLength(disconnectCommand)),
                     Arg.Is(disconnectCommand.Length)
@@ -59,17 +59,17 @@ namespace Mirage.SocketLayer.Tests.PeerTests
         [Test]
         public void AcceptsConnectionForValidMessage()
         {
-            peer.Bind(TestEndPoint.CreateSubstitute());
+            this.peer.Bind(TestEndPoint.CreateSubstitute());
 
             var connectAction = Substitute.For<Action<IConnection>>();
-            peer.OnConnected += connectAction;
+            this.peer.OnConnected += connectAction;
 
             var endPoint = TestEndPoint.CreateSubstitute();
-            socket.SetupReceiveCall(connectRequest, endPoint);
-            peer.UpdateTest();
+            this.socket.SetupReceiveCall(this.connectRequest, endPoint);
+            this.peer.UpdateTest();
 
             // server sends accept and invokes event locally
-            socket.Received(1).Send(endPoint, Arg.Is<byte[]>(x =>
+            this.socket.Received(1).Send(endPoint, Arg.Is<byte[]>(x =>
                 x.Length >= 2 &&
                 x[0] == (byte)PacketType.Command &&
                 x[1] == (byte)Commands.ConnectionAccepted
@@ -80,10 +80,10 @@ namespace Mirage.SocketLayer.Tests.PeerTests
         [Test]
         public void AcceptsConnectionsUpToMax()
         {
-            peer.Bind(TestEndPoint.CreateSubstitute());
+            this.peer.Bind(TestEndPoint.CreateSubstitute());
 
             var connectAction = Substitute.For<Action<IConnection>>();
-            peer.OnConnected += connectAction;
+            this.peer.OnConnected += connectAction;
 
 
             var endPoints = new IEndPoint[maxConnections];
@@ -91,8 +91,8 @@ namespace Mirage.SocketLayer.Tests.PeerTests
             {
                 endPoints[i] = TestEndPoint.CreateSubstitute();
 
-                socket.SetupReceiveCall(connectRequest, endPoints[i]);
-                peer.UpdateTest();
+                this.socket.SetupReceiveCall(this.connectRequest, endPoints[i]);
+                this.peer.UpdateTest();
             }
 
 
@@ -100,7 +100,7 @@ namespace Mirage.SocketLayer.Tests.PeerTests
             connectAction.ReceivedWithAnyArgs(maxConnections).Invoke(default);
             for (var i = 0; i < maxConnections; i++)
             {
-                socket.Received(1).Send(endPoints[i], Arg.Is<byte[]>(x =>
+                this.socket.Received(1).Send(endPoints[i], Arg.Is<byte[]>(x =>
                     x.Length >= 2 &&
                     x[0] == (byte)PacketType.Command &&
                     x[1] == (byte)Commands.ConnectionAccepted
@@ -111,36 +111,36 @@ namespace Mirage.SocketLayer.Tests.PeerTests
         [Test]
         public void RejectsConnectionOverMax()
         {
-            peer.Bind(TestEndPoint.CreateSubstitute());
+            this.peer.Bind(TestEndPoint.CreateSubstitute());
 
             var connectAction = Substitute.For<Action<IConnection>>();
-            peer.OnConnected += connectAction;
+            this.peer.OnConnected += connectAction;
 
             for (var i = 0; i < maxConnections; i++)
             {
-                socket.SetupReceiveCall(connectRequest);
-                peer.UpdateTest();
+                this.socket.SetupReceiveCall(this.connectRequest);
+                this.peer.UpdateTest();
             }
 
             // clear calls from valid connections
-            socket.ClearReceivedCalls();
+            this.socket.ClearReceivedCalls();
             connectAction.ClearReceivedCalls();
 
             var overMaxEndpoint = TestEndPoint.CreateSubstitute();
-            socket.SetupReceiveCall(connectRequest, overMaxEndpoint);
+            this.socket.SetupReceiveCall(this.connectRequest, overMaxEndpoint);
 
 
             byte[] received = null;
-            socket.WhenForAnyArgs(x => x.Send(default, default, default)).Do(x =>
+            this.socket.WhenForAnyArgs(x => x.Send(default, default, default)).Do(x =>
             {
                 received = (byte[])x[1];
             });
 
-            peer.UpdateTest();
+            this.peer.UpdateTest();
 
             Debug.Log($"Length:{received.Length} [{received[0]},{received[1]},{received[2]}]");
             const int length = 3;
-            socket.Received(1).Send(overMaxEndpoint, Arg.Is<byte[]>(x =>
+            this.socket.Received(1).Send(overMaxEndpoint, Arg.Is<byte[]>(x =>
                 x.Length >= length &&
                 x[0] == (byte)PacketType.Command &&
                 x[1] == (byte)Commands.ConnectionRejected &&

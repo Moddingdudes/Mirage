@@ -15,49 +15,49 @@ namespace Mirage.Weaver
 
         public void Error(string message)
         {
-            AddMessage(message, null, DiagnosticType.Error);
+            this.AddMessage(message, null, DiagnosticType.Error);
         }
 
         public void Error(string message, MemberReference mr)
         {
-            Error($"{message} (at {mr})");
+            this.Error($"{message} (at {mr})");
         }
 
         public void Error(string message, MemberReference mr, SequencePoint sequencePoint)
         {
-            AddMessage($"{message} (at {mr})", sequencePoint, DiagnosticType.Error);
+            this.AddMessage($"{message} (at {mr})", sequencePoint, DiagnosticType.Error);
         }
 
         public void Error(string message, MethodDefinition md)
         {
-            Error(message, md, md.DebugInformation.SequencePoints.FirstOrDefault());
+            this.Error(message, md, md.DebugInformation.SequencePoints.FirstOrDefault());
         }
 
 
         public void Warning(string message)
         {
-            AddMessage($"{message}", null, DiagnosticType.Warning);
+            this.AddMessage($"{message}", null, DiagnosticType.Warning);
         }
 
         public void Warning(string message, MemberReference mr)
         {
-            Warning($"{message} (at {mr})");
+            this.Warning($"{message} (at {mr})");
         }
 
         public void Warning(string message, MemberReference mr, SequencePoint sequencePoint)
         {
-            AddMessage($"{message} (at {mr})", sequencePoint, DiagnosticType.Warning);
+            this.AddMessage($"{message} (at {mr})", sequencePoint, DiagnosticType.Warning);
         }
 
         public void Warning(string message, MethodDefinition md)
         {
-            Warning(message, md, md.DebugInformation.SequencePoints.FirstOrDefault());
+            this.Warning(message, md, md.DebugInformation.SequencePoints.FirstOrDefault());
         }
 
 
         private void AddMessage(string message, SequencePoint sequencePoint, DiagnosticType diagnosticType)
         {
-            Diagnostics.Add(new DiagnosticMessage
+            this.Diagnostics.Add(new DiagnosticMessage
             {
                 DiagnosticType = diagnosticType,
                 File = sequencePoint?.Document.Url.Replace($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}", ""),

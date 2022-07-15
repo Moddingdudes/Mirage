@@ -27,7 +27,7 @@ namespace Mirage.Weaver.Serialization
             worker.Append(LoadParamOrArg0(worker, writerParameter));
             worker.Append(LoadParamOrArg0(worker, typeParameter));
             worker.Append(worker.Create(OpCodes.Ldfld, fieldReference));
-            worker.Append(worker.Create(OpCodes.Call, writeFunction));
+            worker.Append(worker.Create(OpCodes.Call, this.writeFunction));
 
         }
 
@@ -39,7 +39,7 @@ namespace Mirage.Weaver.Serialization
             // add argument to call
             worker.Append(worker.Create(OpCodes.Ldarg, valueParameter));
             // call writer extension method
-            worker.Append(worker.Create(OpCodes.Call, writeFunction));
+            worker.Append(worker.Create(OpCodes.Call, this.writeFunction));
         }
 
         public override void AppendRead(ModuleDefinition module, ILProcessor worker, ParameterDefinition readerParameter, TypeReference fieldType)
@@ -47,7 +47,7 @@ namespace Mirage.Weaver.Serialization
             // add `reader` to stack
             worker.Append(worker.Create(OpCodes.Ldarg, readerParameter));
             // call read function
-            worker.Append(worker.Create(OpCodes.Call, readFunction));
+            worker.Append(worker.Create(OpCodes.Call, this.readFunction));
         }
     }
 }

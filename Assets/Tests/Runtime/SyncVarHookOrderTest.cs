@@ -17,12 +17,12 @@ namespace Mirage.Tests.Runtime.Serialization
 
         private void OnValue1Changed(int _, int newValue)
         {
-            HookCalled1?.Invoke(value1, value2);
+            this.HookCalled1?.Invoke(this.value1, this.value2);
         }
 
         private void OnValue2Changed(int _, int newValue)
         {
-            HookCalled2?.Invoke(value1, value2);
+            this.HookCalled2?.Invoke(this.value1, this.value2);
         }
     }
     public class SyncVarHookOrderTest : ClientServerSetup<HookOrderBehaviour>
@@ -32,25 +32,25 @@ namespace Mirage.Tests.Runtime.Serialization
         {
             const int Value1 = 10;
             const int Value2 = 20;
-            serverComponent.value1 = Value1;
-            serverComponent.value2 = Value2;
+            this.serverComponent.value1 = Value1;
+            this.serverComponent.value2 = Value2;
 
             var hook1Called = 0;
-            clientComponent.HookCalled1 += (v1, v2) =>
+            this.clientComponent.HookCalled1 += (v1, v2) =>
             {
                 hook1Called++;
                 Assert.That(v1, Is.EqualTo(Value1));
                 Assert.That(v2, Is.EqualTo(Value2));
             };
             var hook2Called = 0;
-            clientComponent.HookCalled2 += (v1, v2) =>
+            this.clientComponent.HookCalled2 += (v1, v2) =>
             {
                 hook2Called++;
                 Assert.That(v1, Is.EqualTo(Value1));
                 Assert.That(v2, Is.EqualTo(Value2));
             };
 
-            SendSyncvars(true);
+            this.SendSyncvars(true);
 
             Assert.That(hook1Called, Is.EqualTo(1));
             Assert.That(hook2Called, Is.EqualTo(1));
@@ -65,30 +65,30 @@ namespace Mirage.Tests.Runtime.Serialization
             const int ValueNew2 = 20;
 
             // set initial values
-            serverComponent.value1 = ValueOld1;
-            serverComponent.value2 = ValueOld2;
+            this.serverComponent.value1 = ValueOld1;
+            this.serverComponent.value2 = ValueOld2;
 
-            SendSyncvars(true);
+            this.SendSyncvars(true);
 
-            serverComponent.value1 = ValueNew1;
-            serverComponent.value2 = ValueNew2;
+            this.serverComponent.value1 = ValueNew1;
+            this.serverComponent.value2 = ValueNew2;
 
             var hookCalled1 = 0;
-            clientComponent.HookCalled1 += (v1, v2) =>
+            this.clientComponent.HookCalled1 += (v1, v2) =>
             {
                 hookCalled1++;
                 Assert.That(v1, Is.EqualTo(ValueNew1));
                 Assert.That(v2, Is.EqualTo(ValueOld2), "Should be old value because hook is called after v1 is set, but before v2 is read");
             };
             var hookCalled2 = 0;
-            clientComponent.HookCalled2 += (v1, v2) =>
+            this.clientComponent.HookCalled2 += (v1, v2) =>
             {
                 hookCalled2++;
                 Assert.That(v1, Is.EqualTo(ValueNew1));
                 Assert.That(v2, Is.EqualTo(ValueNew2));
             };
 
-            SendSyncvars(false);
+            this.SendSyncvars(false);
 
             Assert.That(hookCalled1, Is.EqualTo(1));
             Assert.That(hookCalled2, Is.EqualTo(1));
@@ -99,11 +99,11 @@ namespace Mirage.Tests.Runtime.Serialization
         {
             using (var writer = NetworkWriterPool.GetWriter())
             {
-                serverComponent.SerializeSyncVars(writer, initial);
+                this.serverComponent.SerializeSyncVars(writer, initial);
 
-                using (var reader = NetworkReaderPool.GetReader(writer.ToArraySegment(), clientComponent.World))
+                using (var reader = NetworkReaderPool.GetReader(writer.ToArraySegment(), this.clientComponent.World))
                 {
-                    clientComponent.DeserializeSyncVars(reader, initial);
+                    this.clientComponent.DeserializeSyncVars(reader, initial);
                 }
             }
         }

@@ -25,9 +25,9 @@ namespace Mirage.Examples.Notify
 
         private MyNotifyCallbacks GetCallbacks()
         {
-            if (callbackPool.Count > 0)
+            if (this.callbackPool.Count > 0)
             {
-                return callbackPool.Pop();
+                return this.callbackPool.Pop();
             }
             else
             {
@@ -45,28 +45,28 @@ namespace Mirage.Examples.Notify
         public void Update(float newValue)
         {
             // some changes value or collection,
-            someValues.Add(newValue);
+            this.someValues.Add(newValue);
 
             // create message and add new undelivered values
             var message = new Changes
             {
                 // Send Count so other side knows what values to expecct
-                valueCount = someValues.Count,
+                valueCount = this.someValues.Count,
                 newValues = new List<float>(),
             };
 
             // add values from last know received
-            for (var i = lastReceivedCount; i < someValues.Count; i++)
+            for (var i = this.lastReceivedCount; i < this.someValues.Count; i++)
             {
-                message.newValues.Add(someValues[i]);
+                message.newValues.Add(this.someValues[i]);
             }
 
             // get callback from pool and set count
-            var callbacks = GetCallbacks();
-            callbacks.valueCount = someValues.Count;
+            var callbacks = this.GetCallbacks();
+            callbacks.valueCount = this.someValues.Count;
 
             // send message and callbacks
-            SendNotify(message, callbacks);
+            this.SendNotify(message, callbacks);
         }
 
 
@@ -82,7 +82,7 @@ namespace Mirage.Examples.Notify
                 MessagePacker.Pack(message, writer);
 
                 var segment = writer.ToArraySegment();
-                player.Connection.SendNotify(segment, callBacks);
+                this.player.Connection.SendNotify(segment, callBacks);
             }
         }
 
@@ -112,13 +112,13 @@ namespace Mirage.Examples.Notify
             public void OnDelivered()
             {
                 // if delivered is newer, then update it
-                if (owner.lastReceivedCount < valueCount)
+                if (this.owner.lastReceivedCount < this.valueCount)
                 {
-                    owner.lastReceivedCount = valueCount;
+                    this.owner.lastReceivedCount = this.valueCount;
                 }
 
                 // return to pool so it can be re-used
-                owner.callbackPool.Push(this);
+                this.owner.callbackPool.Push(this);
             }
 
             public void OnLost()
@@ -126,7 +126,7 @@ namespace Mirage.Examples.Notify
                 // nothing if lost
 
                 // return to pool so it can be re-used
-                owner.callbackPool.Push(this);
+                this.owner.callbackPool.Push(this);
             }
         }
     }
@@ -145,7 +145,7 @@ namespace Mirage.Examples.Notify
         public RecieveChangesNotify(IMessageReceiver receiver)
         {
             // Register Handler so that message can be received
-            receiver.RegisterHandler<SendChangesNotify.Changes>(HandleChange);
+            receiver.RegisterHandler<SendChangesNotify.Changes>(this.HandleChange);
         }
 
         // if on client you can just have single pair of these values,
@@ -161,13 +161,13 @@ namespace Mirage.Examples.Notify
             var newValues = message.newValues;
             var newCount = message.valueCount;
 
-            var numberOfNewValues = newCount - lastReceivedCount;
+            var numberOfNewValues = newCount - this.lastReceivedCount;
             var offset = newValues.Count - numberOfNewValues;
 
             // add new values to list
             for (var i = offset; i < newValues.Count; i++)
             {
-                someValues.Add(newValues[i]);
+                this.someValues.Add(newValues[i]);
             }
         }
     }

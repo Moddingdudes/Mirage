@@ -26,13 +26,13 @@ namespace Mirage.Tests.Runtime.Serialization
         public void Setup()
         {
             // set new ObjectLocator
-            reader.ObjectLocator = Substitute.For<IObjectLocator>();
+            this.reader.ObjectLocator = Substitute.For<IObjectLocator>();
         }
         [TearDown]
         public void TearDown()
         {
-            reader.Dispose();
-            writer.Reset();
+            this.reader.Dispose();
+            this.writer.Reset();
         }
 
 
@@ -40,10 +40,10 @@ namespace Mirage.Tests.Runtime.Serialization
         public void TestWritingBytesSegment()
         {
             byte[] data = { 1, 2, 3 };
-            writer.WriteBytes(data, 0, data.Length);
+            this.writer.WriteBytes(data, 0, data.Length);
 
-            reader.Reset(writer.ToArraySegment());
-            var deserialized = reader.ReadBytesSegment(data.Length);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var deserialized = this.reader.ReadBytesSegment(data.Length);
             Assert.That(deserialized.Count, Is.EqualTo(data.Length));
             for (var i = 0; i < data.Length; ++i)
                 Assert.That(deserialized.Array[deserialized.Offset + i], Is.EqualTo(data[i]));
@@ -54,10 +54,10 @@ namespace Mirage.Tests.Runtime.Serialization
         public void TestWritingBytesAndReadingSegment()
         {
             byte[] data = { 1, 2, 3 };
-            writer.WriteBytesAndSize(data);
+            this.writer.WriteBytesAndSize(data);
 
-            reader.Reset(writer.ToArraySegment());
-            var deserialized = reader.ReadBytesAndSizeSegment();
+            this.reader.Reset(this.writer.ToArraySegment());
+            var deserialized = this.reader.ReadBytesAndSizeSegment();
             Assert.That(deserialized.Count, Is.EqualTo(data.Length));
             for (var i = 0; i < data.Length; ++i)
                 Assert.That(deserialized.Array[deserialized.Offset + i], Is.EqualTo(data[i]));
@@ -70,10 +70,10 @@ namespace Mirage.Tests.Runtime.Serialization
             byte[] data = { 1, 2, 3, 4 };
             // [2, 3]
             var segment = new ArraySegment<byte>(data, 1, 1);
-            writer.WriteBytesAndSizeSegment(segment);
+            this.writer.WriteBytesAndSizeSegment(segment);
 
-            reader.Reset(writer.ToArraySegment());
-            var deserialized = reader.ReadBytesAndSizeSegment();
+            this.reader.Reset(this.writer.ToArraySegment());
+            var deserialized = this.reader.ReadBytesAndSizeSegment();
             Assert.That(deserialized.Count, Is.EqualTo(segment.Count));
             for (var i = 0; i < segment.Count; ++i)
                 Assert.That(deserialized.Array[deserialized.Offset + i], Is.EqualTo(segment.Array[segment.Offset + i]));
@@ -84,22 +84,22 @@ namespace Mirage.Tests.Runtime.Serialization
         {
             Assert.Throws<DataMisalignedException>(() =>
             {
-                writer.WriteString(new string('*', StringExtensions.MaxStringLength));
+                this.writer.WriteString(new string('*', StringExtensions.MaxStringLength));
             });
         }
 
         [Test]
         public void TestResetSetsPotionAndLength()
         {
-            writer.WriteString("I saw");
-            writer.WriteInt64(0xA_FADED_DEAD_EEL);
-            writer.WriteString("and ate it");
-            writer.Reset();
+            this.writer.WriteString("I saw");
+            this.writer.WriteInt64(0xA_FADED_DEAD_EEL);
+            this.writer.WriteString("and ate it");
+            this.writer.Reset();
 
-            Assert.That(writer.BitPosition, Is.EqualTo(0));
-            Assert.That(writer.ByteLength, Is.EqualTo(0));
+            Assert.That(this.writer.BitPosition, Is.EqualTo(0));
+            Assert.That(this.writer.ByteLength, Is.EqualTo(0));
 
-            var data = writer.ToArray();
+            var data = this.writer.ToArray();
             Assert.That(data, Is.Empty);
         }
 
@@ -107,32 +107,32 @@ namespace Mirage.Tests.Runtime.Serialization
         public void TestReadingLengthWrapAround()
         {
             // This is 1.5x int.MaxValue, in the negative range of int.
-            writer.WritePackedUInt32(3221225472);
-            reader.Reset(writer.ToArraySegment());
-            Assert.Throws<OverflowException>(() => reader.ReadBytesAndSize());
+            this.writer.WritePackedUInt32(3221225472);
+            this.reader.Reset(this.writer.ToArraySegment());
+            Assert.Throws<OverflowException>(() => this.reader.ReadBytesAndSize());
         }
 
         [Test]
         public void TestReading0LengthBytesAndSize()
         {
-            writer.WriteBytesAndSize(new byte[] { });
-            reader.Reset(writer.ToArraySegment());
-            Assert.That(reader.ReadBytesAndSize().Length, Is.EqualTo(0));
+            this.writer.WriteBytesAndSize(new byte[] { });
+            this.reader.Reset(this.writer.ToArraySegment());
+            Assert.That(this.reader.ReadBytesAndSize().Length, Is.EqualTo(0));
         }
 
         [Test]
         public void TestReading0LengthBytes()
         {
-            writer.WriteBytes(new byte[] { }, 0, 0);
-            reader.Reset(writer.ToArraySegment());
-            Assert.That(reader.ReadBytes(0).Length, Is.EqualTo(0));
+            this.writer.WriteBytes(new byte[] { }, 0, 0);
+            this.reader.Reset(this.writer.ToArraySegment());
+            Assert.That(this.reader.ReadBytes(0).Length, Is.EqualTo(0));
         }
 
         [Test]
         public void TestWritingNegativeBytesAndSizeFailure()
         {
-            Assert.Throws<OverflowException>(() => writer.WriteBytesAndSize(new byte[0], 0, -1));
-            Assert.That(writer.ByteLength, Is.EqualTo(0));
+            Assert.Throws<OverflowException>(() => this.writer.WriteBytesAndSize(new byte[0], 0, -1));
+            Assert.That(this.writer.ByteLength, Is.EqualTo(0));
         }
 
         [Test]
@@ -142,8 +142,8 @@ namespace Mirage.Tests.Runtime.Serialization
             {
                 Assert.Throws<System.IO.EndOfStreamException>(() =>
                 {
-                    reader.Reset(new byte[0]);
-                    read.Invoke(reader);
+                    this.reader.Reset(new byte[0]);
+                    read.Invoke(this.reader);
                 });
             }
             // Try reading more than there is data to be read from
@@ -207,9 +207,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(vector2s))]
         public void TestVector2(Vector2 vector)
         {
-            writer.WriteVector2(vector);
-            reader.Reset(writer.ToArraySegment());
-            var output = reader.ReadVector2();
+            this.writer.WriteVector2(vector);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var output = this.reader.ReadVector2();
             Assert.That(output, Is.EqualTo(vector));
         }
 
@@ -226,9 +226,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(vector3s))]
         public void TestVector3(Vector3 input)
         {
-            writer.WriteVector3(input);
-            reader.Reset(writer.ToArraySegment());
-            var output = reader.ReadVector3();
+            this.writer.WriteVector3(input);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var output = this.reader.ReadVector3();
             Assert.That(output, Is.EqualTo(input));
         }
 
@@ -244,9 +244,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(vector4s))]
         public void TestVector4(Vector4 input)
         {
-            writer.WriteVector4(input);
-            reader.Reset(writer.ToArraySegment());
-            var output = reader.ReadVector4();
+            this.writer.WriteVector4(input);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var output = this.reader.ReadVector4();
             Assert.That(output, Is.EqualTo(input));
         }
 
@@ -263,9 +263,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(vector2Ints))]
         public void TestVector2Int(Vector2Int input)
         {
-            writer.WriteVector2Int(input);
-            reader.Reset(writer.ToArraySegment());
-            var output = reader.ReadVector2Int();
+            this.writer.WriteVector2Int(input);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var output = this.reader.ReadVector2Int();
             Assert.That(output, Is.EqualTo(input));
         }
 
@@ -283,9 +283,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(vector3Ints))]
         public void TestVector3Int(Vector3Int input)
         {
-            writer.WriteVector3Int(input);
-            reader.Reset(writer.ToArraySegment());
-            var output = reader.ReadVector3Int();
+            this.writer.WriteVector3Int(input);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var output = this.reader.ReadVector3Int();
             Assert.That(output, Is.EqualTo(input));
         }
 
@@ -302,9 +302,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(colors))]
         public void TestColor(Color input)
         {
-            writer.WriteColor(input);
-            reader.Reset(writer.ToArraySegment());
-            var output = reader.ReadColor();
+            this.writer.WriteColor(input);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var output = this.reader.ReadColor();
             Assert.That(output, Is.EqualTo(input));
         }
 
@@ -322,9 +322,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(color32s))]
         public void TestColor32(Color32 input)
         {
-            writer.WriteColor32(input);
-            reader.Reset(writer.ToArraySegment());
-            var output = reader.ReadColor32();
+            this.writer.WriteColor32(input);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var output = this.reader.ReadColor32();
             Assert.That(output, Is.EqualTo(input));
         }
 
@@ -339,9 +339,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(rects))]
         public void TestRect(Rect input)
         {
-            writer.WriteRect(input);
-            reader.Reset(writer.ToArraySegment());
-            var output = reader.ReadRect();
+            this.writer.WriteRect(input);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var output = this.reader.ReadRect();
             Assert.That(output, Is.EqualTo(input));
         }
 
@@ -355,9 +355,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(planes))]
         public void TestPlane(Plane input)
         {
-            writer.WritePlane(input);
-            reader.Reset(writer.ToArraySegment());
-            var output = reader.ReadPlane();
+            this.writer.WritePlane(input);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var output = this.reader.ReadPlane();
             // note: Plane constructor does math internally, resulting in
             // floating point precision loss that causes exact comparison
             // to fail the test. So we test that the difference is small.
@@ -374,9 +374,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(rays))]
         public void TestRay(Ray input)
         {
-            writer.WriteRay(input);
-            reader.Reset(writer.ToArraySegment());
-            var output = reader.ReadRay();
+            this.writer.WriteRay(input);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var output = this.reader.ReadRay();
             Assert.That((output.direction - input.direction).magnitude, Is.LessThan(1e-6f));
             Assert.That(output.origin, Is.EqualTo(input.origin));
         }
@@ -392,9 +392,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(matrix4X4s))]
         public void TestMatrix(Matrix4x4 input)
         {
-            writer.WriteMatrix4X4(input);
-            reader.Reset(writer.ToArraySegment());
-            var output = reader.ReadMatrix4x4();
+            this.writer.WriteMatrix4X4(input);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var output = this.reader.ReadMatrix4x4();
             Assert.That(output, Is.EqualTo(input));
         }
 
@@ -410,69 +410,69 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(invalidUTF8bytes))]
         public void TestReadingInvalidString(byte invalid)
         {
-            writer.WriteString("an uncorrupted string");
-            var data = writer.ToArray();
+            this.writer.WriteString("an uncorrupted string");
+            var data = this.writer.ToArray();
             data[10] = invalid;
-            reader.Reset(data);
-            Assert.Throws<System.Text.DecoderFallbackException>(() => reader.ReadString());
+            this.reader.Reset(data);
+            Assert.Throws<System.Text.DecoderFallbackException>(() => this.reader.ReadString());
         }
 
         [Test]
         public void TestReadingTruncatedString()
         {
             const string str = "a string longer than 10 bytes";
-            writer.WriteString(str);
+            this.writer.WriteString(str);
             // change length value to longer than string
             // +2 because length is already +1 to handle null
-            writer.WriteAtPosition((ushort)(str.Length + 2), 16, 0);
+            this.writer.WriteAtPosition((ushort)(str.Length + 2), 16, 0);
 
-            reader.Reset(writer.ToArraySegment());
-            Assert.Throws<System.IO.EndOfStreamException>(() => reader.ReadString());
+            this.reader.Reset(this.writer.ToArraySegment());
+            Assert.Throws<System.IO.EndOfStreamException>(() => this.reader.ReadString());
         }
 
         [Test]
         public void WriteAtPositionTest()
         {
             // write 2 bytes
-            writer.WriteByte(1);
-            writer.WriteByte(2);
+            this.writer.WriteByte(1);
+            this.writer.WriteByte(2);
 
             // .ToArray() length is 2?
-            Assert.That(writer.ToArray().Length, Is.EqualTo(2));
+            Assert.That(this.writer.ToArray().Length, Is.EqualTo(2));
 
             // set position back by one
-            writer.WriteAtPosition(2, 8, 8);
+            this.writer.WriteAtPosition(2, 8, 8);
 
             // Changing the position should not alter the size of the data
-            Assert.That(writer.ToArray().Length, Is.EqualTo(2));
+            Assert.That(this.writer.ToArray().Length, Is.EqualTo(2));
         }
 
         [Test]
         public void WriteAtBytePositionTest()
         {
             // write 2 bytes
-            writer.WriteByte(1);
-            writer.WriteByte(2);
+            this.writer.WriteByte(1);
+            this.writer.WriteByte(2);
 
             // .ToArray() length is 2?
-            Assert.That(writer.ToArray().Length, Is.EqualTo(2));
+            Assert.That(this.writer.ToArray().Length, Is.EqualTo(2));
 
             // set position back by one
-            writer.WriteAtBytePosition(2, 8, 1);
+            this.writer.WriteAtBytePosition(2, 8, 1);
 
             // Changing the position should not alter the size of the data
-            Assert.That(writer.ToArray().Length, Is.EqualTo(2));
+            Assert.That(this.writer.ToArray().Length, Is.EqualTo(2));
         }
 
         [Test]
         public void TestToArraySegment()
         {
-            writer.WriteString("hello");
-            writer.WriteString("world");
+            this.writer.WriteString("hello");
+            this.writer.WriteString("world");
 
-            reader.Reset(writer.ToArraySegment());
-            Assert.That(reader.ReadString(), Is.EqualTo("hello"));
-            Assert.That(reader.ReadString(), Is.EqualTo("world"));
+            this.reader.Reset(this.writer.ToArraySegment());
+            Assert.That(this.reader.ReadString(), Is.EqualTo("hello"));
+            Assert.That(this.reader.ReadString(), Is.EqualTo("world"));
         }
 
         [Test]
@@ -481,12 +481,12 @@ namespace Mirage.Tests.Runtime.Serialization
             var a = 'a';
             var u = 'ⓤ';
 
-            writer.WriteChar(a);
-            writer.WriteChar(u);
-            reader.Reset(writer.ToArraySegment());
-            var a2 = reader.ReadChar();
+            this.writer.WriteChar(a);
+            this.writer.WriteChar(u);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var a2 = this.reader.ReadChar();
             Assert.That(a2, Is.EqualTo(a));
-            var u2 = reader.ReadChar();
+            var u2 = this.reader.ReadChar();
             Assert.That(u2, Is.EqualTo(u));
         }
 
@@ -531,9 +531,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(weirdUnicode))]
         public void TestUnicodeString(string weird)
         {
-            writer.WriteString(weird);
-            reader.Reset(writer.ToArraySegment());
-            var str = reader.ReadString();
+            this.writer.WriteString(weird);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var str = this.reader.ReadString();
             Assert.That(str, Is.EqualTo(weird));
         }
 
@@ -551,17 +551,17 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(uint32s))]
         public void TestPackedUInt32(uint value)
         {
-            writer.WritePackedUInt32(value);
-            reader.Reset(writer.ToArraySegment());
-            Assert.That(reader.ReadPackedUInt32(), Is.EqualTo(value));
+            this.writer.WritePackedUInt32(value);
+            this.reader.Reset(this.writer.ToArraySegment());
+            Assert.That(this.reader.ReadPackedUInt32(), Is.EqualTo(value));
         }
 
         [Test, TestCaseSource(nameof(uint32s))]
         public void TestUInt32(uint value)
         {
-            writer.WriteUInt32(value);
-            reader.Reset(writer.ToArraySegment());
-            Assert.That(reader.ReadUInt32(), Is.EqualTo(value));
+            this.writer.WriteUInt32(value);
+            this.reader.Reset(this.writer.ToArraySegment());
+            Assert.That(this.reader.ReadUInt32(), Is.EqualTo(value));
         }
 
         private static readonly long[] int32Fail =
@@ -576,9 +576,9 @@ namespace Mirage.Tests.Runtime.Serialization
         {
             Assert.Throws<OverflowException>(() =>
             {
-                writer.WritePackedUInt64((ulong)data);
-                reader.Reset(writer.ToArraySegment());
-                reader.ReadPackedUInt32();
+                this.writer.WritePackedUInt64((ulong)data);
+                this.reader.Reset(this.writer.ToArraySegment());
+                this.reader.ReadPackedUInt32();
             });
         }
 
@@ -603,17 +603,17 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(int32s))]
         public void TestPackedInt32(int data)
         {
-            writer.WritePackedInt32(data);
-            reader.Reset(writer.ToArraySegment());
-            Assert.That(reader.ReadPackedInt32(), Is.EqualTo(data));
+            this.writer.WritePackedInt32(data);
+            this.reader.Reset(this.writer.ToArraySegment());
+            Assert.That(this.reader.ReadPackedInt32(), Is.EqualTo(data));
         }
 
         [Test, TestCaseSource(nameof(int32s))]
         public void TestInt32(int data)
         {
-            writer.WriteInt32(data);
-            reader.Reset(writer.ToArraySegment());
-            Assert.That(reader.ReadInt32(), Is.EqualTo(data));
+            this.writer.WriteInt32(data);
+            this.reader.Reset(this.writer.ToArraySegment());
+            Assert.That(this.reader.ReadInt32(), Is.EqualTo(data));
         }
 
         [Test, TestCaseSource(nameof(int32Fail))]
@@ -621,9 +621,9 @@ namespace Mirage.Tests.Runtime.Serialization
         {
             Assert.Throws<OverflowException>(() =>
             {
-                writer.WritePackedInt64(data);
-                reader.Reset(writer.ToArraySegment());
-                reader.ReadPackedInt32();
+                this.writer.WritePackedInt64(data);
+                this.reader.Reset(this.writer.ToArraySegment());
+                this.reader.ReadPackedInt32();
             });
         }
 
@@ -645,17 +645,17 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(uint64s))]
         public void TestPackedUInt64(ulong data)
         {
-            writer.WritePackedUInt64(data);
-            reader.Reset(writer.ToArraySegment());
-            Assert.That(reader.ReadPackedUInt64(), Is.EqualTo(data));
+            this.writer.WritePackedUInt64(data);
+            this.reader.Reset(this.writer.ToArraySegment());
+            Assert.That(this.reader.ReadPackedUInt64(), Is.EqualTo(data));
         }
 
         [Test, TestCaseSource(nameof(uint64s))]
         public void TestUInt64(ulong data)
         {
-            writer.WriteUInt64(data);
-            reader.Reset(writer.ToArraySegment());
-            Assert.That(reader.ReadUInt64(), Is.EqualTo(data));
+            this.writer.WriteUInt64(data);
+            this.reader.Reset(this.writer.ToArraySegment());
+            Assert.That(this.reader.ReadUInt64(), Is.EqualTo(data));
         }
 
         private static readonly long[] int64s =
@@ -687,27 +687,27 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(int64s))]
         public void TestPackedInt64(long data)
         {
-            writer.WritePackedInt64(data);
-            reader.Reset(writer.ToArraySegment());
-            Assert.That(reader.ReadPackedInt64(), Is.EqualTo(data));
+            this.writer.WritePackedInt64(data);
+            this.reader.Reset(this.writer.ToArraySegment());
+            Assert.That(this.reader.ReadPackedInt64(), Is.EqualTo(data));
         }
 
         [Test, TestCaseSource(nameof(int64s))]
         public void TestInt64(long data)
         {
-            writer.WriteInt64(data);
-            reader.Reset(writer.ToArraySegment());
-            Assert.That(reader.ReadInt64(), Is.EqualTo(data));
+            this.writer.WriteInt64(data);
+            this.reader.Reset(this.writer.ToArraySegment());
+            Assert.That(this.reader.ReadInt64(), Is.EqualTo(data));
         }
 
         [Test]
         public void TestGuid()
         {
             var originalGuid = new Guid("0123456789abcdef9876543210fedcba");
-            writer.WriteGuid(originalGuid);
+            this.writer.WriteGuid(originalGuid);
 
-            reader.Reset(writer.ToArraySegment());
-            var readGuid = reader.ReadGuid();
+            this.reader.Reset(this.writer.ToArraySegment());
+            var readGuid = this.reader.ReadGuid();
             Assert.That(readGuid, Is.EqualTo(originalGuid));
         }
 
@@ -734,9 +734,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(weirdFloats))]
         public void TestFloats(float weird)
         {
-            writer.WriteSingle(weird);
-            reader.Reset(writer.ToArraySegment());
-            var readFloat = reader.ReadSingle();
+            this.writer.WriteSingle(weird);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var readFloat = this.reader.ReadSingle();
             Assert.That(readFloat, Is.EqualTo(weird));
         }
 
@@ -763,9 +763,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(weirdDoubles))]
         public void TestDoubles(double weird)
         {
-            writer.WriteDouble(weird);
-            reader.Reset(writer.ToArraySegment());
-            var readDouble = reader.ReadDouble();
+            this.writer.WriteDouble(weird);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var readDouble = this.reader.ReadDouble();
             Assert.That(readDouble, Is.EqualTo(weird));
         }
 
@@ -782,9 +782,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test, TestCaseSource(nameof(weirdDecimals))]
         public void TestDecimals(decimal weird)
         {
-            writer.WriteDecimalConverter(weird);
-            reader.Reset(writer.ToArraySegment());
-            var readDecimal = reader.ReadDecimalConverter();
+            this.writer.WriteDecimalConverter(weird);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var readDecimal = this.reader.ReadDecimalConverter();
             Assert.That(readDecimal, Is.EqualTo(weird));
         }
 
@@ -801,9 +801,9 @@ namespace Mirage.Tests.Runtime.Serialization
             };
             foreach (var weird in inputFloats)
             {
-                writer.WriteSingle(weird);
+                this.writer.WriteSingle(weird);
             }
-            Assert.That(writer.ToArray(), Is.EqualTo(expected));
+            Assert.That(this.writer.ToArray(), Is.EqualTo(expected));
         }
 
         [Test]
@@ -819,9 +819,9 @@ namespace Mirage.Tests.Runtime.Serialization
             };
             foreach (var weird in inputDoubles)
             {
-                writer.WriteDouble(weird);
+                this.writer.WriteDouble(weird);
             }
-            Assert.That(writer.ToArray(), Is.EqualTo(expected));
+            Assert.That(this.writer.ToArray(), Is.EqualTo(expected));
         }
 
         [Test]
@@ -839,38 +839,38 @@ namespace Mirage.Tests.Runtime.Serialization
             };
             foreach (var weird in inputDecimals)
             {
-                writer.WriteDecimalConverter(weird);
+                this.writer.WriteDecimalConverter(weird);
             }
-            Assert.That(writer.ToArray(), Is.EqualTo(expected));
+            Assert.That(this.writer.ToArray(), Is.EqualTo(expected));
         }
 
         [Test]
         public void TestByteEndianness(
             [Values(0x12, 0x43, 0x00, 0xff, 0xab, 0x02, 0x20)] byte value)
         {
-            writer.WriteByte(value);
-            Assert.That(writer.ToArray(), Is.EqualTo(new[] { value }));
+            this.writer.WriteByte(value);
+            Assert.That(this.writer.ToArray(), Is.EqualTo(new[] { value }));
         }
 
         [Test]
         public void TestUShortEndianness()
         {
-            writer.WriteUInt16(0x1234);
-            Assert.That(writer.ToArray(), Is.EqualTo(new byte[] { 0x34, 0x12 }));
+            this.writer.WriteUInt16(0x1234);
+            Assert.That(this.writer.ToArray(), Is.EqualTo(new byte[] { 0x34, 0x12 }));
         }
 
         [Test]
         public void TestUIntEndianness()
         {
-            writer.WriteUInt32(0x12345678);
-            Assert.That(writer.ToArray(), Is.EqualTo(new byte[] { 0x78, 0x56, 0x34, 0x12 }));
+            this.writer.WriteUInt32(0x12345678);
+            Assert.That(this.writer.ToArray(), Is.EqualTo(new byte[] { 0x78, 0x56, 0x34, 0x12 }));
         }
 
         [Test]
         public void TestULongEndianness()
         {
-            writer.WriteUInt64(0x0123456789abcdef);
-            Assert.That(writer.ToArray(), Is.EqualTo(new byte[] { 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01 }));
+            this.writer.WriteUInt64(0x0123456789abcdef);
+            Assert.That(this.writer.ToArray(), Is.EqualTo(new byte[] { 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01 }));
         }
 
         [Test]
@@ -880,127 +880,127 @@ namespace Mirage.Tests.Runtime.Serialization
             byte[] expected = { 0x12, 0x43, 0x00, 0xff, 0xab, 0x02, 0x20 };
             foreach (var value in values)
             {
-                writer.WriteSByte((sbyte)value);
+                this.writer.WriteSByte((sbyte)value);
             }
-            Assert.That(writer.ToArray(), Is.EqualTo(expected));
+            Assert.That(this.writer.ToArray(), Is.EqualTo(expected));
         }
 
         [Test]
         public void TestShortEndianness()
         {
-            writer.WriteInt16(0x1234);
-            Assert.That(writer.ToArray(), Is.EqualTo(new byte[] { 0x34, 0x12 }));
+            this.writer.WriteInt16(0x1234);
+            Assert.That(this.writer.ToArray(), Is.EqualTo(new byte[] { 0x34, 0x12 }));
         }
 
         [Test]
         public void TestIntEndianness()
         {
-            writer.WriteInt32(0x12345678);
-            Assert.That(writer.ToArray(), Is.EqualTo(new byte[] { 0x78, 0x56, 0x34, 0x12 }));
+            this.writer.WriteInt32(0x12345678);
+            Assert.That(this.writer.ToArray(), Is.EqualTo(new byte[] { 0x78, 0x56, 0x34, 0x12 }));
         }
 
         [Test]
         public void TestLongEndianness()
         {
-            writer.WriteInt64(0x0123456789abcdef);
-            Assert.That(writer.ToArray(), Is.EqualTo(new byte[] { 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01 }));
+            this.writer.WriteInt64(0x0123456789abcdef);
+            Assert.That(this.writer.ToArray(), Is.EqualTo(new byte[] { 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01 }));
         }
 
         [Test]
         public void TestWritingAndReading()
         {
-            writer.WriteChar((char)1);
-            writer.WriteByte(2);
-            writer.WriteSByte(3);
-            writer.WriteBoolean(true);
-            writer.WriteInt16(4);
-            writer.WriteUInt16(5);
-            writer.WriteInt32(6);
-            writer.WriteUInt32(7U);
-            writer.WriteInt64(8L);
-            writer.WriteUInt64(9UL);
-            writer.WriteSingle(10.0F);
-            writer.WriteDouble(11.0D);
-            writer.WriteDecimalConverter(12);
-            writer.WriteString(null);
-            writer.WriteString("");
-            writer.WriteString("13");
+            this.writer.WriteChar((char)1);
+            this.writer.WriteByte(2);
+            this.writer.WriteSByte(3);
+            this.writer.WriteBoolean(true);
+            this.writer.WriteInt16(4);
+            this.writer.WriteUInt16(5);
+            this.writer.WriteInt32(6);
+            this.writer.WriteUInt32(7U);
+            this.writer.WriteInt64(8L);
+            this.writer.WriteUInt64(9UL);
+            this.writer.WriteSingle(10.0F);
+            this.writer.WriteDouble(11.0D);
+            this.writer.WriteDecimalConverter(12);
+            this.writer.WriteString(null);
+            this.writer.WriteString("");
+            this.writer.WriteString("13");
             // just the byte array, no size info etc.
-            writer.WriteBytes(new byte[] { 14, 15 }, 0, 2);
+            this.writer.WriteBytes(new byte[] { 14, 15 }, 0, 2);
             // [SyncVar] struct values can have uninitialized byte arrays, null needs to be supported
-            writer.WriteBytesAndSize(null);
+            this.writer.WriteBytesAndSize(null);
 
             // buffer, no-offset, count
-            writer.WriteBytesAndSize(new byte[] { 17, 18 }, 0, 2);
+            this.writer.WriteBytesAndSize(new byte[] { 17, 18 }, 0, 2);
             // buffer, offset, count
-            writer.WriteBytesAndSize(new byte[] { 19, 20, 21 }, 1, 2);
+            this.writer.WriteBytesAndSize(new byte[] { 19, 20, 21 }, 1, 2);
             // size, buffer
-            writer.WriteBytesAndSize(new byte[] { 22, 23 }, 0, 2);
+            this.writer.WriteBytesAndSize(new byte[] { 22, 23 }, 0, 2);
 
             // read them
-            reader.Reset(writer.ToArraySegment());
+            this.reader.Reset(this.writer.ToArraySegment());
 
-            Assert.That(reader.ReadChar(), Is.EqualTo(1));
-            Assert.That(reader.ReadByte(), Is.EqualTo(2));
-            Assert.That(reader.ReadSByte(), Is.EqualTo(3));
-            Assert.That(reader.ReadBoolean(), Is.True);
-            Assert.That(reader.ReadInt16(), Is.EqualTo(4));
-            Assert.That(reader.ReadUInt16(), Is.EqualTo(5));
-            Assert.That(reader.ReadInt32(), Is.EqualTo(6));
-            Assert.That(reader.ReadUInt32(), Is.EqualTo(7));
-            Assert.That(reader.ReadInt64(), Is.EqualTo(8));
-            Assert.That(reader.ReadUInt64(), Is.EqualTo(9));
-            Assert.That(reader.ReadSingle(), Is.EqualTo(10));
-            Assert.That(reader.ReadDouble(), Is.EqualTo(11));
-            Assert.That(reader.ReadDecimalConverter(), Is.EqualTo(12));
+            Assert.That(this.reader.ReadChar(), Is.EqualTo(1));
+            Assert.That(this.reader.ReadByte(), Is.EqualTo(2));
+            Assert.That(this.reader.ReadSByte(), Is.EqualTo(3));
+            Assert.That(this.reader.ReadBoolean(), Is.True);
+            Assert.That(this.reader.ReadInt16(), Is.EqualTo(4));
+            Assert.That(this.reader.ReadUInt16(), Is.EqualTo(5));
+            Assert.That(this.reader.ReadInt32(), Is.EqualTo(6));
+            Assert.That(this.reader.ReadUInt32(), Is.EqualTo(7));
+            Assert.That(this.reader.ReadInt64(), Is.EqualTo(8));
+            Assert.That(this.reader.ReadUInt64(), Is.EqualTo(9));
+            Assert.That(this.reader.ReadSingle(), Is.EqualTo(10));
+            Assert.That(this.reader.ReadDouble(), Is.EqualTo(11));
+            Assert.That(this.reader.ReadDecimalConverter(), Is.EqualTo(12));
             // writing null string should write null in Mirage ("" in original HLAPI)
-            Assert.That(reader.ReadString(), Is.Null);
-            Assert.That(reader.ReadString(), Is.EqualTo(""));
-            Assert.That(reader.ReadString(), Is.EqualTo("13"));
+            Assert.That(this.reader.ReadString(), Is.Null);
+            Assert.That(this.reader.ReadString(), Is.EqualTo(""));
+            Assert.That(this.reader.ReadString(), Is.EqualTo("13"));
 
-            Assert.That(reader.ReadBytes(2), Is.EqualTo(new byte[] { 14, 15 }));
+            Assert.That(this.reader.ReadBytes(2), Is.EqualTo(new byte[] { 14, 15 }));
 
-            Assert.That(reader.ReadBytesAndSize(), Is.Null);
+            Assert.That(this.reader.ReadBytesAndSize(), Is.Null);
 
-            Assert.That(reader.ReadBytesAndSize(), Is.EqualTo(new byte[] { 17, 18 }));
+            Assert.That(this.reader.ReadBytesAndSize(), Is.EqualTo(new byte[] { 17, 18 }));
 
-            Assert.That(reader.ReadBytesAndSize(), Is.EqualTo(new byte[] { 20, 21 }));
+            Assert.That(this.reader.ReadBytesAndSize(), Is.EqualTo(new byte[] { 20, 21 }));
 
-            Assert.That(reader.ReadBytesAndSize(), Is.EqualTo(new byte[] { 22, 23 }));
+            Assert.That(this.reader.ReadBytesAndSize(), Is.EqualTo(new byte[] { 22, 23 }));
         }
 
         [Test]
         public void TestList()
         {
             var original = new List<int> { 1, 2, 3, 4, 5 };
-            writer.Write(original);
+            this.writer.Write(original);
 
-            reader.Reset(writer.ToArraySegment());
-            var readList = reader.Read<List<int>>();
+            this.reader.Reset(this.writer.ToArraySegment());
+            var readList = this.reader.Read<List<int>>();
             Assert.That(readList, Is.EqualTo(original));
         }
 
         [Test]
         public void TestNullList()
         {
-            writer.Write<List<int>>(null);
+            this.writer.Write<List<int>>(null);
 
-            reader.Reset(writer.ToArraySegment());
-            var readList = reader.Read<List<int>>();
+            this.reader.Reset(this.writer.ToArraySegment());
+            var readList = this.reader.Read<List<int>>();
             Assert.That(readList, Is.Null);
         }
 
         [Test]
         public void WriteNetworkBehaviorNull()
         {
-            writer.WriteNetworkBehaviour(null);
+            this.writer.WriteNetworkBehaviour(null);
 
-            reader.Reset(writer.ToArraySegment());
-            var behaviour = reader.ReadNetworkBehaviour();
+            this.reader.Reset(this.writer.ToArraySegment());
+            var behaviour = this.reader.ReadNetworkBehaviour();
 
             Assert.That(behaviour, Is.Null);
 
-            Assert.That(writer.ByteLength, Is.EqualTo(reader.BytePosition));
+            Assert.That(this.writer.ByteLength, Is.EqualTo(this.reader.BytePosition));
         }
 
         [Test]
@@ -1012,18 +1012,18 @@ namespace Mirage.Tests.Runtime.Serialization
             _ = mock.Identity.NetworkBehaviours;
             mock.Identity.NetId = 1;
             // returns found id
-            reader.ObjectLocator.TryGetIdentity(1, out var _).Returns(x => { x[1] = mock.Identity; return true; });
+            this.reader.ObjectLocator.TryGetIdentity(1, out var _).Returns(x => { x[1] = mock.Identity; return true; });
 
             // try/fianlly so go is always destroyed
             try
             {
-                writer.WriteNetworkBehaviour(mock);
+                this.writer.WriteNetworkBehaviour(mock);
 
-                reader.Reset(writer.ToArraySegment());
-                var behaviour = reader.ReadNetworkBehaviour<MockComponent>();
+                this.reader.Reset(this.writer.ToArraySegment());
+                var behaviour = this.reader.ReadNetworkBehaviour<MockComponent>();
 
                 Assert.That(behaviour == mock);
-                Assert.That(writer.ByteLength, Is.EqualTo(reader.BytePosition));
+                Assert.That(this.writer.ByteLength, Is.EqualTo(this.reader.BytePosition));
             }
             finally
             {
@@ -1046,20 +1046,20 @@ namespace Mirage.Tests.Runtime.Serialization
             _ = mock.Identity.NetworkBehaviours;
             mock.Identity.NetId = 1;
             // returns found id
-            reader.ObjectLocator.TryGetIdentity(1, out var _).Returns(x => { x[1] = mock.Identity; return true; });
+            this.reader.ObjectLocator.TryGetIdentity(1, out var _).Returns(x => { x[1] = mock.Identity; return true; });
 
             // try/fianlly so go is always destroyed
             try
             {
                 var mockArray = new MockComponent[] { mock };
-                writer.Write(mockArray);
+                this.writer.Write(mockArray);
 
-                reader.Reset(writer.ToArraySegment());
-                var readArray = reader.Read<MockComponent[]>();
+                this.reader.Reset(this.writer.ToArraySegment());
+                var readArray = this.reader.Read<MockComponent[]>();
 
                 Assert.That(mockArray.Length == mockArray.Length);
                 Assert.That(mockArray[0] == mockArray[0]);
-                Assert.That(writer.ByteLength, Is.EqualTo(reader.BytePosition));
+                Assert.That(this.writer.ByteLength, Is.EqualTo(this.reader.BytePosition));
             }
             finally
             {
@@ -1077,19 +1077,19 @@ namespace Mirage.Tests.Runtime.Serialization
             _ = mock.Identity.NetworkBehaviours;
             mock.Identity.NetId = 1;
             // return not found
-            reader.ObjectLocator.TryGetIdentity(1, out var _).Returns(x => { x[1] = null; return false; });
+            this.reader.ObjectLocator.TryGetIdentity(1, out var _).Returns(x => { x[1] = null; return false; });
 
             // try/fianlly so go is always destroyed
             try
             {
-                writer.WriteNetworkBehaviour(mock);
+                this.writer.WriteNetworkBehaviour(mock);
 
-                reader.Reset(writer.ToArraySegment());
-                var behaviour = reader.ReadNetworkBehaviour<MockComponent>();
+                this.reader.Reset(this.writer.ToArraySegment());
+                var behaviour = this.reader.ReadNetworkBehaviour<MockComponent>();
 
                 Assert.That(behaviour, Is.Null);
                 // make sure read same as written (including compIndex for non-0 netid
-                Assert.That(writer.ByteLength, Is.EqualTo(reader.BytePosition));
+                Assert.That(this.writer.ByteLength, Is.EqualTo(this.reader.BytePosition));
             }
             finally
             {
@@ -1100,14 +1100,14 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test]
         public void TestWriteGameObject()
         {
-            writer.WriteGameObject(null);
+            this.writer.WriteGameObject(null);
 
-            reader.Reset(writer.ToArraySegment());
-            var obj = reader.ReadGameObject();
+            this.reader.Reset(this.writer.ToArraySegment());
+            var obj = this.reader.ReadGameObject();
 
             Assert.That(obj, Is.Null);
 
-            Assert.That(writer.ByteLength, Is.EqualTo(reader.BytePosition));
+            Assert.That(this.writer.ByteLength, Is.EqualTo(this.reader.BytePosition));
         }
 
         // use networkmessage to make sure writer is generated
@@ -1126,9 +1126,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [TestCase(1234)]
         public void NullableInt(int? value)
         {
-            writer.Write(value);
-            reader.Reset(writer.ToArraySegment());
-            var unpacked = reader.Read<int?>();
+            this.writer.Write(value);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var unpacked = this.reader.Read<int?>();
 
             Assert.That(unpacked, Is.EqualTo(value));
         }
@@ -1139,9 +1139,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [TestCase(false)]
         public void NullableBool(bool? value)
         {
-            writer.Write(value);
-            reader.Reset(writer.ToArraySegment());
-            var unpacked = reader.Read<bool?>();
+            this.writer.Write(value);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var unpacked = this.reader.Read<bool?>();
 
             Assert.That(unpacked, Is.EqualTo(value));
         }
@@ -1152,9 +1152,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [TestCase(20202020ul)]
         public void NullableUlong(ulong? value)
         {
-            writer.Write(value);
-            reader.Reset(writer.ToArraySegment());
-            var unpacked = reader.Read<ulong?>();
+            this.writer.Write(value);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var unpacked = this.reader.Read<ulong?>();
 
             Assert.That(unpacked, Is.EqualTo(value));
         }
@@ -1162,52 +1162,52 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test]
         public void SByteLength()
         {
-            writer.WriteSByte(14);
-            Assert.That(writer.BitPosition, Is.EqualTo(8));
+            this.writer.WriteSByte(14);
+            Assert.That(this.writer.BitPosition, Is.EqualTo(8));
         }
         [Test]
         public void Int16Length()
         {
-            writer.WriteInt16(50);
-            Assert.That(writer.BitPosition, Is.EqualTo(16));
+            this.writer.WriteInt16(50);
+            Assert.That(this.writer.BitPosition, Is.EqualTo(16));
         }
         [Test]
         public void Int32Length()
         {
-            writer.WriteInt32(20);
-            Assert.That(writer.BitPosition, Is.EqualTo(32));
+            this.writer.WriteInt32(20);
+            Assert.That(this.writer.BitPosition, Is.EqualTo(32));
         }
         [Test]
         public void Int64Length()
         {
-            writer.WriteInt64(21);
-            Assert.That(writer.BitPosition, Is.EqualTo(64));
+            this.writer.WriteInt64(21);
+            Assert.That(this.writer.BitPosition, Is.EqualTo(64));
         }
 
 
         [Test]
         public void ByteLength()
         {
-            writer.WriteByte(20);
-            Assert.That(writer.BitPosition, Is.EqualTo(8));
+            this.writer.WriteByte(20);
+            Assert.That(this.writer.BitPosition, Is.EqualTo(8));
         }
         [Test]
         public void UInt16Length()
         {
-            writer.WriteUInt16(263);
-            Assert.That(writer.BitPosition, Is.EqualTo(16));
+            this.writer.WriteUInt16(263);
+            Assert.That(this.writer.BitPosition, Is.EqualTo(16));
         }
         [Test]
         public void UInt32Length()
         {
-            writer.WriteUInt32(65);
-            Assert.That(writer.BitPosition, Is.EqualTo(32));
+            this.writer.WriteUInt32(65);
+            Assert.That(this.writer.BitPosition, Is.EqualTo(32));
         }
         [Test]
         public void UInt64Length()
         {
-            writer.WriteUInt64(22);
-            Assert.That(writer.BitPosition, Is.EqualTo(64));
+            this.writer.WriteUInt64(22);
+            Assert.That(this.writer.BitPosition, Is.EqualTo(64));
         }
 
         [Test]
@@ -1224,12 +1224,12 @@ namespace Mirage.Tests.Runtime.Serialization
             };
 
             // use generic writer
-            writer.Write(inValue);
-            Assert.That(writer.BitPosition, Is.EqualTo(MessageWithCustomWriterExtesions.WriteSize));
-            reader.Reset(writer.ToArraySegment());
+            this.writer.Write(inValue);
+            Assert.That(this.writer.BitPosition, Is.EqualTo(MessageWithCustomWriterExtesions.WriteSize));
+            this.reader.Reset(this.writer.ToArraySegment());
 
-            var outValue = reader.Read<MessageWithCustomWriter>();
-            Assert.That(reader.BitPosition, Is.EqualTo(MessageWithCustomWriterExtesions.WriteSize));
+            var outValue = this.reader.Read<MessageWithCustomWriter>();
+            Assert.That(this.reader.BitPosition, Is.EqualTo(MessageWithCustomWriterExtesions.WriteSize));
             Assert.That(outValue.type, Is.EqualTo(inValue.type));
             Assert.That(outValue.value, Is.EqualTo(inValue.value).Within(0.01f));
 
@@ -1245,9 +1245,9 @@ namespace Mirage.Tests.Runtime.Serialization
         [TestCase(10)]
         public void WritePlusOne(int? inCount)
         {
-            CollectionExtensions.WriteCountPlusOne(writer, inCount);
-            reader.Reset(writer.ToArraySegment());
-            var hasValue = CollectionExtensions.ReadCountPlusOne(reader, out var outCount);
+            CollectionExtensions.WriteCountPlusOne(this.writer, inCount);
+            this.reader.Reset(this.writer.ToArraySegment());
+            var hasValue = CollectionExtensions.ReadCountPlusOne(this.reader, out var outCount);
 
             Assert.That(hasValue, Is.EqualTo(inCount.HasValue));
             if (hasValue)
@@ -1266,10 +1266,10 @@ namespace Mirage.Tests.Runtime.Serialization
         public void ValidateSizeNoThrow(int count)
         {
             // 10 bytes = 80 bits
-            reader.Reset(new byte[10]);
+            this.reader.Reset(new byte[10]);
             Assert.DoesNotThrow(() =>
             {
-                CollectionExtensions.ValidateSize(reader, count);
+                CollectionExtensions.ValidateSize(this.reader, count);
             });
         }
 
@@ -1282,10 +1282,10 @@ namespace Mirage.Tests.Runtime.Serialization
         public void ValidateSizeThrows(int count)
         {
             // 10 bytes = 80 bits
-            reader.Reset(new byte[10]);
+            this.reader.Reset(new byte[10]);
             var e = Assert.Throws<EndOfStreamException>(() =>
             {
-                CollectionExtensions.ValidateSize(reader, count);
+                CollectionExtensions.ValidateSize(this.reader, count);
             });
             Assert.That(e.Message, Is.EqualTo($"Can't read {count} elements because it would read past the end of the stream."));
         }

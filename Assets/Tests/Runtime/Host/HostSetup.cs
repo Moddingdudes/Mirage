@@ -21,8 +21,8 @@ namespace Mirage.Tests.Runtime.Host
         protected NetworkIdentity identity;
         protected T component;
 
-        protected MessageHandler ClientMessageHandler => client.MessageHandler;
-        protected MessageHandler ServerMessageHandler => server.MessageHandler;
+        protected MessageHandler ClientMessageHandler => this.client.MessageHandler;
+        protected MessageHandler ServerMessageHandler => this.server.MessageHandler;
 
         protected virtual bool AutoStartServer => true;
         protected virtual Config ServerConfig => null;
@@ -33,47 +33,47 @@ namespace Mirage.Tests.Runtime.Host
         [UnitySetUp]
         public IEnumerator SetupHost() => UniTask.ToCoroutine(async () =>
         {
-            networkManagerGo = new GameObject();
+            this.networkManagerGo = new GameObject();
             // set gameobject name to test name (helps with debugging)
-            networkManagerGo.name = TestContext.CurrentContext.Test.MethodName;
+            this.networkManagerGo.name = TestContext.CurrentContext.Test.MethodName;
 
-            networkManagerGo.AddComponent<TestSocketFactory>();
-            sceneManager = networkManagerGo.AddComponent<NetworkSceneManager>();
-            serverObjectManager = networkManagerGo.AddComponent<ServerObjectManager>();
-            clientObjectManager = networkManagerGo.AddComponent<ClientObjectManager>();
-            manager = networkManagerGo.AddComponent<NetworkManager>();
-            server = networkManagerGo.AddComponent<NetworkServer>();
-            client = networkManagerGo.AddComponent<NetworkClient>();
-            manager.Client = networkManagerGo.GetComponent<NetworkClient>();
-            manager.Server = networkManagerGo.GetComponent<NetworkServer>();
+            this.networkManagerGo.AddComponent<TestSocketFactory>();
+            this.sceneManager = this.networkManagerGo.AddComponent<NetworkSceneManager>();
+            this.serverObjectManager = this.networkManagerGo.AddComponent<ServerObjectManager>();
+            this.clientObjectManager = this.networkManagerGo.AddComponent<ClientObjectManager>();
+            this.manager = this.networkManagerGo.AddComponent<NetworkManager>();
+            this.server = this.networkManagerGo.AddComponent<NetworkServer>();
+            this.client = this.networkManagerGo.AddComponent<NetworkClient>();
+            this.manager.Client = this.networkManagerGo.GetComponent<NetworkClient>();
+            this.manager.Server = this.networkManagerGo.GetComponent<NetworkServer>();
 
-            if (ServerConfig != null) server.PeerConfig = ServerConfig;
-            if (ClientConfig != null) client.PeerConfig = ClientConfig;
+            if (this.ServerConfig != null) this.server.PeerConfig = this.ServerConfig;
+            if (this.ClientConfig != null) this.client.PeerConfig = this.ClientConfig;
 
-            sceneManager.Client = client;
-            sceneManager.Server = server;
-            serverObjectManager.Server = server;
-            serverObjectManager.NetworkSceneManager = sceneManager;
-            clientObjectManager.Client = client;
-            clientObjectManager.NetworkSceneManager = sceneManager;
+            this.sceneManager.Client = this.client;
+            this.sceneManager.Server = this.server;
+            this.serverObjectManager.Server = this.server;
+            this.serverObjectManager.NetworkSceneManager = this.sceneManager;
+            this.clientObjectManager.Client = this.client;
+            this.clientObjectManager.NetworkSceneManager = this.sceneManager;
 
-            ExtraSetup();
+            this.ExtraSetup();
 
             // wait for all Start() methods to get invoked
             await UniTask.DelayFrame(1);
 
-            if (AutoStartServer)
+            if (this.AutoStartServer)
             {
-                await StartHost();
+                await this.StartHost();
 
-                playerGO = new GameObject("playerGO", typeof(Rigidbody));
-                identity = playerGO.AddComponent<NetworkIdentity>();
-                component = playerGO.AddComponent<T>();
+                this.playerGO = new GameObject("playerGO", typeof(Rigidbody));
+                this.identity = this.playerGO.AddComponent<NetworkIdentity>();
+                this.component = this.playerGO.AddComponent<T>();
 
-                serverObjectManager.AddCharacter(server.LocalPlayer, playerGO);
+                this.serverObjectManager.AddCharacter(this.server.LocalPlayer, this.playerGO);
 
                 // wait for client to spawn it
-                await AsyncUtil.WaitUntilWithTimeout(() => client.Player.HasCharacter);
+                await AsyncUtil.WaitUntilWithTimeout(() => this.client.Player.HasCharacter);
             }
         });
 
@@ -86,9 +86,9 @@ namespace Mirage.Tests.Runtime.Host
                 completionSource.TrySetResult();
             }
 
-            server.Started.AddListener(Started);
+            this.server.Started.AddListener(Started);
             // now start the host
-            manager.Server.StartServer(client);
+            this.manager.Server.StartServer(this.client);
 
             await completionSource.Task;
         }
@@ -98,23 +98,23 @@ namespace Mirage.Tests.Runtime.Host
         [UnityTearDown]
         public IEnumerator ShutdownHost() => UniTask.ToCoroutine(async () =>
         {
-            Object.Destroy(playerGO);
+            Object.Destroy(this.playerGO);
 
             // check active, it might have been stopped by tests
-            if (server.Active) server.Stop();
+            if (this.server.Active) this.server.Stop();
 
             await UniTask.Delay(1);
-            Object.Destroy(networkManagerGo);
+            Object.Destroy(this.networkManagerGo);
 
-            ExtraTearDown();
+            this.ExtraTearDown();
         });
 
         public void DoUpdate(int updateCount = 1)
         {
             for (var i = 0; i < updateCount; i++)
             {
-                server.Update();
-                client.Update();
+                this.server.Update();
+                this.client.Update();
             }
         }
     }

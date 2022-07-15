@@ -232,47 +232,47 @@ namespace Mirage
 
                 this.identity = identity;
 
-                _serializedObject = new SerializedObject(identity);
-                _prefabHashProp = _serializedObject.FindProperty("_prefabHash");
-                _sceneIdProp = _serializedObject.FindProperty("_sceneId");
+                this._serializedObject = new SerializedObject(identity);
+                this._prefabHashProp = this._serializedObject.FindProperty("_prefabHash");
+                this._sceneIdProp = this._serializedObject.FindProperty("_sceneId");
             }
 
             public int PrefabHash
             {
-                get => _prefabHashProp.intValue;
+                get => this._prefabHashProp.intValue;
                 set
                 {
-                    _prefabHashProp.intValue = value;
-                    _serializedObject.ApplyModifiedProperties();
+                    this._prefabHashProp.intValue = value;
+                    this._serializedObject.ApplyModifiedProperties();
                 }
             }
 
 
             public int SceneId
             {
-                get => (int)(_sceneIdProp.intValue & ID_MASK);
+                get => (int)(this._sceneIdProp.intValue & ID_MASK);
                 set
                 {
                     // have to mask incoming number incase it is negative
-                    _sceneIdProp.longValue = (_sceneIdProp.longValue & HASH_MASK) | (value & ID_MASK);
-                    _serializedObject.ApplyModifiedProperties();
+                    this._sceneIdProp.longValue = (this._sceneIdProp.longValue & HASH_MASK) | (value & ID_MASK);
+                    this._serializedObject.ApplyModifiedProperties();
                 }
             }
 
             public int SceneHash
             {
-                get => (int)((_sceneIdProp.intValue & HASH_MASK) >> 32);
+                get => (int)((this._sceneIdProp.intValue & HASH_MASK) >> 32);
                 set
                 {
-                    _sceneIdProp.longValue = (((long)value) << 32) | (_sceneIdProp.longValue & ID_MASK);
-                    _serializedObject.ApplyModifiedProperties();
+                    this._sceneIdProp.longValue = (((long)value) << 32) | (this._sceneIdProp.longValue & ID_MASK);
+                    this._serializedObject.ApplyModifiedProperties();
                 }
             }
 
             public void ClearSceneId()
             {
-                SceneId = 0;
-                SceneHash = 0;
+                this.SceneId = 0;
+                this.SceneHash = 0;
             }
         }
     }

@@ -16,8 +16,8 @@ namespace Mirage
 
         internal void Update()
         {
-            if (Client.Active)
-                NetworkPingLabelText.text = string.Format("{0}ms", (int)(Client.World.Time.Rtt * 1000));
+            if (this.Client.Active)
+                this.NetworkPingLabelText.text = string.Format("{0}ms", (int)(this.Client.World.Time.Rtt * 1000));
         }
     }
 }

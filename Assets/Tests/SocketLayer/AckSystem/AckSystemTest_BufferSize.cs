@@ -19,18 +19,18 @@ namespace Mirage.SocketLayer.Tests.AckSystemTests
             {
                 connection = new SubIRawConnection()
             };
-            instance.ackSystem = new AckSystem(instance.connection, config, MAX_PACKET_SIZE, time, bufferPool);
+            instance.ackSystem = new AckSystem(instance.connection, config, MAX_PACKET_SIZE, time, this.bufferPool);
 
             for (var i = 0; i < 50; i++)
             {
-                instance.ackSystem.SendReliable(createRandomData(i));
+                instance.ackSystem.SendReliable(this.createRandomData(i));
                 // update to send batch
                 instance.ackSystem.Update();
             }
 
             var exception = Assert.Throws<InvalidOperationException>(() =>
             {
-                instance.ackSystem.SendReliable(createRandomData(51));
+                instance.ackSystem.SendReliable(this.createRandomData(51));
                 instance.ackSystem.Update();
             });
             var expected = new InvalidOperationException($"Max packets in send buffer reached for {instance.connection}");
@@ -50,18 +50,18 @@ namespace Mirage.SocketLayer.Tests.AckSystemTests
             {
                 connection = new SubIRawConnection()
             };
-            instance.ackSystem = new AckSystem(instance.connection, config, MAX_PACKET_SIZE, time, bufferPool);
+            instance.ackSystem = new AckSystem(instance.connection, config, MAX_PACKET_SIZE, time, this.bufferPool);
 
             for (var i = 0; i < 255; i++)
             {
-                instance.ackSystem.SendReliable(createRandomData(i));
+                instance.ackSystem.SendReliable(this.createRandomData(i));
                 // update to send batch
                 instance.ackSystem.Update();
             }
 
             var exception = Assert.Throws<InvalidOperationException>(() =>
             {
-                instance.ackSystem.SendReliable(createRandomData(0));
+                instance.ackSystem.SendReliable(this.createRandomData(0));
                 instance.ackSystem.Update();
             });
             var expected = new InvalidOperationException($"Sent queue is full for {instance.connection}");

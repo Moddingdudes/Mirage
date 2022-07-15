@@ -18,7 +18,7 @@ namespace Mirage.Tests.Runtime.Host
         {
             var secondGO = new GameObject();
             var secondClient = secondGO.AddComponent<NetworkClient>();
-            var socketFactory = networkManagerGo.GetComponent<TestSocketFactory>();
+            var socketFactory = this.networkManagerGo.GetComponent<TestSocketFactory>();
 
             secondClient.SocketFactory = socketFactory;
 
@@ -31,10 +31,10 @@ namespace Mirage.Tests.Runtime.Host
             secondClient.Connect("localhost");
 
             // updates both so that connect and reject message is received 
-            DoUpdate();
+            this.DoUpdate();
             secondClient.Update();
 
-            Assert.That(server.Players, Has.Count.EqualTo(1));
+            Assert.That(this.server.Players, Has.Count.EqualTo(1));
             // also check if client was disconnected (this will confirm it was rejected
             Assert.That(disconnectedCalled, Is.EqualTo(1));
 

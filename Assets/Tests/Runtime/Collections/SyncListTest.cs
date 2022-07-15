@@ -51,28 +51,28 @@ namespace Mirage.Tests.Runtime
         [SetUp]
         public void SetUp()
         {
-            serverSyncList = new SyncList<string>();
-            clientSyncList = new SyncList<string>();
+            this.serverSyncList = new SyncList<string>();
+            this.clientSyncList = new SyncList<string>();
 
             // add some data to the list
-            serverSyncList.Add("Hello");
-            serverSyncList.Add("World");
-            serverSyncList.Add("!");
-            SerializeHelper.SerializeAllTo(serverSyncList, clientSyncList);
+            this.serverSyncList.Add("Hello");
+            this.serverSyncList.Add("World");
+            this.serverSyncList.Add("!");
+            SerializeHelper.SerializeAllTo(this.serverSyncList, this.clientSyncList);
         }
 
         [Test]
         public void TestInit()
         {
-            Assert.That(clientSyncList, Is.EquivalentTo(new[] { "Hello", "World", "!" }));
+            Assert.That(this.clientSyncList, Is.EquivalentTo(new[] { "Hello", "World", "!" }));
         }
 
         [Test]
         public void ClearEventOnSyncAll()
         {
             var callback = Substitute.For<Action>();
-            clientSyncList.OnClear += callback;
-            SerializeHelper.SerializeAllTo(serverSyncList, clientSyncList);
+            this.clientSyncList.OnClear += callback;
+            SerializeHelper.SerializeAllTo(this.serverSyncList, this.clientSyncList);
             callback.Received().Invoke();
         }
 
@@ -80,8 +80,8 @@ namespace Mirage.Tests.Runtime
         public void InsertEventOnSyncAll()
         {
             var callback = Substitute.For<Action<int, string>>();
-            clientSyncList.OnInsert += callback;
-            SerializeHelper.SerializeAllTo(serverSyncList, clientSyncList);
+            this.clientSyncList.OnInsert += callback;
+            SerializeHelper.SerializeAllTo(this.serverSyncList, this.clientSyncList);
 
             Received.InOrder(() =>
             {
@@ -95,148 +95,148 @@ namespace Mirage.Tests.Runtime
         public void ChangeEventOnSyncAll()
         {
             var callback = Substitute.For<Action>();
-            clientSyncList.OnChange += callback;
-            SerializeHelper.SerializeAllTo(serverSyncList, clientSyncList);
+            this.clientSyncList.OnChange += callback;
+            SerializeHelper.SerializeAllTo(this.serverSyncList, this.clientSyncList);
             callback.Received().Invoke();
         }
 
         [Test]
         public void TestAdd()
         {
-            serverSyncList.Add("yay");
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
-            Assert.That(clientSyncList, Is.EquivalentTo(new[] { "Hello", "World", "!", "yay" }));
+            this.serverSyncList.Add("yay");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
+            Assert.That(this.clientSyncList, Is.EquivalentTo(new[] { "Hello", "World", "!", "yay" }));
         }
 
         [Test]
         public void TestAddRange()
         {
-            serverSyncList.AddRange(new[] { "One", "Two", "Three" });
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
-            Assert.That(clientSyncList, Is.EqualTo(new[] { "Hello", "World", "!", "One", "Two", "Three" }));
+            this.serverSyncList.AddRange(new[] { "One", "Two", "Three" });
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
+            Assert.That(this.clientSyncList, Is.EqualTo(new[] { "Hello", "World", "!", "One", "Two", "Three" }));
         }
 
         [Test]
         public void TestClear()
         {
-            serverSyncList.Clear();
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
-            Assert.That(clientSyncList, Is.EquivalentTo(new string[] { }));
+            this.serverSyncList.Clear();
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
+            Assert.That(this.clientSyncList, Is.EquivalentTo(new string[] { }));
         }
 
         [Test]
         public void TestInsert()
         {
-            serverSyncList.Insert(0, "yay");
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
-            Assert.That(clientSyncList, Is.EquivalentTo(new[] { "yay", "Hello", "World", "!" }));
+            this.serverSyncList.Insert(0, "yay");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
+            Assert.That(this.clientSyncList, Is.EquivalentTo(new[] { "yay", "Hello", "World", "!" }));
         }
 
         [Test]
         public void TestInsertRange()
         {
-            serverSyncList.InsertRange(1, new[] { "One", "Two", "Three" });
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
-            Assert.That(clientSyncList, Is.EqualTo(new[] { "Hello", "One", "Two", "Three", "World", "!" }));
+            this.serverSyncList.InsertRange(1, new[] { "One", "Two", "Three" });
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
+            Assert.That(this.clientSyncList, Is.EqualTo(new[] { "Hello", "One", "Two", "Three", "World", "!" }));
         }
 
         [Test]
         public void TestSet()
         {
-            serverSyncList[1] = "yay";
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
-            Assert.That(clientSyncList[1], Is.EqualTo("yay"));
-            Assert.That(clientSyncList, Is.EquivalentTo(new[] { "Hello", "yay", "!" }));
+            this.serverSyncList[1] = "yay";
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
+            Assert.That(this.clientSyncList[1], Is.EqualTo("yay"));
+            Assert.That(this.clientSyncList, Is.EquivalentTo(new[] { "Hello", "yay", "!" }));
         }
 
         [Test]
         public void TestSetNull()
         {
-            serverSyncList[1] = null;
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
-            Assert.That(clientSyncList[1], Is.EqualTo(null));
-            Assert.That(clientSyncList, Is.EquivalentTo(new[] { "Hello", null, "!" }));
-            serverSyncList[1] = "yay";
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
-            Assert.That(clientSyncList, Is.EquivalentTo(new[] { "Hello", "yay", "!" }));
+            this.serverSyncList[1] = null;
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
+            Assert.That(this.clientSyncList[1], Is.EqualTo(null));
+            Assert.That(this.clientSyncList, Is.EquivalentTo(new[] { "Hello", null, "!" }));
+            this.serverSyncList[1] = "yay";
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
+            Assert.That(this.clientSyncList, Is.EquivalentTo(new[] { "Hello", "yay", "!" }));
         }
 
         [Test]
         public void TestRemoveAll()
         {
-            serverSyncList.RemoveAll(entry => entry.Contains("l"));
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
-            Assert.That(clientSyncList, Is.EquivalentTo(new[] { "!" }));
+            this.serverSyncList.RemoveAll(entry => entry.Contains("l"));
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
+            Assert.That(this.clientSyncList, Is.EquivalentTo(new[] { "!" }));
         }
 
         [Test]
         public void TestRemoveAllNone()
         {
-            serverSyncList.RemoveAll(entry => entry == "yay");
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
-            Assert.That(clientSyncList, Is.EquivalentTo(new[] { "Hello", "World", "!" }));
+            this.serverSyncList.RemoveAll(entry => entry == "yay");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
+            Assert.That(this.clientSyncList, Is.EquivalentTo(new[] { "Hello", "World", "!" }));
         }
 
         [Test]
         public void TestRemoveAt()
         {
-            serverSyncList.RemoveAt(1);
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
-            Assert.That(clientSyncList, Is.EquivalentTo(new[] { "Hello", "!" }));
+            this.serverSyncList.RemoveAt(1);
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
+            Assert.That(this.clientSyncList, Is.EquivalentTo(new[] { "Hello", "!" }));
         }
 
         [Test]
         public void TestRemove()
         {
-            serverSyncList.Remove("World");
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
-            Assert.That(clientSyncList, Is.EquivalentTo(new[] { "Hello", "!" }));
+            this.serverSyncList.Remove("World");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
+            Assert.That(this.clientSyncList, Is.EquivalentTo(new[] { "Hello", "!" }));
         }
 
         [Test]
         public void TestFindIndex()
         {
-            var index = serverSyncList.FindIndex(entry => entry == "World");
+            var index = this.serverSyncList.FindIndex(entry => entry == "World");
             Assert.That(index, Is.EqualTo(1));
         }
 
         [Test]
         public void TestFind()
         {
-            var element = serverSyncList.Find(entry => entry == "World");
+            var element = this.serverSyncList.Find(entry => entry == "World");
             Assert.That(element, Is.EqualTo("World"));
         }
 
         [Test]
         public void TestNoFind()
         {
-            var nonexistent = serverSyncList.Find(entry => entry == "yay");
+            var nonexistent = this.serverSyncList.Find(entry => entry == "yay");
             Assert.That(nonexistent, Is.Null);
         }
 
         [Test]
         public void TestFindAll()
         {
-            var results = serverSyncList.FindAll(entry => entry.Contains("l"));
+            var results = this.serverSyncList.FindAll(entry => entry.Contains("l"));
             Assert.That(results, Is.EquivalentTo(new[] { "Hello", "World" }));
         }
 
         [Test]
         public void TestFindAllNonExistent()
         {
-            var nonexistent = serverSyncList.FindAll(entry => entry == "yay");
+            var nonexistent = this.serverSyncList.FindAll(entry => entry == "yay");
             Assert.That(nonexistent, Is.Empty);
         }
 
         [Test]
         public void TestMultSync()
         {
-            serverSyncList.Add("1");
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
+            this.serverSyncList.Add("1");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
             // add some delta and see if it applies
-            serverSyncList.Add("2");
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
-            Assert.That(clientSyncList, Is.EquivalentTo(new[] { "Hello", "World", "!", "1", "2" }));
+            this.serverSyncList.Add("2");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
+            Assert.That(this.clientSyncList, Is.EquivalentTo(new[] { "Hello", "World", "!", "1", "2" }));
         }
 
         [Test]
@@ -299,9 +299,9 @@ namespace Mirage.Tests.Runtime
         public void AddClientCallbackTest()
         {
             var callback = Substitute.For<Action<int, string>>();
-            clientSyncList.OnInsert += callback;
-            serverSyncList.Add("yay");
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
+            this.clientSyncList.OnInsert += callback;
+            this.serverSyncList.Add("yay");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
             callback.Received().Invoke(3, "yay");
         }
 
@@ -309,9 +309,9 @@ namespace Mirage.Tests.Runtime
         public void InsertClientCallbackTest()
         {
             var callback = Substitute.For<Action<int, string>>();
-            clientSyncList.OnInsert += callback;
-            serverSyncList.Insert(1, "yay");
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
+            this.clientSyncList.OnInsert += callback;
+            this.serverSyncList.Insert(1, "yay");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
             callback.Received().Invoke(1, "yay");
         }
 
@@ -319,9 +319,9 @@ namespace Mirage.Tests.Runtime
         public void RemoveClientCallbackTest()
         {
             var callback = Substitute.For<Action<int, string>>();
-            clientSyncList.OnRemove += callback;
-            serverSyncList.Remove("World");
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
+            this.clientSyncList.OnRemove += callback;
+            this.serverSyncList.Remove("World");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
             callback.Received().Invoke(1, "World");
         }
 
@@ -329,9 +329,9 @@ namespace Mirage.Tests.Runtime
         public void ClearClientCallbackTest()
         {
             var callback = Substitute.For<Action>();
-            clientSyncList.OnClear += callback;
-            serverSyncList.Clear();
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
+            this.clientSyncList.OnClear += callback;
+            this.serverSyncList.Clear();
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
             callback.Received().Invoke();
         }
 
@@ -339,9 +339,9 @@ namespace Mirage.Tests.Runtime
         public void SetClientCallbackTest()
         {
             var callback = Substitute.For<Action<int, string, string>>();
-            clientSyncList.OnSet += callback;
-            serverSyncList[1] = "yo mama";
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
+            this.clientSyncList.OnSet += callback;
+            this.serverSyncList[1] = "yo mama";
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
             callback.Received().Invoke(1, "World", "yo mama");
         }
 
@@ -349,10 +349,10 @@ namespace Mirage.Tests.Runtime
         public void ChangeClientCallbackTest()
         {
             var callback = Substitute.For<Action>();
-            clientSyncList.OnChange += callback;
-            serverSyncList.Add("1");
-            serverSyncList.Add("2");
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
+            this.clientSyncList.OnChange += callback;
+            this.serverSyncList.Add("1");
+            this.serverSyncList.Add("2");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
             callback.Received(1).Invoke();
         }
 
@@ -360,8 +360,8 @@ namespace Mirage.Tests.Runtime
         public void AddServerCallbackTest()
         {
             var callback = Substitute.For<Action<int, string>>();
-            serverSyncList.OnInsert += callback;
-            serverSyncList.Add("yay");
+            this.serverSyncList.OnInsert += callback;
+            this.serverSyncList.Add("yay");
             callback.Received().Invoke(3, "yay");
         }
 
@@ -369,8 +369,8 @@ namespace Mirage.Tests.Runtime
         public void InsertServerCallbackTest()
         {
             var callback = Substitute.For<Action<int, string>>();
-            serverSyncList.OnInsert += callback;
-            serverSyncList.Insert(1, "yay");
+            this.serverSyncList.OnInsert += callback;
+            this.serverSyncList.Insert(1, "yay");
             callback.Received().Invoke(1, "yay");
         }
 
@@ -378,8 +378,8 @@ namespace Mirage.Tests.Runtime
         public void RemoveServerCallbackTest()
         {
             var callback = Substitute.For<Action<int, string>>();
-            serverSyncList.OnRemove += callback;
-            serverSyncList.Remove("World");
+            this.serverSyncList.OnRemove += callback;
+            this.serverSyncList.Remove("World");
             callback.Received().Invoke(1, "World");
         }
 
@@ -387,8 +387,8 @@ namespace Mirage.Tests.Runtime
         public void ClearServerCallbackTest()
         {
             var callback = Substitute.For<Action>();
-            serverSyncList.OnClear += callback;
-            serverSyncList.Clear();
+            this.serverSyncList.OnClear += callback;
+            this.serverSyncList.Clear();
             callback.Received().Invoke();
         }
 
@@ -396,8 +396,8 @@ namespace Mirage.Tests.Runtime
         public void SetServerCallbackTest()
         {
             var callback = Substitute.For<Action<int, string, string>>();
-            serverSyncList.OnSet += callback;
-            serverSyncList[1] = "yo mama";
+            this.serverSyncList.OnSet += callback;
+            this.serverSyncList[1] = "yo mama";
             callback.Received().Invoke(1, "World", "yo mama");
         }
 
@@ -405,9 +405,9 @@ namespace Mirage.Tests.Runtime
         public void ChangeServerCallbackTest()
         {
             var callback = Substitute.For<Action>();
-            serverSyncList.OnChange += callback;
-            serverSyncList.Add("1");
-            serverSyncList.Add("2");
+            this.serverSyncList.OnChange += callback;
+            this.serverSyncList.Add("1");
+            this.serverSyncList.Add("2");
             // note that on the server we would receive 2 calls
             // because we are adding 2 operations separately
             // there is no way to batch operations in the server
@@ -417,46 +417,46 @@ namespace Mirage.Tests.Runtime
         [Test]
         public void CountTest()
         {
-            Assert.That(serverSyncList.Count, Is.EqualTo(3));
+            Assert.That(this.serverSyncList.Count, Is.EqualTo(3));
         }
 
         [Test]
         public void ReadOnlyTest()
         {
-            Assert.That(serverSyncList.IsReadOnly, Is.False);
-            Assert.That(clientSyncList.IsReadOnly, Is.True);
+            Assert.That(this.serverSyncList.IsReadOnly, Is.False);
+            Assert.That(this.clientSyncList.IsReadOnly, Is.True);
         }
         [Test]
         public void WritingToReadOnlyThrows()
         {
-            Assert.Throws<InvalidOperationException>(() => { clientSyncList.Add("fail"); });
+            Assert.Throws<InvalidOperationException>(() => { this.clientSyncList.Add("fail"); });
         }
 
         [Test]
         public void DirtyTest()
         {
             // Sync Delta to clear dirty
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
 
             // nothing to send
-            Assert.That(serverSyncList.IsDirty, Is.False);
+            Assert.That(this.serverSyncList.IsDirty, Is.False);
 
             // something has changed
-            serverSyncList.Add("1");
-            Assert.That(serverSyncList.IsDirty, Is.True);
-            SerializeHelper.SerializeDeltaTo(serverSyncList, clientSyncList);
+            this.serverSyncList.Add("1");
+            Assert.That(this.serverSyncList.IsDirty, Is.True);
+            SerializeHelper.SerializeDeltaTo(this.serverSyncList, this.clientSyncList);
 
             // data has been flushed,  should go back to clear
-            Assert.That(serverSyncList.IsDirty, Is.False);
+            Assert.That(this.serverSyncList.IsDirty, Is.False);
         }
 
         [Test]
         public void ObjectCanBeReusedAfterReset()
         {
-            clientSyncList.Reset();
+            this.clientSyncList.Reset();
 
             // make old client the host
-            var hostList = clientSyncList;
+            var hostList = this.clientSyncList;
             var clientList2 = new SyncList<string>();
 
             Assert.That(hostList.IsReadOnly, Is.False);
@@ -470,25 +470,25 @@ namespace Mirage.Tests.Runtime
         [Test]
         public void ResetShouldSetReadOnlyToFalse()
         {
-            clientSyncList.Reset();
+            this.clientSyncList.Reset();
 
-            Assert.That(clientSyncList.IsReadOnly, Is.False);
+            Assert.That(this.clientSyncList.IsReadOnly, Is.False);
         }
 
         [Test]
         public void ResetShouldClearChanges()
         {
-            serverSyncList.Reset();
+            this.serverSyncList.Reset();
 
-            Assert.That(serverSyncList.ChangeCount, Is.Zero);
+            Assert.That(this.serverSyncList.ChangeCount, Is.Zero);
         }
 
         [Test]
         public void ResetShouldClearItems()
         {
-            serverSyncList.Reset();
+            this.serverSyncList.Reset();
 
-            Assert.That(serverSyncList, Is.Empty);
+            Assert.That(this.serverSyncList, Is.Empty);
         }
     }
 }

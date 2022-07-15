@@ -10,7 +10,7 @@ namespace Mirage.Tests.Runtime.Host
         [Test]
         public void GetNetworkIdentity()
         {
-            Assert.That(playerGO.GetNetworkIdentity(), Is.EqualTo(identity));
+            Assert.That(this.playerGO.GetNetworkIdentity(), Is.EqualTo(this.identity));
         }
 
         [Test]

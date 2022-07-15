@@ -40,8 +40,8 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var hook = Substitute.For<Action<int, int>>();
-            clientComponent.hookCalled += hook;
-            serverComponent.value = num;
+            this.clientComponent.hookCalled += hook;
+            this.serverComponent.value = num;
 
             yield return null;
             yield return null;
@@ -64,8 +64,8 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var hook = Substitute.For<Action<MyClass, MyClass>>();
-            clientComponent.hookCalled += hook;
-            serverComponent.value = new MyClass { Value = num };
+            this.clientComponent.hookCalled += hook;
+            this.serverComponent.value = new MyClass { Value = num };
 
             yield return null;
             yield return null;

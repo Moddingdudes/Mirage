@@ -34,7 +34,7 @@ namespace Mirage
         /// True if the server or client is started and running
         /// <para>This is set True in StartServer / StartClient, and set False in StopServer / StopClient</para>
         /// </summary>
-        public bool IsNetworkActive => Server.Active || Client.Active;
+        public bool IsNetworkActive => this.Server.Active || this.Client.Active;
 
         /// <summary>
         /// helper enum to know if we started the networkmanager as server/client/host.
@@ -43,11 +43,11 @@ namespace Mirage
         {
             get
             {
-                if (!Server.Active && !Client.Active)
+                if (!this.Server.Active && !this.Client.Active)
                     return NetworkManagerMode.None;
-                else if (Server.Active && Client.Active)
+                else if (this.Server.Active && this.Client.Active)
                     return NetworkManagerMode.Host;
-                else if (Server.Active)
+                else if (this.Server.Active)
                     return NetworkManagerMode.Server;
                 else
                     return NetworkManagerMode.Client;

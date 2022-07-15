@@ -19,16 +19,16 @@ namespace Mirage
 
         internal GameObject gameObject;
 
-        internal uint NetId => gameObject != null ? gameObject.GetComponent<NetworkIdentity>().NetId : netId;
+        internal uint NetId => this.gameObject != null ? this.gameObject.GetComponent<NetworkIdentity>().NetId : this.netId;
 
         public GameObject Value
         {
             get
             {
-                if (gameObject != null)
-                    return gameObject;
+                if (this.gameObject != null)
+                    return this.gameObject;
 
-                if (objectLocator != null && objectLocator.TryGetIdentity(NetId, out var result))
+                if (this.objectLocator != null && this.objectLocator.TryGetIdentity(this.NetId, out var result))
                 {
                     return result.gameObject;
                 }
@@ -39,8 +39,8 @@ namespace Mirage
             set
             {
                 if (value == null)
-                    netId = 0;
-                gameObject = value;
+                    this.netId = 0;
+                this.gameObject = value;
             }
         }
     }

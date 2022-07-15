@@ -6,85 +6,85 @@ namespace Mirage.SocketLayer
         public readonly Frame[] buffer;
         public uint tick;
         [System.Obsolete("Frame is now a struct, use buffer and tick instead if you need to set data")]
-        public Frame Current => buffer[tick];
+        public Frame Current => this.buffer[this.tick];
 
         public Metrics(int bitSize = 10)
         {
-            buffer = new Frame[1 << bitSize];
-            Sequencer = new Sequencer(bitSize);
+            this.buffer = new Frame[1 << bitSize];
+            this.Sequencer = new Sequencer(bitSize);
         }
 
         public void OnTick(int connectionCount)
         {
-            tick = (uint)Sequencer.NextAfter(tick);
-            buffer[tick] = Frame.CreateNew();
-            buffer[tick].connectionCount = connectionCount;
+            this.tick = (uint)this.Sequencer.NextAfter(this.tick);
+            this.buffer[this.tick] = Frame.CreateNew();
+            this.buffer[this.tick].connectionCount = connectionCount;
         }
 
         public void OnSend(int length)
         {
-            buffer[tick].sendCount++;
-            buffer[tick].sendBytes += length;
+            this.buffer[this.tick].sendCount++;
+            this.buffer[this.tick].sendBytes += length;
         }
 
         internal void OnSendUnconnected(int length)
         {
-            buffer[tick].sendUnconnectedCount++;
-            buffer[tick].sendUnconnectedBytes += length;
+            this.buffer[this.tick].sendUnconnectedCount++;
+            this.buffer[this.tick].sendUnconnectedBytes += length;
         }
 
         public void OnResend(int length)
         {
-            buffer[tick].resendCount++;
-            buffer[tick].resendBytes += length;
+            this.buffer[this.tick].resendCount++;
+            this.buffer[this.tick].resendBytes += length;
         }
 
         public void OnReceive(int length)
         {
-            buffer[tick].receiveCount++;
-            buffer[tick].receiveBytes += length;
+            this.buffer[this.tick].receiveCount++;
+            this.buffer[this.tick].receiveBytes += length;
         }
 
         public void OnReceiveUnconnected(int length)
         {
-            buffer[tick].receiveUnconnectedCount++;
-            buffer[tick].receiveUnconnectedBytes += length;
+            this.buffer[this.tick].receiveUnconnectedCount++;
+            this.buffer[this.tick].receiveUnconnectedBytes += length;
         }
 
         public void OnSendMessageUnreliable(int length)
         {
-            buffer[tick].sendMessagesUnreliableCount++;
-            buffer[tick].sendMessagesUnreliableBytes += length;
+            this.buffer[this.tick].sendMessagesUnreliableCount++;
+            this.buffer[this.tick].sendMessagesUnreliableBytes += length;
         }
 
         public void OnReceiveMessageUnreliable(int length)
         {
-            buffer[tick].receiveMessagesUnreliableCount++;
-            buffer[tick].receiveMessagesUnreliableBytes += length;
+            this.buffer[this.tick].receiveMessagesUnreliableCount++;
+            this.buffer[this.tick].receiveMessagesUnreliableBytes += length;
         }
 
         public void OnSendMessageReliable(int length)
         {
-            buffer[tick].sendMessagesReliableCount++;
-            buffer[tick].sendMessagesReliableBytes += length;
+            this.buffer[this.tick].sendMessagesReliableCount++;
+            this.buffer[this.tick].sendMessagesReliableBytes += length;
         }
 
         public void OnReceiveMessageReliable(int length)
         {
-            buffer[tick].receiveMessagesReliableCount++;
-            buffer[tick].receiveMessagesReliableBytes += length;
+            this.buffer[this.tick].receiveMessagesReliableCount++;
+            this.buffer[this.tick].receiveMessagesReliableBytes += length;
         }
 
         public void OnSendMessageNotify(int length)
         {
-            buffer[tick].sendMessagesNotifyCount++;
-            buffer[tick].sendMessagesNotifyBytes += length;
+            this.buffer[this.tick].sendMessagesNotifyCount++;
+            this.buffer[this.tick].sendMessagesNotifyBytes += length;
         }
 
         public void OnReceiveMessageNotify(int length)
         {
-            buffer[tick].receiveMessagesNotifyCount++;
-            buffer[tick].receiveMessagesNotifyBytes += length;
+            this.buffer[this.tick].receiveMessagesNotifyCount++;
+            this.buffer[this.tick].receiveMessagesNotifyBytes += length;
         }
 
         public struct Frame
@@ -164,14 +164,14 @@ namespace Mirage.SocketLayer
             public int receiveMessagesNotifyBytes;
 
             /// <summary>Number of message sent to connections</summary>
-            public int sendMessagesCountTotal => sendMessagesUnreliableCount + sendMessagesReliableCount + sendMessagesNotifyCount;
+            public int sendMessagesCountTotal => this.sendMessagesUnreliableCount + this.sendMessagesReliableCount + this.sendMessagesNotifyCount;
             /// <summary>Number of bytes sent to connections (excludes packets headers, will just be the message sent by high level)</summary>
-            public int sendMessagesBytesTotal => sendMessagesUnreliableBytes + sendMessagesReliableBytes + sendMessagesNotifyBytes;
+            public int sendMessagesBytesTotal => this.sendMessagesUnreliableBytes + this.sendMessagesReliableBytes + this.sendMessagesNotifyBytes;
 
             /// <summary>Number of message received from connections</summary>
-            public int receiveMessagesCountTotal => receiveMessagesUnreliableCount + receiveMessagesReliableCount + receiveMessagesNotifyCount;
+            public int receiveMessagesCountTotal => this.receiveMessagesUnreliableCount + this.receiveMessagesReliableCount + this.receiveMessagesNotifyCount;
             /// <summary>Number of bytes received from connections (excludes packets headers, will just be the message sent by high level)</summary>
-            public int receiveMessagesBytesTotal => receiveMessagesUnreliableBytes + receiveMessagesReliableBytes + receiveMessagesNotifyBytes;
+            public int receiveMessagesBytesTotal => this.receiveMessagesUnreliableBytes + this.receiveMessagesReliableBytes + this.receiveMessagesNotifyBytes;
             #endregion
         }
     }

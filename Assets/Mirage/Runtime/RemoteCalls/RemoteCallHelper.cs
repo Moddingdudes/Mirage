@@ -14,17 +14,17 @@ namespace Mirage.RemoteCalls
 
         public RemoteCallCollection(NetworkBehaviour behaviour)
         {
-            remoteCalls = new RemoteCall[behaviour.GetRpcCount()];
+            this.remoteCalls = new RemoteCall[behaviour.GetRpcCount()];
         }
 
         public void Register(int index, Type invokeClass, string name, RpcInvokeType invokerType, RpcDelegate func, bool cmdRequireAuthority)
         {
             // weaver gives index, so should never give 2 indexes that are the same
-            if (remoteCalls[index] != null)
+            if (this.remoteCalls[index] != null)
                 throw new InvalidOperationException("2 Rpc has same index");
 
             var call = new RemoteCall(invokeClass, invokerType, func, cmdRequireAuthority, name);
-            remoteCalls[index] = call;
+            this.remoteCalls[index] = call;
 
             if (logger.LogEnabled())
             {
@@ -58,12 +58,12 @@ namespace Mirage.RemoteCalls
                 Wrapper(obj, reader, senderPlayer, replyId).Forget();
             }
 
-            Register(index, invokeClass, name, RpcInvokeType.ServerRpc, CmdWrapper, cmdRequireAuthority);
+            this.Register(index, invokeClass, name, RpcInvokeType.ServerRpc, CmdWrapper, cmdRequireAuthority);
         }
 
         public RemoteCall Get(int index)
         {
-            return remoteCalls[index];
+            return this.remoteCalls[index];
         }
     }
     /// <summary>
@@ -109,50 +109,50 @@ namespace Mirage.RemoteCalls
 
         public RemoteCall(Type declaringType, RpcInvokeType invokeType, RpcDelegate function, bool requireAuthority, string name)
         {
-            DeclaringType = declaringType;
-            InvokeType = invokeType;
+            this.DeclaringType = declaringType;
+            this.InvokeType = invokeType;
             this.function = function;
-            RequireAuthority = requireAuthority;
+            this.RequireAuthority = requireAuthority;
             this.name = name;
         }
 
         public bool AreEqual(Type declaringType, RpcInvokeType invokeType, RpcDelegate function)
         {
-            if (InvokeType != invokeType)
+            if (this.InvokeType != invokeType)
                 return false;
 
             if (declaringType.IsGenericType)
-                return AreEqualIgnoringGeneric(declaringType, function);
+                return this.AreEqualIgnoringGeneric(declaringType, function);
 
-            return DeclaringType == declaringType
+            return this.DeclaringType == declaringType
                 && this.function == function;
         }
 
         private bool AreEqualIgnoringGeneric(Type declaringType, RpcDelegate function)
         {
             // if this.type not generic, then not equal
-            if (!DeclaringType.IsGenericType)
+            if (!this.DeclaringType.IsGenericType)
                 return false;
 
             // types must be in same assembly to be equal
-            if (DeclaringType.Assembly != declaringType.Assembly)
+            if (this.DeclaringType.Assembly != declaringType.Assembly)
                 return false;
 
             Debug.Assert(declaringType == function.Method.DeclaringType);
-            Debug.Assert(DeclaringType == this.function.Method.DeclaringType);
+            Debug.Assert(this.DeclaringType == this.function.Method.DeclaringType);
 
             // we check Assembly above, so we know these 2 functions must be in same assmebly here
             // - we can check Namespace and Name to acount generic check
             // - weaver check to make sure method in type have unique hash
             // - weaver appends hash to names, so overloads will have different hash/names
-            return DeclaringType.Namespace == declaringType.Namespace
-                && DeclaringType.Name == declaringType.Name
+            return this.DeclaringType.Namespace == declaringType.Namespace
+                && this.DeclaringType.Name == declaringType.Name
                 && this.function.Method.Name == function.Method.Name;
         }
 
         internal void Invoke(NetworkReader reader, NetworkBehaviour invokingType, INetworkPlayer senderPlayer = null, int replyId = 0)
         {
-            function(invokingType, reader, senderPlayer, replyId);
+            this.function(invokingType, reader, senderPlayer, replyId);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace Mirage.RemoteCalls
         /// <returns></returns>
         public override string ToString()
         {
-            return name;
+            return this.name;
         }
     }
 }

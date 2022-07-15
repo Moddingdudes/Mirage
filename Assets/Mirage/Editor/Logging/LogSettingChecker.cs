@@ -18,20 +18,20 @@ namespace Mirage.EditorScripts.Logging
 
         public void Refresh()
         {
-            duplicateChecker.Clear();
-            RemoveDuplicates();
-            AddNewFromFactory();
+            this.duplicateChecker.Clear();
+            this.RemoveDuplicates();
+            this.AddNewFromFactory();
         }
 
         private void RemoveDuplicates()
         {
-            for (var i = 0; i < settings.LogLevels.Count; i++)
+            for (var i = 0; i < this.settings.LogLevels.Count; i++)
             {
-                var added = duplicateChecker.Add(settings.LogLevels[i].FullName);
+                var added = this.duplicateChecker.Add(this.settings.LogLevels[i].FullName);
                 // is duplicate, remove it
                 if (!added)
                 {
-                    settings.LogLevels.RemoveAt(i);
+                    this.settings.LogLevels.RemoveAt(i);
                     i--;
                 }
             }
@@ -42,11 +42,11 @@ namespace Mirage.EditorScripts.Logging
             // try add new types
             foreach (var logger in LogFactory.Loggers)
             {
-                var added = duplicateChecker.Add(logger.Key);
+                var added = this.duplicateChecker.Add(logger.Key);
                 // is new, add it
                 if (added)
                 {
-                    settings.LogLevels.Add(new LogSettingsSO.LoggerSettings(logger.Key, logger.Value.filterLogType));
+                    this.settings.LogLevels.Add(new LogSettingsSO.LoggerSettings(logger.Key, logger.Value.filterLogType));
                 }
             }
         }

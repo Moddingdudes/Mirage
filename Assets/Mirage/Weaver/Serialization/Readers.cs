@@ -22,14 +22,14 @@ namespace Mirage.Weaver
 
         protected override MethodReference GetGenericFunction()
         {
-            var genericType = module.ImportReference(typeof(GenericTypesSerializationExtensions)).Resolve();
+            var genericType = this.module.ImportReference(typeof(GenericTypesSerializationExtensions)).Resolve();
             var method = genericType.GetMethod(nameof(GenericTypesSerializationExtensions.Read));
-            return module.ImportReference(method);
+            return this.module.ImportReference(method);
         }
 
         protected override MethodReference GetNetworkBehaviourFunction(TypeReference typeReference)
         {
-            var readMethod = GenerateReaderFunction(typeReference);
+            var readMethod = this.GenerateReaderFunction(typeReference);
             var worker = readMethod.worker;
 
             worker.Append(worker.Create(OpCodes.Ldarg_0));
@@ -41,14 +41,14 @@ namespace Mirage.Weaver
 
         protected override MethodReference GenerateEnumFunction(TypeReference typeReference)
         {
-            var readMethod = GenerateReaderFunction(typeReference);
+            var readMethod = this.GenerateReaderFunction(typeReference);
 
             var worker = readMethod.worker;
 
             worker.Append(worker.Create(OpCodes.Ldarg_0));
 
             var underlyingType = typeReference.Resolve().GetEnumUnderlyingType();
-            var underlyingFunc = TryGetFunction(underlyingType, null);
+            var underlyingFunc = this.TryGetFunction(underlyingType, null);
 
             worker.Append(worker.Create(OpCodes.Call, underlyingFunc));
             worker.Append(worker.Create(OpCodes.Ret));
@@ -73,7 +73,7 @@ namespace Mirage.Weaver
             var functionName = "_Read_" + variable.FullName;
 
             // create new reader for this type
-            var definition = module.GeneratedClass().AddMethod(functionName,
+            var definition = this.module.GeneratedClass().AddMethod(functionName,
                     MethodAttributes.Public |
                     MethodAttributes.Static |
                     MethodAttributes.HideBySig,
@@ -81,7 +81,7 @@ namespace Mirage.Weaver
 
             var readParameter = definition.AddParam<NetworkReader>("reader");
             definition.Body.InitLocals = true;
-            Register(variable, definition);
+            this.Register(variable, definition);
 
             var worker = definition.Body.GetILProcessor();
             return new ReadMethod(definition, readParameter, worker);
@@ -90,11 +90,11 @@ namespace Mirage.Weaver
         protected override MethodReference GenerateCollectionFunction(TypeReference typeReference, TypeReference elementType, Expression<Action> genericExpression)
         {
             // generate readers for the element
-            _ = GetFunction_Thorws(elementType);
+            _ = this.GetFunction_Thorws(elementType);
 
-            var readMethod = GenerateReaderFunction(typeReference);
+            var readMethod = this.GenerateReaderFunction(typeReference);
 
-            var listReader = module.ImportReference(genericExpression);
+            var listReader = this.module.ImportReference(genericExpression);
 
             var methodRef = new GenericInstanceMethod(listReader.GetElementMethod());
             methodRef.GenericArguments.Add(elementType);
@@ -113,7 +113,7 @@ namespace Mirage.Weaver
 
         protected override MethodReference GenerateClassOrStructFunction(TypeReference typeReference)
         {
-            var readMethod = GenerateReaderFunction(typeReference);
+            var readMethod = this.GenerateReaderFunction(typeReference);
 
             // create local for return value
             var variable = readMethod.definition.AddLocal(typeReference);
@@ -124,10 +124,10 @@ namespace Mirage.Weaver
             var td = typeReference.Resolve();
 
             if (!td.IsValueType)
-                GenerateNullCheck(worker);
+                this.GenerateNullCheck(worker);
 
-            CreateNew(variable, worker, td);
-            ReadAllFields(typeReference, readMethod);
+            this.CreateNew(variable, worker, td);
+            this.ReadAllFields(typeReference, readMethod);
 
             worker.Append(worker.Create(OpCodes.Ldloc, variable));
             worker.Append(worker.Create(OpCodes.Ret));
@@ -139,7 +139,7 @@ namespace Mirage.Weaver
             // if (!reader.ReadBoolean())
             //   return null
             worker.Append(worker.Create(OpCodes.Ldarg_0));
-            worker.Append(worker.Create(OpCodes.Call, TryGetFunction<bool>(null)));
+            worker.Append(worker.Create(OpCodes.Call, this.TryGetFunction<bool>(null)));
 
             var labelEmptyArray = worker.Create(OpCodes.Nop);
             worker.Append(worker.Create(OpCodes.Brtrue, labelEmptyArray));
@@ -195,9 +195,9 @@ namespace Mirage.Weaver
                 // - fieldType (made non-generic if possible) used to get type (eg if MyMessage<int> and field `T Value` then get writer for int)
                 // - fieldRef (imported) to emit IL codes
                 var fieldType = fieldDef.GetFieldTypeIncludingGeneric(type);
-                var fieldRef = module.ImportField(fieldDef, type);
+                var fieldRef = this.module.ImportField(fieldDef, type);
 
-                var valueSerialize = ValueSerializerFinder.GetSerializer(module, fieldDef, fieldType, null, this);
+                var valueSerialize = ValueSerializerFinder.GetSerializer(this.module, fieldDef, fieldType, null, this);
 
                 // load this, write value, store value
 
@@ -205,7 +205,7 @@ namespace Mirage.Weaver
                 var opcode = type.IsValueType ? OpCodes.Ldloca : OpCodes.Ldloc;
                 worker.Append(worker.Create(opcode, 0));
 
-                valueSerialize.AppendRead(module, worker, readMethod.readParameter, fieldType);
+                valueSerialize.AppendRead(this.module, worker, readMethod.readParameter, fieldType);
 
                 worker.Append(worker.Create(OpCodes.Stfld, fieldRef));
             }
@@ -217,15 +217,15 @@ namespace Mirage.Weaver
         /// <param name="worker"></param>
         internal void InitializeReaders(ILProcessor worker)
         {
-            var genericReaderClassRef = module.ImportReference(typeof(Reader<>));
+            var genericReaderClassRef = this.module.ImportReference(typeof(Reader<>));
 
             var readProperty = typeof(Reader<>).GetProperty(nameof(Reader<object>.Read));
-            var fieldRef = module.ImportReference(readProperty.GetSetMethod());
-            var networkReaderRef = module.ImportReference(typeof(NetworkReader));
-            var funcRef = module.ImportReference(typeof(Func<,>));
-            var funcConstructorRef = module.ImportReference(typeof(Func<,>).GetConstructors()[0]);
+            var fieldRef = this.module.ImportReference(readProperty.GetSetMethod());
+            var networkReaderRef = this.module.ImportReference(typeof(NetworkReader));
+            var funcRef = this.module.ImportReference(typeof(Func<,>));
+            var funcConstructorRef = this.module.ImportReference(typeof(Func<,>).GetConstructors()[0]);
 
-            foreach (var readFunc in funcs.Values)
+            foreach (var readFunc in this.funcs.Values)
             {
                 var dataType = readFunc.ReturnType;
 

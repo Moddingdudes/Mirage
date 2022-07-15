@@ -32,52 +32,52 @@ namespace Mirage
 
         private void Awake()
         {
-            Identity.OnStartServer.AddListener(OnStartServer);
+            this.Identity.OnStartServer.AddListener(this.OnStartServer);
         }
 
         public void OnStartServer()
         {
-            currentScene = gameObject.scene;
-            if (logger.LogEnabled()) logger.Log($"NetworkSceneChecker.OnStartServer currentScene: {currentScene}");
+            this.currentScene = this.gameObject.scene;
+            if (logger.LogEnabled()) logger.Log($"NetworkSceneChecker.OnStartServer currentScene: {this.currentScene}");
 
-            if (!sceneCheckerObjects.ContainsKey(currentScene))
-                sceneCheckerObjects.Add(currentScene, new HashSet<NetworkIdentity>());
+            if (!sceneCheckerObjects.ContainsKey(this.currentScene))
+                sceneCheckerObjects.Add(this.currentScene, new HashSet<NetworkIdentity>());
 
-            sceneCheckerObjects[currentScene].Add(Identity);
+            sceneCheckerObjects[this.currentScene].Add(this.Identity);
         }
 
         [Server(error = false)]
         private void Update()
         {
-            if (currentScene == gameObject.scene)
+            if (this.currentScene == this.gameObject.scene)
                 return;
 
             // This object is in a new scene so observers in the prior scene
             // and the new scene need to rebuild their respective observers lists.
 
             // Remove this object from the hashset of the scene it just left
-            sceneCheckerObjects[currentScene].Remove(Identity);
+            sceneCheckerObjects[this.currentScene].Remove(this.Identity);
 
             // RebuildObservers of all NetworkIdentity's in the scene this object just left
-            RebuildSceneObservers();
+            this.RebuildSceneObservers();
 
             // Set this to the new scene this object just entered
-            currentScene = gameObject.scene;
+            this.currentScene = this.gameObject.scene;
 
             // Make sure this new scene is in the dictionary
-            if (!sceneCheckerObjects.ContainsKey(currentScene))
-                sceneCheckerObjects.Add(currentScene, new HashSet<NetworkIdentity>());
+            if (!sceneCheckerObjects.ContainsKey(this.currentScene))
+                sceneCheckerObjects.Add(this.currentScene, new HashSet<NetworkIdentity>());
 
             // Add this object to the hashset of the new scene
-            sceneCheckerObjects[currentScene].Add(Identity);
+            sceneCheckerObjects[this.currentScene].Add(this.Identity);
 
             // RebuildObservers of all NetworkIdentity's in the scene this object just entered
-            RebuildSceneObservers();
+            this.RebuildSceneObservers();
         }
 
         private void RebuildSceneObservers()
         {
-            foreach (var networkIdentity in sceneCheckerObjects[currentScene])
+            foreach (var networkIdentity in sceneCheckerObjects[this.currentScene])
                 if (networkIdentity != null)
                     networkIdentity.RebuildObservers(false);
         }
@@ -90,10 +90,10 @@ namespace Mirage
         /// <returns>True if the player can see this object.</returns>
         public override bool OnCheckObserver(INetworkPlayer player)
         {
-            if (forceHidden)
+            if (this.forceHidden)
                 return false;
 
-            return player.Identity.gameObject.scene == gameObject.scene;
+            return player.Identity.gameObject.scene == this.gameObject.scene;
         }
 
         /// <summary>
@@ -105,11 +105,11 @@ namespace Mirage
         public override void OnRebuildObservers(HashSet<INetworkPlayer> observers, bool initialize)
         {
             // If forceHidden then return without adding any observers.
-            if (forceHidden)
+            if (this.forceHidden)
                 return;
 
             // Add everything in the hashset for this object's current scene
-            foreach (var networkIdentity in sceneCheckerObjects[currentScene])
+            foreach (var networkIdentity in sceneCheckerObjects[this.currentScene])
                 if (networkIdentity != null && networkIdentity.Owner != null)
                     observers.Add(networkIdentity.Owner);
         }

@@ -31,17 +31,17 @@ namespace Mirage.Sockets.Udp
 
         public override int MaxPacketSize => UdpMTU.MaxPacketSize;
 
-        private bool useNanoSocket => SocketLib == SocketLib.Native || (SocketLib == SocketLib.Automatic && IsDesktop);
+        private bool useNanoSocket => this.SocketLib == SocketLib.Native || (this.SocketLib == SocketLib.Automatic && IsDesktop);
 
         string IHasAddress.Address
         {
-            get => Address;
-            set => Address = value;
+            get => this.Address;
+            set => this.Address = value;
         }
         int IHasPort.Port
         {
-            get => Port;
-            set => Port = checked((ushort)value);
+            get => this.Port;
+            set => this.Port = checked((ushort)value);
         }
 
         private static int initCount;
@@ -54,7 +54,7 @@ namespace Mirage.Sockets.Udp
 
         private void Awake()
         {
-            if (!useNanoSocket) return;
+            if (!this.useNanoSocket) return;
 
             // NanoSocket is only available on Windows, Mac and Linux
             // However on newer versions of Mac it causes the standalone builds
@@ -70,7 +70,7 @@ namespace Mirage.Sockets.Udp
             // "Standalone" here is referring to Win64 or Linux64, but not mac, because that should be covered by case above
 #elif NANO_SOCKET_ALLOWED
             // Attempt initialization of NanoSockets native library. If this fails, go back to native.
-            InitializeNanoSockets();
+            this.InitializeNanoSockets();
 #else
             Debug.LogWarning("NanoSocket does not support this platform (non-desktop platform detected). Switching to C# Managed sockets.");
             this.SocketLib = SocketLib.Managed;
@@ -90,14 +90,14 @@ namespace Mirage.Sockets.Udp
             catch (DllNotFoundException)
             {
                 Debug.LogWarning("NanoSocket DLL not found or failed to load. Switching to C# Managed Sockets.");
-                SocketLib = SocketLib.Managed;
+                this.SocketLib = SocketLib.Managed;
             }
         }
 #endif
 
         private void OnDestroy()
         {
-            if (!useNanoSocket) return;
+            if (!this.useNanoSocket) return;
 
 #if NANO_SOCKET_ALLOWED
             initCount--;
@@ -111,10 +111,10 @@ namespace Mirage.Sockets.Udp
 
         public override ISocket CreateClientSocket()
         {
-            ThrowIfNotSupported();
+            this.ThrowIfNotSupported();
 
 #if NANO_SOCKET_ALLOWED
-            if (useNanoSocket) return new NanoSocket(this);
+            if (this.useNanoSocket) return new NanoSocket(this);
 #endif
 
             return new UdpSocket();
@@ -122,10 +122,10 @@ namespace Mirage.Sockets.Udp
 
         public override ISocket CreateServerSocket()
         {
-            ThrowIfNotSupported();
+            this.ThrowIfNotSupported();
 
 #if NANO_SOCKET_ALLOWED
-            if (useNanoSocket) return new NanoSocket(this);
+            if (this.useNanoSocket) return new NanoSocket(this);
 #endif
 
             return new UdpSocket();
@@ -134,21 +134,21 @@ namespace Mirage.Sockets.Udp
         public override IEndPoint GetBindEndPoint()
         {
 #if NANO_SOCKET_ALLOWED
-            if (useNanoSocket) return new NanoEndPoint("::0", Port);
+            if (this.useNanoSocket) return new NanoEndPoint("::0", this.Port);
 #endif
 
-            return new EndPointWrapper(new IPEndPoint(IPAddress.IPv6Any, Port));
+            return new EndPointWrapper(new IPEndPoint(IPAddress.IPv6Any, this.Port));
         }
 
         public override IEndPoint GetConnectEndPoint(string address = null, ushort? port = null)
         {
-            var addressString = address ?? Address;
-            var ipAddress = getAddress(addressString);
+            var addressString = address ?? this.Address;
+            var ipAddress = this.getAddress(addressString);
 
-            var portIn = port ?? Port;
+            var portIn = port ?? this.Port;
 
 #if NANO_SOCKET_ALLOWED
-            if (useNanoSocket) return new NanoEndPoint(addressString, portIn);
+            if (this.useNanoSocket) return new NanoEndPoint(addressString, portIn);
 #endif
 
             return new EndPointWrapper(new IPEndPoint(ipAddress, portIn));
@@ -192,32 +192,32 @@ namespace Mirage.Sockets.Udp
 
         public EndPointWrapper(EndPoint endPoint)
         {
-            inner = endPoint;
+            this.inner = endPoint;
         }
 
         public override bool Equals(object obj)
         {
             if (obj is EndPointWrapper other)
             {
-                return inner.Equals(other.inner);
+                return this.inner.Equals(other.inner);
             }
             return false;
         }
 
         public override int GetHashCode()
         {
-            return inner.GetHashCode();
+            return this.inner.GetHashCode();
         }
 
         public override string ToString()
         {
-            return inner.ToString();
+            return this.inner.ToString();
         }
 
         IEndPoint IEndPoint.CreateCopy()
         {
             // copy the inner endpoint
-            var copy = inner.Create(inner.Serialize());
+            var copy = this.inner.Create(this.inner.Serialize());
             return new EndPointWrapper(copy);
         }
     }

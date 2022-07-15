@@ -11,7 +11,7 @@ namespace Mirage.Weaver.SyncVars
         public readonly FoundNetworkBehaviour Behaviour;
         public readonly FieldDefinition FieldDefinition;
         public readonly int DirtyIndex;
-        public long DirtyBit => 1L << DirtyIndex;
+        public long DirtyBit => 1L << this.DirtyIndex;
 
         /// <summary>
         /// Flag to say if the sync var was successfully processed or not.
@@ -21,10 +21,10 @@ namespace Mirage.Weaver.SyncVars
 
         public FoundSyncVar(ModuleDefinition module, FoundNetworkBehaviour behaviour, FieldDefinition fieldDefinition, int dirtyIndex)
         {
-            Module = module;
-            Behaviour = behaviour;
-            FieldDefinition = fieldDefinition;
-            DirtyIndex = dirtyIndex;
+            this.Module = module;
+            this.Behaviour = behaviour;
+            this.FieldDefinition = fieldDefinition;
+            this.DirtyIndex = dirtyIndex;
         }
 
         public ValueSerializer ValueSerializer { get; private set; }
@@ -44,13 +44,13 @@ namespace Mirage.Weaver.SyncVars
         /// </summary>
         public void SetWrapType()
         {
-            OriginalName = FieldDefinition.Name;
-            OriginalType = FieldDefinition.FieldType;
+            this.OriginalName = this.FieldDefinition.Name;
+            this.OriginalType = this.FieldDefinition.FieldType;
 
-            if (CheckWrapType(OriginalType, out var wrapType))
+            if (this.CheckWrapType(this.OriginalType, out var wrapType))
             {
-                IsWrapped = true;
-                FieldDefinition.FieldType = wrapType;
+                this.IsWrapped = true;
+                this.FieldDefinition.FieldType = wrapType;
             }
         }
 
@@ -61,18 +61,18 @@ namespace Mirage.Weaver.SyncVars
             if (typeReference.Is<NetworkIdentity>())
             {
                 // change the type of the field to a wrapper NetworkIdentitySyncvar
-                wrapType = Module.ImportReference<NetworkIdentitySyncvar>();
+                wrapType = this.Module.ImportReference<NetworkIdentitySyncvar>();
                 return true;
             }
             if (typeReference.Is<GameObject>())
             {
-                wrapType = Module.ImportReference<GameObjectSyncvar>();
+                wrapType = this.Module.ImportReference<GameObjectSyncvar>();
                 return true;
             }
 
             if (typeReference.Resolve().IsDerivedFrom<NetworkBehaviour>())
             {
-                wrapType = Module.ImportReference<NetworkBehaviorSyncvar>();
+                wrapType = this.Module.ImportReference<NetworkBehaviorSyncvar>();
                 return true;
             }
 
@@ -87,18 +87,18 @@ namespace Mirage.Weaver.SyncVars
         /// <param name="module"></param>
         public void ProcessAttributes(Writers writers, Readers readers)
         {
-            var hook = HookMethodFinder.GetHookMethod(FieldDefinition, OriginalType);
-            Hook = hook;
-            HasHook = hook != null;
+            var hook = HookMethodFinder.GetHookMethod(this.FieldDefinition, this.OriginalType);
+            this.Hook = hook;
+            this.HasHook = hook != null;
 
-            InitialOnly = GetInitialOnly(FieldDefinition);
+            this.InitialOnly = GetInitialOnly(this.FieldDefinition);
 
-            InvokeHookOnServer = GetFireOnServer(FieldDefinition);
+            this.InvokeHookOnServer = GetFireOnServer(this.FieldDefinition);
 
-            ValueSerializer = ValueSerializerFinder.GetSerializer(this, writers, readers);
+            this.ValueSerializer = ValueSerializerFinder.GetSerializer(this, writers, readers);
 
-            if (!HasHook && InvokeHookOnServer)
-                throw new HookMethodException("'invokeHookOnServer' is set to true but no hook was implemented. Please implement hook or set 'invokeHookOnServer' back to false or remove for default false.", FieldDefinition);
+            if (!this.HasHook && this.InvokeHookOnServer)
+                throw new HookMethodException("'invokeHookOnServer' is set to true but no hook was implemented. Please implement hook or set 'invokeHookOnServer' back to false or remove for default false.", this.FieldDefinition);
         }
 
         private static bool GetInitialOnly(FieldDefinition fieldDefinition)

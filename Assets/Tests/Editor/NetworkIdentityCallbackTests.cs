@@ -21,8 +21,8 @@ namespace Mirage.Tests
             public override void OnRebuildObservers(HashSet<INetworkPlayer> observers, bool initialize) { }
             public override bool OnCheckObserver(INetworkPlayer player)
             {
-                ++called;
-                valuePassed = player;
+                ++this.called;
+                this.valuePassed = player;
                 throw new Exception("some exception");
             }
         }
@@ -33,7 +33,7 @@ namespace Mirage.Tests
             public override void OnRebuildObservers(HashSet<INetworkPlayer> observers, bool initialize) { }
             public override bool OnCheckObserver(INetworkPlayer player)
             {
-                ++called;
+                ++this.called;
                 return true;
             }
         }
@@ -44,7 +44,7 @@ namespace Mirage.Tests
             public override void OnRebuildObservers(HashSet<INetworkPlayer> observers, bool initialize) { }
             public override bool OnCheckObserver(INetworkPlayer player)
             {
-                ++called;
+                ++this.called;
                 return false;
             }
         }
@@ -54,12 +54,12 @@ namespace Mirage.Tests
             public int value;
             public override bool OnSerialize(NetworkWriter writer, bool initialState)
             {
-                writer.WriteInt32(value);
+                writer.WriteInt32(this.value);
                 return true;
             }
             public override void OnDeserialize(NetworkReader reader, bool initialState)
             {
-                value = reader.ReadInt32();
+                this.value = reader.ReadInt32();
             }
         }
 
@@ -68,12 +68,12 @@ namespace Mirage.Tests
             public string value;
             public override bool OnSerialize(NetworkWriter writer, bool initialState)
             {
-                writer.WriteString(value);
+                writer.WriteString(this.value);
                 return true;
             }
             public override void OnDeserialize(NetworkReader reader, bool initialState)
             {
-                value = reader.ReadString();
+                this.value = reader.ReadString();
             }
         }
 
@@ -94,14 +94,14 @@ namespace Mirage.Tests
             public int value;
             public override bool OnSerialize(NetworkWriter writer, bool initialState)
             {
-                writer.WriteInt32(value);
+                writer.WriteInt32(this.value);
                 // one too many
-                writer.WriteInt32(value);
+                writer.WriteInt32(this.value);
                 return true;
             }
             public override void OnDeserialize(NetworkReader reader, bool initialState)
             {
-                value = reader.ReadInt32();
+                this.value = reader.ReadInt32();
             }
         }
 
@@ -111,7 +111,7 @@ namespace Mirage.Tests
             public override bool OnCheckObserver(INetworkPlayer player) { return true; }
             public override void OnRebuildObservers(HashSet<INetworkPlayer> observers, bool initialize)
             {
-                observers.Add(observer);
+                observers.Add(this.observer);
             }
         }
 
@@ -134,19 +134,19 @@ namespace Mirage.Tests
         [SetUp]
         public void SetUp()
         {
-            networkServerGameObject = new GameObject();
-            server = networkServerGameObject.AddComponent<NetworkServer>();
-            serverObjectManager = networkServerGameObject.AddComponent<ServerObjectManager>();
-            serverObjectManager.Server = server;
-            networkServerGameObject.AddComponent<NetworkClient>();
+            this.networkServerGameObject = new GameObject();
+            this.server = this.networkServerGameObject.AddComponent<NetworkServer>();
+            this.serverObjectManager = this.networkServerGameObject.AddComponent<ServerObjectManager>();
+            this.serverObjectManager.Server = this.server;
+            this.networkServerGameObject.AddComponent<NetworkClient>();
 
-            gameObject = new GameObject($"Test go {TestContext.CurrentContext.Test.Name}");
-            identity = gameObject.AddComponent<NetworkIdentity>();
-            identity.Server = server;
-            identity.ServerObjectManager = serverObjectManager;
+            this.gameObject = new GameObject($"Test go {TestContext.CurrentContext.Test.Name}");
+            this.identity = this.gameObject.AddComponent<NetworkIdentity>();
+            this.identity.Server = this.server;
+            this.identity.ServerObjectManager = this.serverObjectManager;
 
-            player1 = Substitute.For<INetworkPlayer>();
-            player2 = Substitute.For<INetworkPlayer>();
+            this.player1 = Substitute.For<INetworkPlayer>();
+            this.player2 = Substitute.For<INetworkPlayer>();
         }
 
         [TearDown]
@@ -154,8 +154,8 @@ namespace Mirage.Tests
         {
             // set isServer is false. otherwise Destroy instead of
             // DestroyImmediate is called internally, giving an error in Editor
-            Object.DestroyImmediate(gameObject);
-            Object.DestroyImmediate(networkServerGameObject);
+            Object.DestroyImmediate(this.gameObject);
+            Object.DestroyImmediate(this.networkServerGameObject);
         }
 
         // A Test behaves as an ordinary method
@@ -166,10 +166,10 @@ namespace Mirage.Tests
             var func1 = Substitute.For<UnityAction>();
             var func2 = Substitute.For<UnityAction>();
 
-            identity.OnStartServer.AddListener(func1);
-            identity.OnStartServer.AddListener(func2);
+            this.identity.OnStartServer.AddListener(func1);
+            this.identity.OnStartServer.AddListener(func2);
 
-            identity.StartServer();
+            this.identity.StartServer();
 
             func1.Received(1).Invoke();
             func2.Received(1).Invoke();
@@ -180,58 +180,58 @@ namespace Mirage.Tests
         {
             // assign a guid
             var hash = 123456789;
-            identity.PrefabHash = hash;
+            this.identity.PrefabHash = hash;
 
             // did it work?
-            Assert.That(identity.PrefabHash, Is.EqualTo(hash));
+            Assert.That(this.identity.PrefabHash, Is.EqualTo(hash));
         }
 
         [Test]
         public void SetPrefabHash_GivesErrorIfOneExists()
         {
             var hash1 = "Assets/Prefab/myPrefab.asset".GetStableHashCode();
-            identity.PrefabHash = hash1;
+            this.identity.PrefabHash = hash1;
 
             // assign a guid
             var hash2 = "Assets/Prefab/myPrefab2.asset".GetStableHashCode();
             var exception = Assert.Throws<InvalidOperationException>(() =>
             {
-                identity.PrefabHash = hash2;
+                this.identity.PrefabHash = hash2;
             });
 
-            Assert.That(exception.Message, Is.EqualTo($"Cannot set PrefabHash on NetworkIdentity '{identity.name}' because it already had an PrefabHash. Current PrefabHash is '{hash1}', attempted new PrefabHash is '{hash2}'."));
+            Assert.That(exception.Message, Is.EqualTo($"Cannot set PrefabHash on NetworkIdentity '{this.identity.name}' because it already had an PrefabHash. Current PrefabHash is '{hash1}', attempted new PrefabHash is '{hash2}'."));
             // guid was changed
-            Assert.That(identity.PrefabHash, Is.EqualTo(hash1));
+            Assert.That(this.identity.PrefabHash, Is.EqualTo(hash1));
         }
 
         [Test]
         public void SetPrefabHash_GivesErrorForEmptyGuid()
         {
             var hash1 = "Assets/Prefab/myPrefab.asset".GetStableHashCode();
-            identity.PrefabHash = hash1;
+            this.identity.PrefabHash = hash1;
 
             // assign a guid
             var hash2 = 0;
             var exception = Assert.Throws<ArgumentException>(() =>
             {
-                identity.PrefabHash = hash2;
+                this.identity.PrefabHash = hash2;
             });
 
-            Assert.That(exception.Message, Is.EqualTo($"Cannot set PrefabHash to an empty guid on NetworkIdentity '{identity.name}'. Old PrefabHash '{hash1}'."));
+            Assert.That(exception.Message, Is.EqualTo($"Cannot set PrefabHash to an empty guid on NetworkIdentity '{this.identity.name}'. Old PrefabHash '{hash1}'."));
             // guid was NOT changed
-            Assert.That(identity.PrefabHash, Is.EqualTo(hash1));
+            Assert.That(this.identity.PrefabHash, Is.EqualTo(hash1));
         }
         [Test]
         public void SetPrefabHash_DoesNotGiveErrorIfBothOldAndNewAreEmpty()
         {
-            Debug.Assert(identity.PrefabHash == 0, "PrefabHash needs to be empty at the start of this test");
+            Debug.Assert(this.identity.PrefabHash == 0, "PrefabHash needs to be empty at the start of this test");
             // assign a guid
             var hash2 = 0;
             // expect no errors
-            identity.PrefabHash = hash2;
+            this.identity.PrefabHash = hash2;
 
             // guid was still empty
-            Assert.That(identity.PrefabHash, Is.EqualTo(0));
+            Assert.That(this.identity.PrefabHash, Is.EqualTo(0));
         }
 
         [Test]
@@ -239,8 +239,8 @@ namespace Mirage.Tests
         {
             // SetClientOwner
             (_, var original) = PipedConnections(Substitute.For<IMessageReceiver>(), Substitute.For<IMessageReceiver>());
-            identity.SetClientOwner(original);
-            Assert.That(identity.Owner, Is.EqualTo(original));
+            this.identity.SetClientOwner(original);
+            Assert.That(this.identity.Owner, Is.EqualTo(original));
         }
 
         [Test]
@@ -248,37 +248,37 @@ namespace Mirage.Tests
         {
             // SetClientOwner
             (_, var original) = PipedConnections(Substitute.For<IMessageReceiver>(), Substitute.For<IMessageReceiver>());
-            identity.SetClientOwner(original);
+            this.identity.SetClientOwner(original);
 
             // setting it when it's already set shouldn't overwrite the original
             (_, var overwrite) = PipedConnections(Substitute.For<IMessageReceiver>(), Substitute.For<IMessageReceiver>());
             // will log a warning
             Assert.Throws<InvalidOperationException>(() =>
             {
-                identity.SetClientOwner(overwrite);
+                this.identity.SetClientOwner(overwrite);
             });
 
-            Assert.That(identity.Owner, Is.EqualTo(original));
+            Assert.That(this.identity.Owner, Is.EqualTo(original));
         }
 
         [Test]
         public void RemoveObserverInternal()
         {
             // call OnStartServer so that observers dict is created
-            identity.StartServer();
+            this.identity.StartServer();
 
             // add an observer connection
             var player = Substitute.For<INetworkPlayer>();
-            identity.observers.Add(player);
+            this.identity.observers.Add(player);
 
             var player2 = Substitute.For<INetworkPlayer>();
             // RemoveObserverInternal with invalid connection should do nothing
-            identity.RemoveObserverInternal(player2);
-            Assert.That(identity.observers, Is.EquivalentTo(new[] { player }));
+            this.identity.RemoveObserverInternal(player2);
+            Assert.That(this.identity.observers, Is.EquivalentTo(new[] { player }));
 
             // RemoveObserverInternal with existing connection should remove it
-            identity.RemoveObserverInternal(player);
-            Assert.That(identity.observers, Is.Empty);
+            this.identity.RemoveObserverInternal(player);
+            Assert.That(this.identity.observers, Is.Empty);
         }
 
         [Test]
@@ -287,11 +287,11 @@ namespace Mirage.Tests
             // OnValidate will have assigned a random sceneId of format 0x00000000FFFFFFFF
             // -> make sure that one was assigned, and that the left part was
             //    left empty for scene hash
-            Assert.That(identity.SceneId, Is.Not.Zero);
-            Assert.That(identity.SceneId & 0xFFFF_FFFF_0000_0000ul, Is.Zero);
+            Assert.That(this.identity.SceneId, Is.Not.Zero);
+            Assert.That(this.identity.SceneId & 0xFFFF_FFFF_0000_0000ul, Is.Zero);
 
             // make sure that OnValidate added it to sceneIds dict
-            Assert.That(NetworkIdentityIdGenerator.sceneIds[(int)(identity.SceneId & 0x0000_0000_FFFF_FFFFul)], Is.Not.Null);
+            Assert.That(NetworkIdentityIdGenerator.sceneIds[(int)(this.identity.SceneId & 0x0000_0000_FFFF_FFFFul)], Is.Not.Null);
         }
 
         [Test]
@@ -300,14 +300,14 @@ namespace Mirage.Tests
             // Awake will have assigned a random sceneId of format 0x00000000FFFFFFFF
             // -> make sure that one was assigned, and that the left part was
             //    left empty for scene hash
-            Assert.That(identity.SceneId, Is.Not.Zero);
-            Assert.That(identity.SceneId & 0xFFFF_FFFF_0000_0000ul, Is.Zero, "scene hash should start empty");
-            var originalId = identity.SceneId;
+            Assert.That(this.identity.SceneId, Is.Not.Zero);
+            Assert.That(this.identity.SceneId & 0xFFFF_FFFF_0000_0000ul, Is.Zero, "scene hash should start empty");
+            var originalId = this.identity.SceneId;
 
             // set scene hash
-            NetworkIdentityIdGenerator.SetSceneHash(identity);
+            NetworkIdentityIdGenerator.SetSceneHash(this.identity);
 
-            var newSceneId = identity.SceneId;
+            var newSceneId = this.identity.SceneId;
             var newID = newSceneId & 0x0000_0000_FFFF_FFFFul;
             var newHash = newSceneId & 0xFFFF_FFFF_0000_0000ul;
 
@@ -318,8 +318,8 @@ namespace Mirage.Tests
             Assert.That(newHash, Is.Not.Zero);
 
             // calling it again should said the exact same hash again
-            NetworkIdentityIdGenerator.SetSceneHash(identity);
-            Assert.That(identity.SceneId, Is.EqualTo(newSceneId), "should be same value as first time it was called");
+            NetworkIdentityIdGenerator.SetSceneHash(this.identity);
+            Assert.That(this.identity.SceneId, Is.EqualTo(newSceneId), "should be same value as first time it was called");
         }
 
         [Test]
@@ -327,7 +327,7 @@ namespace Mirage.Tests
         {
             // OnValidate will have been called. make sure that PrefabHash was set
             // to 0 empty and not anything else, because this is a scene object
-            Assert.That(identity.PrefabHash, Is.EqualTo(0));
+            Assert.That(this.identity.PrefabHash, Is.EqualTo(0));
         }
 
         [Test]
@@ -337,7 +337,7 @@ namespace Mirage.Tests
             var func = Substitute.For<UnityAction>();
 
             // add it to the listener
-            identity.OnStartServer.AddListener(func);
+            this.identity.OnStartServer.AddListener(func);
 
             // Since we are testing that exceptions are not swallowed,
             // when the mock is invoked, throw an exception 
@@ -348,7 +348,7 @@ namespace Mirage.Tests
             // Make sure that the exception is not swallowed
             Assert.Throws<Exception>(() =>
             {
-                identity.StartServer();
+                this.identity.StartServer();
             });
 
             // ask the mock if it got invoked
@@ -362,7 +362,7 @@ namespace Mirage.Tests
         {
             // add component
             var func = Substitute.For<UnityAction>();
-            identity.OnStartClient.AddListener(func);
+            this.identity.OnStartClient.AddListener(func);
 
             func
                 .When(f => f.Invoke())
@@ -371,14 +371,14 @@ namespace Mirage.Tests
             // make sure exceptions are not swallowed
             Assert.Throws<Exception>(() =>
             {
-                identity.StartClient();
+                this.identity.StartClient();
             });
             func.Received().Invoke();
 
             // we have checks to make sure that it's only called once.
             Assert.DoesNotThrow(() =>
             {
-                identity.StartClient();
+                this.identity.StartClient();
             });
             func.Received(1).Invoke();
         }
@@ -388,7 +388,7 @@ namespace Mirage.Tests
         {
             // add component
             var func = Substitute.For<UnityAction<bool>>();
-            identity.OnAuthorityChanged.AddListener(func);
+            this.identity.OnAuthorityChanged.AddListener(func);
 
             func
                 .When(f => f.Invoke(Arg.Any<bool>()))
@@ -397,7 +397,7 @@ namespace Mirage.Tests
             // make sure exceptions are not swallowed
             Assert.Throws<Exception>(() =>
             {
-                identity.CallStartAuthority();
+                this.identity.CallStartAuthority();
             });
             func.Received(1).Invoke(Arg.Any<bool>());
         }
@@ -407,44 +407,44 @@ namespace Mirage.Tests
         {
             var startAuth = 0;
             var stopAuth = 0;
-            identity.OnAuthorityChanged.AddListener(auth =>
+            this.identity.OnAuthorityChanged.AddListener(auth =>
             {
                 if (auth) startAuth++;
                 else stopAuth++;
             });
 
             // set authority from false to true, which should call OnStartAuthority
-            identity.HasAuthority = true;
-            identity.NotifyAuthority();
+            this.identity.HasAuthority = true;
+            this.identity.NotifyAuthority();
             // shouldn't be touched
-            Assert.That(identity.HasAuthority, Is.True);
+            Assert.That(this.identity.HasAuthority, Is.True);
             // start should be called
             Assert.That(startAuth, Is.EqualTo(1));
             Assert.That(stopAuth, Is.EqualTo(0));
 
             // set it to true again, should do nothing because already true
-            identity.HasAuthority = true;
-            identity.NotifyAuthority();
+            this.identity.HasAuthority = true;
+            this.identity.NotifyAuthority();
             // shouldn't be touched
-            Assert.That(identity.HasAuthority, Is.True);
+            Assert.That(this.identity.HasAuthority, Is.True);
             // same as before
             Assert.That(startAuth, Is.EqualTo(1));
             Assert.That(stopAuth, Is.EqualTo(0));
 
             // set it to false, should call OnStopAuthority
-            identity.HasAuthority = false;
-            identity.NotifyAuthority();
+            this.identity.HasAuthority = false;
+            this.identity.NotifyAuthority();
             // shouldn't be touched
-            Assert.That(identity.HasAuthority, Is.False);
+            Assert.That(this.identity.HasAuthority, Is.False);
             // same as before
             Assert.That(startAuth, Is.EqualTo(1));
             Assert.That(stopAuth, Is.EqualTo(1));
 
             // set it to false again, should do nothing because already false
-            identity.HasAuthority = false;
-            identity.NotifyAuthority();
+            this.identity.HasAuthority = false;
+            this.identity.NotifyAuthority();
             // shouldn't be touched
-            Assert.That(identity.HasAuthority, Is.False);
+            Assert.That(this.identity.HasAuthority, Is.False);
             // same as before
             Assert.That(startAuth, Is.EqualTo(1));
             Assert.That(stopAuth, Is.EqualTo(1));
@@ -454,12 +454,12 @@ namespace Mirage.Tests
         public void OnCheckObserverCatchesException()
         {
             // add component
-            gameObject.AddComponent<CheckObserverExceptionNetworkBehaviour>();
+            this.gameObject.AddComponent<CheckObserverExceptionNetworkBehaviour>();
 
             // should catch the exception internally and not throw it
             Assert.Throws<Exception>(() =>
             {
-                identity.OnCheckObserver(player1);
+                this.identity.OnCheckObserver(this.player1);
             });
         }
 
@@ -471,7 +471,7 @@ namespace Mirage.Tests
             var gameObjectTrue = new GameObject();
             var identityTrue = gameObjectTrue.AddComponent<NetworkIdentity>();
             var compTrue = gameObjectTrue.AddComponent<CheckObserverTrueNetworkBehaviour>();
-            Assert.That(identityTrue.OnCheckObserver(player1), Is.True);
+            Assert.That(identityTrue.OnCheckObserver(this.player1), Is.True);
             Assert.That(compTrue.called, Is.EqualTo(1));
         }
 
@@ -484,7 +484,7 @@ namespace Mirage.Tests
             var gameObjectFalse = new GameObject();
             var identityFalse = gameObjectFalse.AddComponent<NetworkIdentity>();
             var compFalse = gameObjectFalse.AddComponent<CheckObserverFalseNetworkBehaviour>();
-            Assert.That(identityFalse.OnCheckObserver(player1), Is.False);
+            Assert.That(identityFalse.OnCheckObserver(this.player1), Is.False);
             Assert.That(compFalse.called, Is.EqualTo(1));
         }
 
@@ -492,9 +492,9 @@ namespace Mirage.Tests
         public void OnSerializeAllSafely()
         {
             // create a networkidentity with our test components
-            var comp1 = gameObject.AddComponent<SerializeTest1NetworkBehaviour>();
-            var compExc = gameObject.AddComponent<SerializeExceptionNetworkBehaviour>();
-            var comp2 = gameObject.AddComponent<SerializeTest2NetworkBehaviour>();
+            var comp1 = this.gameObject.AddComponent<SerializeTest1NetworkBehaviour>();
+            var compExc = this.gameObject.AddComponent<SerializeExceptionNetworkBehaviour>();
+            var comp2 = this.gameObject.AddComponent<SerializeTest2NetworkBehaviour>();
 
             // set some unique values to serialize
             comp1.value = 12345;
@@ -510,7 +510,7 @@ namespace Mirage.Tests
             // serialize should propagate exceptions
             Assert.Throws<Exception>(() =>
             {
-                identity.OnSerializeAll(true, ownerWriter, observersWriter);
+                this.identity.OnSerializeAll(true, ownerWriter, observersWriter);
             });
         }
 
@@ -522,12 +522,12 @@ namespace Mirage.Tests
             // add byte.MaxValue+1 components
             for (var i = 0; i < byte.MaxValue + 1; ++i)
             {
-                gameObject.AddComponent<SerializeTest1NetworkBehaviour>();
+                this.gameObject.AddComponent<SerializeTest1NetworkBehaviour>();
             }
             // ingore error from creating cache (has its own test)
             Assert.Throws<InvalidOperationException>(() =>
             {
-                _ = identity.NetworkBehaviours;
+                _ = this.identity.NetworkBehaviours;
             });
         }
 
@@ -540,9 +540,9 @@ namespace Mirage.Tests
         public void OnDeserializeSafelyShouldDetectAndHandleDeSerializationMismatch()
         {
             // add components
-            var comp1 = gameObject.AddComponent<SerializeTest1NetworkBehaviour>();
-            gameObject.AddComponent<SerializeMismatchNetworkBehaviour>();
-            var comp2 = gameObject.AddComponent<SerializeTest2NetworkBehaviour>();
+            var comp1 = this.gameObject.AddComponent<SerializeTest1NetworkBehaviour>();
+            this.gameObject.AddComponent<SerializeMismatchNetworkBehaviour>();
+            var comp2 = this.gameObject.AddComponent<SerializeTest2NetworkBehaviour>();
 
             // set some unique values to serialize
             comp1.value = 12345;
@@ -551,7 +551,7 @@ namespace Mirage.Tests
             // serialize
             var ownerWriter = new NetworkWriter(1300);
             var observersWriter = new NetworkWriter(1300);
-            identity.OnSerializeAll(true, ownerWriter, observersWriter);
+            this.identity.OnSerializeAll(true, ownerWriter, observersWriter);
 
             // reset component values
             comp1.value = 0;
@@ -562,7 +562,7 @@ namespace Mirage.Tests
             reader.Reset(ownerWriter.ToArraySegment());
             Assert.Throws<DeserializeFailedException>(() =>
             {
-                identity.OnDeserializeAll(reader, true);
+                this.identity.OnDeserializeAll(reader, true);
             });
             reader.Dispose();
         }
@@ -574,8 +574,8 @@ namespace Mirage.Tests
             var funcEx = Substitute.For<UnityAction>();
             var func = Substitute.For<UnityAction>();
 
-            identity.OnStartLocalPlayer.AddListener(funcEx);
-            identity.OnStartLocalPlayer.AddListener(func);
+            this.identity.OnStartLocalPlayer.AddListener(funcEx);
+            this.identity.OnStartLocalPlayer.AddListener(func);
 
             funcEx
                 .When(f => f.Invoke())
@@ -586,7 +586,7 @@ namespace Mirage.Tests
             // the exception was caught and not thrown in here.
             Assert.Throws<Exception>(() =>
             {
-                identity.StartLocalPlayer();
+                this.identity.StartLocalPlayer();
             });
 
             funcEx.Received(1).Invoke();
@@ -597,7 +597,7 @@ namespace Mirage.Tests
             // let's see if they work.
             Assert.DoesNotThrow(() =>
             {
-                identity.StartLocalPlayer();
+                this.identity.StartLocalPlayer();
             });
             // same as before?
             funcEx.Received(1).Invoke();
@@ -609,9 +609,9 @@ namespace Mirage.Tests
         public void OnStopClient()
         {
             var mockCallback = Substitute.For<UnityAction>();
-            identity.OnStopClient.AddListener(mockCallback);
+            this.identity.OnStopClient.AddListener(mockCallback);
 
-            identity.StopClient();
+            this.identity.StopClient();
 
             mockCallback.Received().Invoke();
         }
@@ -620,9 +620,9 @@ namespace Mirage.Tests
         public void OnStopServer()
         {
             var mockCallback = Substitute.For<UnityAction>();
-            identity.OnStopServer.AddListener(mockCallback);
+            this.identity.OnStopServer.AddListener(mockCallback);
 
-            identity.StopServer();
+            this.identity.StopServer();
 
             mockCallback.Received().Invoke();
         }
@@ -635,45 +635,45 @@ namespace Mirage.Tests
                 .When(f => f.Invoke())
                 .Do(f => { throw new Exception("Some exception"); });
 
-            identity.OnStopServer.AddListener(mockCallback);
+            this.identity.OnStopServer.AddListener(mockCallback);
 
             Assert.Throws<Exception>(() =>
             {
-                identity.StopServer();
+                this.identity.StopServer();
             });
         }
 
         [Test]
         public void AddObserver()
         {
-            identity.Server = server;
+            this.identity.Server = this.server;
 
             // call OnStartServer so that observers dict is created
-            identity.StartServer();
+            this.identity.StartServer();
 
             // call AddObservers
-            identity.AddObserver(player1);
-            identity.AddObserver(player2);
-            Assert.That(identity.observers, Is.EquivalentTo(new[] { player1, player2 }));
+            this.identity.AddObserver(this.player1);
+            this.identity.AddObserver(this.player2);
+            Assert.That(this.identity.observers, Is.EquivalentTo(new[] { this.player1, this.player2 }));
 
             // adding a duplicate connectionId shouldn't overwrite the original
-            identity.AddObserver(player1);
-            Assert.That(identity.observers, Is.EquivalentTo(new[] { player1, player2 }));
+            this.identity.AddObserver(this.player1);
+            Assert.That(this.identity.observers, Is.EquivalentTo(new[] { this.player1, this.player2 }));
         }
 
         [Test]
         public void ClearObservers()
         {
             // call OnStartServer so that observers dict is created
-            identity.StartServer();
+            this.identity.StartServer();
 
             // add some observers
-            identity.observers.Add(player1);
-            identity.observers.Add(player2);
+            this.identity.observers.Add(this.player1);
+            this.identity.observers.Add(this.player2);
 
             // call ClearObservers
-            identity.ClearObservers();
-            Assert.That(identity.observers.Count, Is.EqualTo(0));
+            this.identity.ClearObservers();
+            Assert.That(this.identity.observers.Count, Is.EqualTo(0));
         }
 
 
@@ -681,26 +681,26 @@ namespace Mirage.Tests
         public void Reset()
         {
             // creates .observers and generates a netId
-            identity.StartServer();
-            identity.Owner = player1;
-            identity.observers.Add(player1);
+            this.identity.StartServer();
+            this.identity.Owner = this.player1;
+            this.identity.observers.Add(this.player1);
 
             // mark for reset and reset
-            identity.NetworkReset();
-            Assert.That(identity.NetId, Is.EqualTo(0));
-            Assert.That(identity.Owner, Is.Null);
+            this.identity.NetworkReset();
+            Assert.That(this.identity.NetId, Is.EqualTo(0));
+            Assert.That(this.identity.Owner, Is.Null);
         }
 
         [Test]
         public void GetNewObservers()
         {
             // add components
-            var comp = gameObject.AddComponent<RebuildObserversNetworkBehaviour>();
-            comp.observer = player1;
+            var comp = this.gameObject.AddComponent<RebuildObserversNetworkBehaviour>();
+            comp.observer = this.player1;
 
             // get new observers
             var observers = new HashSet<INetworkPlayer>();
-            var result = identity.GetNewObservers(observers, true);
+            var result = this.identity.GetNewObservers(observers, true);
             Assert.That(result, Is.True);
             Assert.That(observers.Count, Is.EqualTo(1));
             Assert.That(observers.Contains(comp.observer), Is.True);
@@ -713,9 +713,9 @@ namespace Mirage.Tests
             // it and not do anything else
             var observers = new HashSet<INetworkPlayer>
             {
-                player1
+                this.player1
             };
-            identity.GetNewObservers(observers, true);
+            this.identity.GetNewObservers(observers, true);
             Assert.That(observers.Count, Is.EqualTo(0));
         }
 
@@ -724,7 +724,7 @@ namespace Mirage.Tests
         {
             // get new observers. no observer components so it should be false
             var observers = new HashSet<INetworkPlayer>();
-            var result = identity.GetNewObservers(observers, true);
+            var result = this.identity.GetNewObservers(observers, true);
             Assert.That(result, Is.False);
         }
 
@@ -735,21 +735,21 @@ namespace Mirage.Tests
         {
             // add at least one observers component, otherwise it will just add
             // all server connections
-            gameObject.AddComponent<RebuildEmptyObserversNetworkBehaviour>();
+            this.gameObject.AddComponent<RebuildEmptyObserversNetworkBehaviour>();
 
             // add own player connection that isn't ready
             (_, var connection) = PipedConnections(Substitute.For<IMessageReceiver>(), Substitute.For<IMessageReceiver>());
             // set not ready (ready is default true now)
             connection.SceneIsReady = false;
 
-            identity.Owner = connection;
+            this.identity.Owner = connection;
 
             // call OnStartServer so that observers dict is created
-            identity.StartServer();
+            this.identity.StartServer();
 
             // rebuild shouldn't add own player because conn wasn't set ready
-            identity.RebuildObservers(true);
-            Assert.That(identity.observers, Does.Not.Contains(identity.Owner));
+            this.identity.RebuildObservers(true);
+            Assert.That(this.identity.observers, Does.Not.Contains(this.identity.Owner));
         }
 
         [Test]
@@ -758,13 +758,13 @@ namespace Mirage.Tests
 
             // add a proximity checker
             // one with a ready connection, one with no ready connection, one with null connection
-            var comp = gameObject.AddComponent<RebuildObserversNetworkBehaviour>();
+            var comp = this.gameObject.AddComponent<RebuildObserversNetworkBehaviour>();
             comp.observer = Substitute.For<INetworkPlayer>();
             comp.observer.SceneIsReady.Returns(true);
 
             // rebuild observers should add all component's ready observers
-            identity.RebuildObservers(true);
-            Assert.That(identity.observers, Is.EquivalentTo(new[] { comp.observer }));
+            this.identity.RebuildObservers(true);
+            Assert.That(this.identity.observers, Is.EquivalentTo(new[] { comp.observer }));
         }
 
 
@@ -773,13 +773,13 @@ namespace Mirage.Tests
         {
             // add a proximity checker
             // one with a ready connection, one with no ready connection, one with null connection
-            var comp = gameObject.AddComponent<RebuildObserversNetworkBehaviour>();
+            var comp = this.gameObject.AddComponent<RebuildObserversNetworkBehaviour>();
             comp.observer = Substitute.For<INetworkPlayer>();
             comp.observer.SceneIsReady.Returns(false);
 
             // rebuild observers should add all component's ready observers
-            identity.RebuildObservers(true);
-            Assert.That(identity.observers, Is.Empty);
+            this.identity.RebuildObservers(true);
+            Assert.That(this.identity.observers, Is.Empty);
         }
 
         [Test]
@@ -791,13 +791,13 @@ namespace Mirage.Tests
             notReadyConnection.SceneIsReady.Returns(false);
 
             // add some server connections
-            server.AddTestPlayer(readyConnection);
-            server.AddTestPlayer(notReadyConnection);
+            this.server.AddTestPlayer(readyConnection);
+            this.server.AddTestPlayer(notReadyConnection);
 
             // rebuild observers should add all ready server connections
             // because no component implements OnRebuildObservers
-            identity.RebuildObservers(true);
-            Assert.That(identity.observers, Is.EquivalentTo(new[] { readyConnection }));
+            this.identity.RebuildObservers(true);
+            Assert.That(this.identity.observers, Is.EquivalentTo(new[] { readyConnection }));
         }
 
     }

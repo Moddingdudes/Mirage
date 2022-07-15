@@ -14,64 +14,64 @@ namespace Mirage.Tests.Runtime.ClientServer
 
         private class NetworkAuthenticationImpl : NetworkAuthenticator
         {
-            public override void ClientAuthenticate(INetworkPlayer player) => ClientAccept(player);
-            public override void ServerAuthenticate(INetworkPlayer player) => ServerAccept(player);
+            public override void ClientAuthenticate(INetworkPlayer player) => this.ClientAccept(player);
+            public override void ServerAuthenticate(INetworkPlayer player) => this.ServerAccept(player);
             public override void ClientSetup(NetworkClient client) { }
             public override void ServerSetup(NetworkServer server) { }
         }
 
         public override void ExtraSetup()
         {
-            serverAuthenticator = serverGo.AddComponent<NetworkAuthenticationImpl>();
-            clientAuthenticator = clientGo.AddComponent<NetworkAuthenticationImpl>();
-            server.authenticator = serverAuthenticator;
-            client.authenticator = clientAuthenticator;
+            this.serverAuthenticator = this.serverGo.AddComponent<NetworkAuthenticationImpl>();
+            this.clientAuthenticator = this.clientGo.AddComponent<NetworkAuthenticationImpl>();
+            this.server.authenticator = this.serverAuthenticator;
+            this.client.authenticator = this.clientAuthenticator;
 
-            serverMockMethod = Substitute.For<Action<INetworkPlayer>>();
-            serverAuthenticator.OnServerAuthenticated += serverMockMethod;
+            this.serverMockMethod = Substitute.For<Action<INetworkPlayer>>();
+            this.serverAuthenticator.OnServerAuthenticated += this.serverMockMethod;
 
-            clientMockMethod = Substitute.For<Action<INetworkPlayer>>();
-            clientAuthenticator.OnClientAuthenticated += clientMockMethod;
+            this.clientMockMethod = Substitute.For<Action<INetworkPlayer>>();
+            this.clientAuthenticator.OnClientAuthenticated += this.clientMockMethod;
         }
 
         [Test]
         public void OnServerAuthenticateTest()
         {
-            serverAuthenticator.ServerAuthenticate(Substitute.For<INetworkPlayer>());
+            this.serverAuthenticator.ServerAuthenticate(Substitute.For<INetworkPlayer>());
 
-            serverMockMethod.Received().Invoke(Arg.Any<INetworkPlayer>());
+            this.serverMockMethod.Received().Invoke(Arg.Any<INetworkPlayer>());
         }
 
         [Test]
         public void OnClientAuthenticateTest()
         {
-            clientAuthenticator.ClientAuthenticate(Substitute.For<INetworkPlayer>());
+            this.clientAuthenticator.ClientAuthenticate(Substitute.For<INetworkPlayer>());
 
-            clientMockMethod.Received().Invoke(Arg.Any<INetworkPlayer>());
+            this.clientMockMethod.Received().Invoke(Arg.Any<INetworkPlayer>());
         }
 
         [Test]
         public void ClientOnValidateTest()
         {
-            Assert.That(client.authenticator, Is.EqualTo(clientAuthenticator));
+            Assert.That(this.client.authenticator, Is.EqualTo(this.clientAuthenticator));
         }
 
         [Test]
         public void ServerOnValidateTest()
         {
-            Assert.That(server.authenticator, Is.EqualTo(serverAuthenticator));
+            Assert.That(this.server.authenticator, Is.EqualTo(this.serverAuthenticator));
         }
 
         [Test]
         public void NetworkClientCallsAuthenticator()
         {
-            clientMockMethod.Received().Invoke(Arg.Any<INetworkPlayer>());
+            this.clientMockMethod.Received().Invoke(Arg.Any<INetworkPlayer>());
         }
 
         [Test]
         public void NetworkServerCallsAuthenticator()
         {
-            clientMockMethod.Received().Invoke(Arg.Any<INetworkPlayer>());
+            this.clientMockMethod.Received().Invoke(Arg.Any<INetworkPlayer>());
         }
     }
 }

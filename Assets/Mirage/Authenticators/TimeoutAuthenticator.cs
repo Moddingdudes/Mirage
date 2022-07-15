@@ -22,62 +22,62 @@ namespace Mirage.Authenticators
 
         public void Awake()
         {
-            Authenticator.OnClientAuthenticated += HandleClientAuthenticated;
-            Authenticator.OnServerAuthenticated += HandleServerAuthenticated;
+            this.Authenticator.OnClientAuthenticated += this.HandleClientAuthenticated;
+            this.Authenticator.OnServerAuthenticated += this.HandleServerAuthenticated;
         }
 
         private readonly HashSet<INetworkPlayer> pendingAuthentication = new HashSet<INetworkPlayer>();
 
         private void HandleServerAuthenticated(INetworkPlayer player)
         {
-            pendingAuthentication.Remove(player);
-            ServerAccept(player);
+            this.pendingAuthentication.Remove(player);
+            this.ServerAccept(player);
         }
 
         private void HandleClientAuthenticated(INetworkPlayer player)
         {
-            pendingAuthentication.Remove(player);
-            ClientAccept(player);
+            this.pendingAuthentication.Remove(player);
+            this.ClientAccept(player);
         }
 
         public override void ServerAuthenticate(INetworkPlayer player)
         {
-            pendingAuthentication.Add(player);
-            Authenticator.ServerAuthenticate(player);
-            if (Timeout > 0)
-                StartCoroutine(BeginAuthentication(player, ServerReject));
+            this.pendingAuthentication.Add(player);
+            this.Authenticator.ServerAuthenticate(player);
+            if (this.Timeout > 0)
+                this.StartCoroutine(this.BeginAuthentication(player, this.ServerReject));
         }
 
         public override void ClientAuthenticate(INetworkPlayer player)
         {
-            pendingAuthentication.Add(player);
-            Authenticator.ClientAuthenticate(player);
+            this.pendingAuthentication.Add(player);
+            this.Authenticator.ClientAuthenticate(player);
 
-            if (Timeout > 0)
-                StartCoroutine(BeginAuthentication(player, ClientReject));
+            if (this.Timeout > 0)
+                this.StartCoroutine(this.BeginAuthentication(player, this.ClientReject));
         }
 
         public override void ServerSetup(NetworkServer server)
         {
-            Authenticator.ServerSetup(server);
+            this.Authenticator.ServerSetup(server);
         }
 
         public override void ClientSetup(NetworkClient client)
         {
-            Authenticator.ClientSetup(client);
+            this.Authenticator.ClientSetup(client);
         }
 
         private IEnumerator BeginAuthentication(INetworkPlayer player, Action<INetworkPlayer> reject)
         {
-            if (logger.LogEnabled()) logger.Log($"Authentication countdown started {player} {Timeout}");
+            if (logger.LogEnabled()) logger.Log($"Authentication countdown started {player} {this.Timeout}");
 
-            yield return new WaitForSecondsRealtime(Timeout);
+            yield return new WaitForSecondsRealtime(this.Timeout);
 
-            if (pendingAuthentication.Contains(player))
+            if (this.pendingAuthentication.Contains(player))
             {
                 if (logger.LogEnabled()) logger.Log($"Authentication Timeout {player}");
 
-                pendingAuthentication.Remove(player);
+                this.pendingAuthentication.Remove(player);
                 reject.Invoke(player);
             }
         }

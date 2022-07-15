@@ -143,11 +143,11 @@ namespace Mirage
         //the code to handle display and button clicking
         private void OnEnable()
         {
-            changeLogPath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)) + "/../../../CHANGELOG.md";
+            this.changeLogPath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)) + "/../../../CHANGELOG.md";
 
             //Load the UI
             //Each editor window contains a root VisualElement object
-            var root = rootVisualElement;
+            var root = this.rootVisualElement;
             var uxml = Resources.Load<VisualTreeAsset>("WelcomeWindow");
             var uss = Resources.Load<StyleSheet>("WelcomeWindow");
 
@@ -160,24 +160,24 @@ namespace Mirage
             var versionText = root.Q<Label>("VersionText");
             versionText.text = "v" + GetVersion();
 
-            DrawChangeLog(ParseChangeLog());
+            this.DrawChangeLog(this.ParseChangeLog());
 
             #region Page buttons
 
-            ConfigureTab("WelcomeButton", "Welcome", WelcomePageUrl);
-            ConfigureTab("ChangeLogButton", "ChangeLog", ChangelogUrl);
-            ConfigureTab("QuickStartButton", "QuickStart", QuickStartUrl);
-            ConfigureTab("BestPracticesButton", "BestPractices", BestPracticesUrl);
-            ConfigureTab("FaqButton", "Faq", FaqUrl);
-            ConfigureTab("DiscordButton", "Discord", DiscordInviteUrl);
-            ConfigurePackagesTab();
+            this.ConfigureTab("WelcomeButton", "Welcome", WelcomePageUrl);
+            this.ConfigureTab("ChangeLogButton", "ChangeLog", ChangelogUrl);
+            this.ConfigureTab("QuickStartButton", "QuickStart", QuickStartUrl);
+            this.ConfigureTab("BestPracticesButton", "BestPractices", BestPracticesUrl);
+            this.ConfigureTab("FaqButton", "Faq", FaqUrl);
+            this.ConfigureTab("DiscordButton", "Discord", DiscordInviteUrl);
+            this.ConfigurePackagesTab();
 
-            ShowTab(EditorPrefs.GetString(screenToOpenKey, "Welcome"));
+            this.ShowTab(EditorPrefs.GetString(screenToOpenKey, "Welcome"));
 
             //set the screen's button to be tinted when welcome window is opened
-            var openedButton = rootVisualElement.Q<Button>(EditorPrefs.GetString(screenToOpenKey, "Welcome") + "Button");
-            ToggleMenuButtonColor(openedButton, true);
-            lastClickedTab = openedButton;
+            var openedButton = this.rootVisualElement.Q<Button>(EditorPrefs.GetString(screenToOpenKey, "Welcome") + "Button");
+            this.ToggleMenuButtonColor(openedButton, true);
+            this.lastClickedTab = openedButton;
 
             #endregion
         }
@@ -193,22 +193,22 @@ namespace Mirage
         //menu button setup
         private void ConfigureTab(string tabButtonName, string tab, string url)
         {
-            var tabButton = rootVisualElement.Q<Button>(tabButtonName);
+            var tabButton = this.rootVisualElement.Q<Button>(tabButtonName);
 
             tabButton.EnableInClassList("dark-selected-tab", false);
             tabButton.EnableInClassList("light-selected-tab", false);
 
             tabButton.clicked += () =>
             {
-                ToggleMenuButtonColor(tabButton, true);
-                ToggleMenuButtonColor(lastClickedTab, false);
-                ShowTab(tab);
+                this.ToggleMenuButtonColor(tabButton, true);
+                this.ToggleMenuButtonColor(this.lastClickedTab, false);
+                this.ShowTab(tab);
 
-                lastClickedTab = tabButton;
+                this.lastClickedTab = tabButton;
                 EditorPrefs.SetString(screenToOpenKey, tab);
             };
 
-            var redirectButton = rootVisualElement.Q<VisualElement>(tab).Q<Button>("Redirect");
+            var redirectButton = this.rootVisualElement.Q<VisualElement>(tab).Q<Button>("Redirect");
             if (redirectButton != null)
             {
                 redirectButton.clicked += () => Application.OpenURL(url);
@@ -218,7 +218,7 @@ namespace Mirage
         //switch between content
         private void ShowTab(string screen)
         {
-            var rightColumn = rootVisualElement.Q<VisualElement>("RightColumnBox");
+            var rightColumn = this.rootVisualElement.Q<VisualElement>("RightColumnBox");
 
             foreach (var tab in rightColumn.Children())
             {
@@ -264,7 +264,7 @@ namespace Mirage
 
             var currentChangeLogs = 0;
 
-            using (var reader = new StreamReader(changeLogPath))
+            using (var reader = new StreamReader(this.changeLogPath))
             {
                 string line;
 
@@ -321,7 +321,7 @@ namespace Mirage
                     newLog.Q<Label>("ChangeLogVersion").text =
                         $"Version {item.Split(new[] { "[" }, StringSplitOptions.RemoveEmptyEntries)[1].Split(new[] { "]" }, StringSplitOptions.RemoveEmptyEntries)[0]}";
 
-                    rootVisualElement.Q<VisualElement>("ChangelogData").Add(newLog);
+                    this.rootVisualElement.Q<VisualElement>("ChangelogData").Add(newLog);
 
                     builder = new StringBuilder();
                     firstTitle = true;
@@ -351,7 +351,7 @@ namespace Mirage
                     builder.Append(change);
                 }
 
-                rootVisualElement.Q<VisualElement>("ChangelogData").ElementAt(currentVersionCount).Q<Label>("ChangeLogText").text = builder.ToString();
+                this.rootVisualElement.Q<VisualElement>("ChangelogData").ElementAt(currentVersionCount).Q<Label>("ChangeLogText").text = builder.ToString();
             }
         }
 
@@ -360,26 +360,26 @@ namespace Mirage
         //configure the package tab when the tab button is pressed
         private void ConfigurePackagesTab()
         {
-            var tabButton = rootVisualElement.Q<Button>("PackagesButton");
+            var tabButton = this.rootVisualElement.Q<Button>("PackagesButton");
 
             tabButton.EnableInClassList("dark-selected-tab", false);
             tabButton.EnableInClassList("light-selected-tab", false);
 
             tabButton.clicked += () =>
             {
-                ToggleMenuButtonColor(tabButton, true);
-                ToggleMenuButtonColor(lastClickedTab, false);
-                ShowTab("Packages");
+                this.ToggleMenuButtonColor(tabButton, true);
+                this.ToggleMenuButtonColor(this.lastClickedTab, false);
+                this.ShowTab("Packages");
 
-                lastClickedTab = tabButton;
+                this.lastClickedTab = tabButton;
                 EditorPrefs.SetString(screenToOpenKey, "Packages");
             };
 
-            listRequest = Client.List(true, false);
-            searchRequest = Client.SearchAll(false);
+            this.listRequest = Client.List(true, false);
+            this.searchRequest = Client.SearchAll(false);
 
             //subscribe to ListPackageProgress for updates
-            EditorApplication.update += ListPackageProgress;
+            EditorApplication.update += this.ListPackageProgress;
         }
 
         /// <summary>
@@ -388,18 +388,18 @@ namespace Mirage
         /// <param name="packageName">The package to install or uninstall.</param>
         private void ModuleButtonClicked(string packageName)
         {
-            var packageElement = rootVisualElement.Q<VisualElement>("ModulesList").Q<VisualElement>(packageName);
+            var packageElement = this.rootVisualElement.Q<VisualElement>("ModulesList").Q<VisualElement>(packageName);
 
             var packageButton = packageElement.Q<Button>();
 
             switch (packageButton.text)
             {
                 case "Install":
-                    InstallPackage(packageName);
+                    this.InstallPackage(packageName);
                     packageButton.text = "Uninstall";
                     break;
                 case "Uninstall":
-                    UninstallPackage(packageName);
+                    this.UninstallPackage(packageName);
                     packageButton.text = "Install";
                     break;
             }
@@ -408,38 +408,38 @@ namespace Mirage
         //install the package
         private void InstallPackage(string packageName)
         {
-            installRequest = Client.Add(packages.Find((x) => x.displayName == packageName).gitUrl);
+            this.installRequest = Client.Add(this.packages.Find((x) => x.displayName == packageName).gitUrl);
 
             //subscribe to InstallPackageProgress for updates
-            EditorApplication.update += InstallPackageProgress;
+            EditorApplication.update += this.InstallPackageProgress;
         }
 
         //uninstall the package
         private void UninstallPackage(string packageName)
         {
-            uninstallRequest = Client.Remove(packages.Find((x) => x.displayName == packageName).packageName);
+            this.uninstallRequest = Client.Remove(this.packages.Find((x) => x.displayName == packageName).packageName);
 
             //subscribe to UninstallPackageProgress for updates
-            EditorApplication.update += UninstallPackageProgress;
+            EditorApplication.update += this.UninstallPackageProgress;
         }
 
         //keeps track of the package install progress
         private void InstallPackageProgress()
         {
-            if (installRequest.IsCompleted)
+            if (this.installRequest.IsCompleted)
             {
                 //log results
-                if (installRequest.Status == StatusCode.Success)
+                if (this.installRequest.Status == StatusCode.Success)
                 {
                     if (logger.LogEnabled()) logger.Log("Package install successful.");
                 }
-                else if (installRequest.Status == StatusCode.Failure)
+                else if (this.installRequest.Status == StatusCode.Failure)
                 {
-                    logger.LogError($"Package install was unsuccessful. \n Error Code: {installRequest.Error.errorCode}\n Error Message: {installRequest.Error.message}");
+                    logger.LogError($"Package install was unsuccessful. \n Error Code: {this.installRequest.Error.errorCode}\n Error Message: {this.installRequest.Error.message}");
 
                 }
 
-                EditorApplication.update -= InstallPackageProgress;
+                EditorApplication.update -= this.InstallPackageProgress;
 
                 //refresh the package tab
                 currentWindow.Repaint();
@@ -448,18 +448,18 @@ namespace Mirage
 
         private void UninstallPackageProgress()
         {
-            if (uninstallRequest.IsCompleted)
+            if (this.uninstallRequest.IsCompleted)
             {
                 //log results
-                EditorApplication.update -= UninstallPackageProgress;
+                EditorApplication.update -= this.UninstallPackageProgress;
 
-                if (uninstallRequest.Status == StatusCode.Success)
+                if (this.uninstallRequest.Status == StatusCode.Success)
                 {
                     if (logger.LogEnabled()) logger.Log("Package uninstall successful.");
                 }
-                else if (uninstallRequest.Status == StatusCode.Failure)
+                else if (this.uninstallRequest.Status == StatusCode.Failure)
                 {
-                    logger.LogError($"Package uninstall was unsuccessful. \n Error Code: {uninstallRequest.Error.errorCode}\n Error Message: {uninstallRequest.Error.message}");
+                    logger.LogError($"Package uninstall was unsuccessful. \n Error Code: {this.uninstallRequest.Error.errorCode}\n Error Message: {this.uninstallRequest.Error.message}");
                 }
 
                 //refresh the package tab
@@ -469,33 +469,33 @@ namespace Mirage
 
         private void ListPackageProgress()
         {
-            if (!searchRequest.IsCompleted | !listRequest.IsCompleted)
+            if (!this.searchRequest.IsCompleted | !this.listRequest.IsCompleted)
             {
                 return;
             }
 
-            EditorApplication.update -= ListPackageProgress;
+            EditorApplication.update -= this.ListPackageProgress;
 
-            switch (searchRequest.Status)
+            switch (this.searchRequest.Status)
             {
                 case StatusCode.Success:
 
-                    packages.Clear();
+                    this.packages.Clear();
 
-                    foreach (var package in searchRequest.Result)
+                    foreach (var package in this.searchRequest.Result)
                     {
                         if (!package.name.Contains("com.miragenet") || package.name.Equals(miragePackageName)) continue;
 
                         var packageInstalled = false;
 
-                        foreach (var installedPackages in listRequest.Result)
+                        foreach (var installedPackages in this.listRequest.Result)
                         {
                             if (!package.name.Equals(installedPackages.name)) continue;
 
                             packageInstalled = true;
                         }
 
-                        packages.Add(new Package
+                        this.packages.Add(new Package
                         {
                             displayName = package.displayName,
                             gitUrl = package.name,
@@ -505,11 +505,11 @@ namespace Mirage
                         });
                     }
 
-                    ConfigureInstallButtons();
+                    this.ConfigureInstallButtons();
 
                     break;
                 case StatusCode.Failure:
-                    if (logger.ErrorEnabled()) logger.LogError($"There was an issue finding packages. \n Error Code: {searchRequest.Error.errorCode }\n Error Message: {searchRequest.Error.message}");
+                    if (logger.ErrorEnabled()) logger.LogError($"There was an issue finding packages. \n Error Code: {this.searchRequest.Error.errorCode }\n Error Message: {this.searchRequest.Error.message}");
                     break;
             }
         }
@@ -518,13 +518,13 @@ namespace Mirage
         //changes text and functionality after button press
         private void ConfigureInstallButtons()
         {
-            var moduleVisualElement = rootVisualElement.Q<VisualElement>("ModulesList");
+            var moduleVisualElement = this.rootVisualElement.Q<VisualElement>("ModulesList");
             moduleVisualElement.Clear();
 
-            foreach (var module in packages)
+            foreach (var module in this.packages)
             {
                 //set the button and name of the package
-                var moduleButton = new Button(() => ModuleButtonClicked(module.displayName))
+                var moduleButton = new Button(() => this.ModuleButtonClicked(module.displayName))
                 {
                     style = { height = new Length(20, LengthUnit.Pixel), position = Position.Relative, left = 40 },
                     text = module.installed ? "Uninstall" : "Install"

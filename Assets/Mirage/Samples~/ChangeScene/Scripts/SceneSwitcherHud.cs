@@ -13,43 +13,43 @@ namespace Mirage.Examples.SceneChange
 
         public void Update()
         {
-            if (additiveLoaded)
+            if (this.additiveLoaded)
             {
-                AdditiveButtonText.text = "Additive Unload";
+                this.AdditiveButtonText.text = "Additive Unload";
             }
             else
             {
-                AdditiveButtonText.text = "Additive Load";
+                this.AdditiveButtonText.text = "Additive Load";
             }
         }
 
         public void Room1ButtonHandler()
         {
-            sceneManager.ServerLoadSceneNormal("Room1");
-            additiveLoaded = false;
+            this.sceneManager.ServerLoadSceneNormal("Room1");
+            this.additiveLoaded = false;
         }
 
         public void Room2ButtonHandler()
         {
-            sceneManager.ServerLoadSceneNormal("Room2");
-            additiveLoaded = false;
+            this.sceneManager.ServerLoadSceneNormal("Room2");
+            this.additiveLoaded = false;
         }
 
         public void AdditiveButtonHandler()
         {
-            var players = sceneManager.Server.Players;
+            var players = this.sceneManager.Server.Players;
 
-            if (additiveLoaded)
+            if (this.additiveLoaded)
             {
-                additiveLoaded = false;
+                this.additiveLoaded = false;
 
-                sceneManager.ServerUnloadSceneAdditively(_additiveLoadedScene, players);
+                this.sceneManager.ServerUnloadSceneAdditively(this._additiveLoadedScene, players);
             }
             else
             {
-                additiveLoaded = true;
-                sceneManager.ServerLoadSceneAdditively("Additive", players);
-                _additiveLoadedScene = SceneManager.GetSceneAt(SceneManager.sceneCount - 1);
+                this.additiveLoaded = true;
+                this.sceneManager.ServerLoadSceneAdditively("Additive", players);
+                this._additiveLoadedScene = SceneManager.GetSceneAt(SceneManager.sceneCount - 1);
             }
         }
     }

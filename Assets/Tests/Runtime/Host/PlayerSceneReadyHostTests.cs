@@ -20,7 +20,7 @@ namespace Mirage.Tests.Runtime.Host
             // set ready to true, then check if methods sets it back to falase
             player.SceneIsReady = true;
 
-            sceneManager.SetClientNotReady(player);
+            this.sceneManager.SetClientNotReady(player);
             Assert.That(player.SceneIsReady, Is.False);
         }
 
@@ -43,7 +43,7 @@ namespace Mirage.Tests.Runtime.Host
             thrid.SceneIsReady = true;
 
             // set all not ready
-            sceneManager.SetAllClientsNotReady(players);
+            this.sceneManager.SetAllClientsNotReady(players);
             Assert.That(first.SceneIsReady, Is.False);
             Assert.That(second.SceneIsReady, Is.False);
             Assert.That(thrid.SceneIsReady, Is.True, "should not be changed because it isn't in given list");
@@ -55,15 +55,15 @@ namespace Mirage.Tests.Runtime.Host
             // add first ready client
             var first = Substitute.For<INetworkPlayer>();
             first.SceneIsReady = true;
-            server.AddTestPlayer(first);
+            this.server.AddTestPlayer(first);
 
             // add second ready client
             var second = Substitute.For<INetworkPlayer>();
             second.SceneIsReady = true;
-            server.AddTestPlayer(second);
+            this.server.AddTestPlayer(second);
 
             // set all not ready
-            sceneManager.SetAllClientsNotReady(null);
+            this.sceneManager.SetAllClientsNotReady(null);
             Assert.That(first.SceneIsReady, Is.False);
             Assert.That(second.SceneIsReady, Is.False);
         }

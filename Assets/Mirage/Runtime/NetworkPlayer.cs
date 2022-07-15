@@ -66,15 +66,15 @@ namespace Mirage
         /// <summary>
         /// Checks if this player has a <see cref="Identity"/>
         /// </summary>
-        public bool HasCharacter => Identity != null;
+        public bool HasCharacter => this.Identity != null;
 
         /// <summary>
         /// The IP address / URL / FQDN associated with the connection.
         /// Can be useful for a game master to do IP Bans etc.
         /// </summary>
-        public IEndPoint Address => connection.EndPoint;
+        public IEndPoint Address => this.connection.EndPoint;
 
-        public IConnection Connection => connection;
+        public IConnection Connection => this.connection;
 
         /// <summary>
         /// Disconnects the player.
@@ -85,8 +85,8 @@ namespace Mirage
         /// </remarks>
         public void Disconnect()
         {
-            connection.Disconnect();
-            isDisconnected = true;
+            this.connection.Disconnect();
+            this.isDisconnected = true;
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Mirage
         /// </summary>
         public void MarkAsDisconnected()
         {
-            isDisconnected = true;
+            this.isDisconnected = true;
         }
 
         /// <summary>
@@ -108,14 +108,14 @@ namespace Mirage
         /// </summary>
         public NetworkIdentity Identity
         {
-            get => _identity;
+            get => this._identity;
             set
             {
-                if (_identity == value)
+                if (this._identity == value)
                     return;
 
-                _identity = value;
-                OnIdentityChanged?.Invoke(_identity);
+                this._identity = value;
+                OnIdentityChanged?.Invoke(this._identity);
             }
         }
 
@@ -147,7 +147,7 @@ namespace Mirage
         /// <returns></returns>
         public void Send<T>(T message, int channelId = Channel.Reliable)
         {
-            if (isDisconnected) { return; }
+            if (this.isDisconnected) { return; }
 
             using (var writer = NetworkWriterPool.GetWriter())
             {
@@ -155,7 +155,7 @@ namespace Mirage
 
                 var segment = writer.ToArraySegment();
                 NetworkDiagnostics.OnSend(message, segment.Count, 1);
-                Send(segment, channelId);
+                this.Send(segment, channelId);
             }
         }
 
@@ -167,15 +167,15 @@ namespace Mirage
         /// <param name="channelId"></param>
         public void Send(ArraySegment<byte> segment, int channelId = Channel.Reliable)
         {
-            if (isDisconnected) { return; }
+            if (this.isDisconnected) { return; }
 
             if (channelId == Channel.Reliable)
             {
-                connection.SendReliable(segment);
+                this.connection.SendReliable(segment);
             }
             else
             {
-                connection.SendUnreliable(segment);
+                this.connection.SendUnreliable(segment);
             }
         }
 
@@ -188,7 +188,7 @@ namespace Mirage
         /// <returns></returns>
         public void Send<T>(T message, INotifyCallBack token)
         {
-            if (isDisconnected) { return; }
+            if (this.isDisconnected) { return; }
 
             using (var writer = NetworkWriterPool.GetWriter())
             {
@@ -196,23 +196,23 @@ namespace Mirage
 
                 var segment = writer.ToArraySegment();
                 NetworkDiagnostics.OnSend(message, segment.Count, 1);
-                connection.SendNotify(segment, token);
+                this.connection.SendNotify(segment, token);
             }
         }
 
         public override string ToString()
         {
-            return $"connection({Address})";
+            return $"connection({this.Address})";
         }
 
         public void AddToVisList(NetworkIdentity identity)
         {
-            visList.Add(identity);
+            this.visList.Add(identity);
         }
 
         public void RemoveFromVisList(NetworkIdentity identity)
         {
-            visList.Remove(identity);
+            this.visList.Remove(identity);
         }
 
         /// <summary>
@@ -221,21 +221,21 @@ namespace Mirage
         /// </summary>
         public void RemoveAllVisibleObjects()
         {
-            foreach (var identity in visList)
+            foreach (var identity in this.visList)
             {
                 identity.RemoveObserverInternal(this);
             }
-            visList.Clear();
+            this.visList.Clear();
         }
 
         public void AddOwnedObject(NetworkIdentity networkIdentity)
         {
-            clientOwnedObjects.Add(networkIdentity);
+            this.clientOwnedObjects.Add(networkIdentity);
         }
 
         public void RemoveOwnedObject(NetworkIdentity networkIdentity)
         {
-            clientOwnedObjects.Remove(networkIdentity);
+            this.clientOwnedObjects.Remove(networkIdentity);
         }
 
         /// <summary>
@@ -245,12 +245,12 @@ namespace Mirage
         public void DestroyOwnedObjects()
         {
             // create a copy because the list might be modified when destroying
-            var ownedObjects = new HashSet<NetworkIdentity>(clientOwnedObjects);
+            var ownedObjects = new HashSet<NetworkIdentity>(this.clientOwnedObjects);
 
             foreach (var netIdentity in ownedObjects)
             {
                 //dont destroy self yet.
-                if (netIdentity == Identity)
+                if (netIdentity == this.Identity)
                     continue;
 
                 if (netIdentity != null && netIdentity.ServerObjectManager != null)
@@ -261,12 +261,12 @@ namespace Mirage
                 }
             }
 
-            if (Identity != null && Identity.ServerObjectManager != null)
+            if (this.Identity != null && this.Identity.ServerObjectManager != null)
                 // Destroy the connections own identity.
-                Identity.ServerObjectManager.Destroy(Identity.gameObject);
+                this.Identity.ServerObjectManager.Destroy(this.Identity.gameObject);
 
             // clear the hashset because we destroyed them all
-            clientOwnedObjects.Clear();
+            this.clientOwnedObjects.Clear();
         }
     }
 }

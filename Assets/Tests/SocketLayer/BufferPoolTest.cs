@@ -171,8 +171,8 @@ namespace Mirage.SocketLayer.Tests
 
             private TestBuffer(int size, Pool<TestBuffer> pool)
             {
-                Size = size;
-                Pool = pool;
+                this.Size = size;
+                this.Pool = pool;
             }
 
             public static TestBuffer Create(int size, Pool<TestBuffer> pool)

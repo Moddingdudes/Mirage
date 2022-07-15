@@ -123,26 +123,26 @@ namespace Mirage.Tests.BuildIL2CPP
         public IL2CPPApplier(BuildTarget target, bool il2cpp)
         {
             UnityEngine.Debug.Log("Apply IL2CPP");
-            group = BuildPipeline.GetBuildTargetGroup(target);
-            var backend = PlayerSettings.GetScriptingBackend(group);
+            this.group = BuildPipeline.GetBuildTargetGroup(target);
+            var backend = PlayerSettings.GetScriptingBackend(this.group);
             if (il2cpp && backend != ScriptingImplementation.IL2CPP)
             {
-                startingBackend = backend;
-                PlayerSettings.SetScriptingBackend(group, ScriptingImplementation.IL2CPP);
+                this.startingBackend = backend;
+                PlayerSettings.SetScriptingBackend(this.group, ScriptingImplementation.IL2CPP);
             }
             else if (!il2cpp && backend == ScriptingImplementation.IL2CPP)
             {
-                startingBackend = backend;
-                PlayerSettings.SetScriptingBackend(group, ScriptingImplementation.Mono2x);
+                this.startingBackend = backend;
+                PlayerSettings.SetScriptingBackend(this.group, ScriptingImplementation.Mono2x);
             }
 
         }
         public void Dispose()
         {
-            if (startingBackend.HasValue)
+            if (this.startingBackend.HasValue)
             {
                 UnityEngine.Debug.Log("Revert IL2CPP");
-                PlayerSettings.SetScriptingBackend(group, startingBackend.Value);
+                PlayerSettings.SetScriptingBackend(this.group, this.startingBackend.Value);
             }
         }
     }

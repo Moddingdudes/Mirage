@@ -55,7 +55,7 @@ namespace Mirage.Serialization
         public int BitLength
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => bitLength;
+            get => this.bitLength;
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Mirage.Serialization
         public int BitPosition
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => bitPosition;
+            get => this.bitPosition;
         }
         /// <summary>
         /// Current <see cref="BitPosition"/> rounded up to nearest multiple of 8
@@ -76,65 +76,65 @@ namespace Mirage.Serialization
             // add to 3 last bits,
             //   if any are 1 then it will roll over 4th bit.
             //   if all are 0, then nothing happens 
-            get => (bitPosition + 0b111) >> 3;
+            get => (this.bitPosition + 0b111) >> 3;
         }
 
         public NetworkReader() { }
 
         ~NetworkReader()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
         /// <param name="disposing">true if called from IDisposable</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!needsDisposing) return;
+            if (!this.needsDisposing) return;
 
-            handle.Free();
-            longPtr = null;
-            needsDisposing = false;
+            this.handle.Free();
+            this.longPtr = null;
+            this.needsDisposing = false;
 
             if (disposing)
             {
                 // clear manged stuff here because we no longer want reader to keep reference to buffer
-                bitLength = 0;
-                managedBuffer = null;
+                this.bitLength = 0;
+                this.managedBuffer = null;
             }
         }
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
         }
 
         public void Reset(ArraySegment<byte> segment)
         {
-            Reset(segment.Array, segment.Offset, segment.Count);
+            this.Reset(segment.Array, segment.Offset, segment.Count);
         }
         public void Reset(byte[] array)
         {
-            Reset(array, 0, array.Length);
+            this.Reset(array, 0, array.Length);
         }
         public void Reset(byte[] array, int position, int length)
         {
             if (array == null)
                 throw new ArgumentNullException(nameof(array), "Cant use null array in Reader");
 
-            if (needsDisposing)
+            if (this.needsDisposing)
             {
                 // dispose old handler first
                 // false here so we dont release reader back to pool
-                Dispose(false);
+                this.Dispose(false);
             }
 
             // reset disposed bool, as it can be disposed again after reset
-            needsDisposing = true;
+            this.needsDisposing = true;
 
-            bitPosition = position * 8;
-            bitOffset = position * 8;
-            bitLength = bitPosition + (length * 8);
-            managedBuffer = array;
-            handle = GCHandle.Alloc(managedBuffer, GCHandleType.Pinned);
-            longPtr = (ulong*)handle.AddrOfPinnedObject();
+            this.bitPosition = position * 8;
+            this.bitOffset = position * 8;
+            this.bitLength = this.bitPosition + (length * 8);
+            this.managedBuffer = array;
+            this.handle = GCHandle.Alloc(this.managedBuffer, GCHandleType.Pinned);
+            this.longPtr = (ulong*)this.handle.AddrOfPinnedObject();
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Mirage.Serialization
         /// <returns></returns>
         public bool CanRead()
         {
-            return bitPosition < bitLength;
+            return this.bitPosition < this.bitLength;
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Mirage.Serialization
         /// <returns></returns>
         public bool CanReadBits(int readCount)
         {
-            return (bitPosition + readCount) <= bitLength;
+            return (this.bitPosition + readCount) <= this.bitLength;
         }
 
         /// <summary>
@@ -162,33 +162,33 @@ namespace Mirage.Serialization
         /// <returns></returns>
         public bool CanReadBytes(int readCount)
         {
-            return (bitPosition + (readCount * 8)) <= bitLength;
+            return (this.bitPosition + (readCount * 8)) <= this.bitLength;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void CheckNewLength(int newPosition)
         {
-            if (newPosition > bitLength)
+            if (newPosition > this.bitLength)
             {
-                ThrowPositionOverLength(newPosition);
+                this.ThrowPositionOverLength(newPosition);
             }
         }
 
         private void ThrowPositionOverLength(int newPosition)
         {
-            throw new EndOfStreamException($"Can not read over end of buffer, new position {newPosition}, length {bitLength} bits");
+            throw new EndOfStreamException($"Can not read over end of buffer, new position {newPosition}, length {this.bitLength} bits");
         }
 
         private void PadToByte()
         {
-            bitPosition = BytePosition << 3;
+            this.bitPosition = this.BytePosition << 3;
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ReadBoolean()
         {
-            return ReadBooleanAsUlong() == 1UL;
+            return this.ReadBooleanAsUlong() == 1UL;
         }
 
         /// <summary>
@@ -197,54 +197,54 @@ namespace Mirage.Serialization
         /// <param name="value"></param>
         public ulong ReadBooleanAsUlong()
         {
-            var newPosition = bitPosition + 1;
-            CheckNewLength(newPosition);
+            var newPosition = this.bitPosition + 1;
+            this.CheckNewLength(newPosition);
 
-            var ptr = (longPtr + (bitPosition >> 6));
-            var result = ((*ptr) >> bitPosition) & 0b1;
+            var ptr = (this.longPtr + (this.bitPosition >> 6));
+            var result = ((*ptr) >> this.bitPosition) & 0b1;
 
-            bitPosition = newPosition;
+            this.bitPosition = newPosition;
             return result;
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public sbyte ReadSByte() => (sbyte)ReadByte();
+        public sbyte ReadSByte() => (sbyte)this.ReadByte();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public byte ReadByte() => (byte)ReadUnmasked(8);
+        public byte ReadByte() => (byte)this.ReadUnmasked(8);
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public short ReadInt16() => (short)ReadUInt16();
+        public short ReadInt16() => (short)this.ReadUInt16();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ushort ReadUInt16() => (ushort)ReadUnmasked(16);
+        public ushort ReadUInt16() => (ushort)this.ReadUnmasked(16);
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int ReadInt32() => (int)ReadUInt32();
+        public int ReadInt32() => (int)this.ReadUInt32();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public uint ReadUInt32() => (uint)ReadUnmasked(32);
+        public uint ReadUInt32() => (uint)this.ReadUnmasked(32);
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public long ReadInt64() => (long)ReadUInt64();
+        public long ReadInt64() => (long)this.ReadUInt64();
         public ulong ReadUInt64()
         {
-            var newPosition = bitPosition + 64;
-            CheckNewLength(newPosition);
+            var newPosition = this.bitPosition + 64;
+            this.CheckNewLength(newPosition);
 
-            var bitsInLong = bitPosition & 0b11_1111;
+            var bitsInLong = this.bitPosition & 0b11_1111;
             ulong result;
             if (bitsInLong == 0)
             {
-                var ptr1 = (longPtr + (bitPosition >> 6));
+                var ptr1 = (this.longPtr + (this.bitPosition >> 6));
                 result = *ptr1;
             }
             else
             {
                 var bitsLeft = 64 - bitsInLong;
 
-                var ptr1 = (longPtr + (bitPosition >> 6));
+                var ptr1 = (this.longPtr + (this.bitPosition >> 6));
                 var ptr2 = (ptr1 + 1);
 
                 // eg use byte, read 6  =>bitPosition=5, bitsLeft=3, newPos=1
@@ -253,12 +253,12 @@ namespace Mirage.Serialization
                 // r = r1|r2 => ccaa_aaaa
                 // we mask this result later
 
-                var r1 = (*ptr1) >> bitPosition;
+                var r1 = (*ptr1) >> this.bitPosition;
                 var r2 = (*ptr2) << bitsLeft;
                 result = r1 | r2;
             }
 
-            bitPosition = newPosition;
+            this.bitPosition = newPosition;
 
             // dont need to mask this result because should be reading all 64 bits
             return result;
@@ -268,13 +268,13 @@ namespace Mirage.Serialization
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float ReadSingle()
         {
-            var uValue = ReadUInt32();
+            var uValue = this.ReadUInt32();
             return *(float*)&uValue;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double ReadDouble()
         {
-            var uValue = ReadUInt64();
+            var uValue = this.ReadUInt64();
             return *(double*)&uValue;
         }
 
@@ -284,26 +284,26 @@ namespace Mirage.Serialization
         {
             if (bits == 0) return 0;
             // mask so we dont returns extra bits
-            return ReadUnmasked(bits) & (ulong.MaxValue >> (64 - bits));
+            return this.ReadUnmasked(bits) & (ulong.MaxValue >> (64 - bits));
         }
 
         private ulong ReadUnmasked(int bits)
         {
-            var newPosition = bitPosition + bits;
-            CheckNewLength(newPosition);
+            var newPosition = this.bitPosition + bits;
+            this.CheckNewLength(newPosition);
 
-            var bitsInLong = bitPosition & 0b11_1111;
+            var bitsInLong = this.bitPosition & 0b11_1111;
             var bitsLeft = 64 - bitsInLong;
 
             ulong result;
             if (bitsLeft >= bits)
             {
-                var ptr = longPtr + (bitPosition >> 6);
+                var ptr = this.longPtr + (this.bitPosition >> 6);
                 result = (*ptr) >> bitsInLong;
             }
             else
             {
-                var ptr1 = longPtr + (bitPosition >> 6);
+                var ptr1 = this.longPtr + (this.bitPosition >> 6);
                 var ptr2 = ptr1 + 1;
 
                 // eg use byte, read 6  =>bitPosition=5, bitsLeft=3, newPos=1
@@ -316,7 +316,7 @@ namespace Mirage.Serialization
                 var r2 = (*ptr2) << bitsLeft;
                 result = r1 | r2;
             }
-            bitPosition = newPosition;
+            this.bitPosition = newPosition;
 
             return result;
         }
@@ -329,11 +329,11 @@ namespace Mirage.Serialization
         public ulong ReadAtPosition(int bits, int bitPosition)
         {
             // check length here so this methods throws instead of the read below
-            CheckNewLength(bitPosition + bits);
+            this.CheckNewLength(bitPosition + bits);
 
             var currentPosition = this.bitPosition;
             this.bitPosition = bitPosition;
-            var result = Read(bits);
+            var result = this.Read(bits);
             this.bitPosition = currentPosition;
 
             return result;
@@ -349,12 +349,12 @@ namespace Mirage.Serialization
         /// <exception cref="ArgumentOutOfRangeException">throws when <paramref name="newPosition"/> is less than <see cref="bitOffset"/></exception>
         public void MoveBitPosition(int newPosition)
         {
-            if (newPosition < bitOffset)
+            if (newPosition < this.bitOffset)
             {
-                throw new ArgumentOutOfRangeException(nameof(newPosition), newPosition, $"New position can not be less than buffer offset, Buffer offset: {bitOffset}");
+                throw new ArgumentOutOfRangeException(nameof(newPosition), newPosition, $"New position can not be less than buffer offset, Buffer offset: {this.bitOffset}");
             }
-            CheckNewLength(newPosition);
-            bitPosition = newPosition;
+            this.CheckNewLength(newPosition);
+            this.bitPosition = newPosition;
         }
 
 
@@ -367,14 +367,14 @@ namespace Mirage.Serialization
         /// <param name="value"></param>
         public void PadAndCopy<T>(out T value) where T : unmanaged
         {
-            PadToByte();
-            var newPosition = bitPosition + (8 * sizeof(T));
-            CheckNewLength(newPosition);
+            this.PadToByte();
+            var newPosition = this.bitPosition + (8 * sizeof(T));
+            this.CheckNewLength(newPosition);
 
-            var startPtr = ((byte*)longPtr) + (bitPosition >> 3);
+            var startPtr = ((byte*)this.longPtr) + (this.bitPosition >> 3);
 
             value = *(T*)startPtr;
-            bitPosition = newPosition;
+            this.bitPosition = newPosition;
         }
 
         /// <summary>
@@ -387,23 +387,23 @@ namespace Mirage.Serialization
         /// <param name="length"></param>
         public void ReadBytes(byte[] array, int offset, int length)
         {
-            PadToByte();
-            var newPosition = bitPosition + (8 * length);
-            CheckNewLength(newPosition);
+            this.PadToByte();
+            var newPosition = this.bitPosition + (8 * length);
+            this.CheckNewLength(newPosition);
 
             // todo benchmark this vs Marshal.Copy or for loop
-            Buffer.BlockCopy(managedBuffer, BytePosition, array, offset, length);
-            bitPosition = newPosition;
+            Buffer.BlockCopy(this.managedBuffer, this.BytePosition, array, offset, length);
+            this.bitPosition = newPosition;
         }
 
         public ArraySegment<byte> ReadBytesSegment(int count)
         {
-            PadToByte();
-            var newPosition = bitPosition + (8 * count);
-            CheckNewLength(newPosition);
+            this.PadToByte();
+            var newPosition = this.bitPosition + (8 * count);
+            this.CheckNewLength(newPosition);
 
-            var result = new ArraySegment<byte>(managedBuffer, BytePosition, count);
-            bitPosition = newPosition;
+            var result = new ArraySegment<byte>(this.managedBuffer, this.BytePosition, count);
+            this.bitPosition = newPosition;
             return result;
         }
     }

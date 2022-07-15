@@ -20,17 +20,17 @@ namespace Example.CustomCharacter
 
         public void Start()
         {
-            Client.Started.AddListener(OnClientStarted);
-            Client.Authenticated.AddListener(OnClientAuthenticated);
-            Server.Started.AddListener(OnServerStarted);
+            this.Client.Started.AddListener(this.OnClientStarted);
+            this.Client.Authenticated.AddListener(this.OnClientAuthenticated);
+            this.Server.Started.AddListener(this.OnServerStarted);
         }
 
         private void OnClientStarted()
         {
             // make sure all prefabs are Register so mirage can spawn the character for this client and for other players
-            ClientObjectManager.RegisterPrefab(HumanPrefab.Identity);
-            ClientObjectManager.RegisterPrefab(ElvishPrefab.Identity);
-            ClientObjectManager.RegisterPrefab(DwarvishPrefab.Identity);
+            this.ClientObjectManager.RegisterPrefab(this.HumanPrefab.Identity);
+            this.ClientObjectManager.RegisterPrefab(this.ElvishPrefab.Identity);
+            this.ClientObjectManager.RegisterPrefab(this.DwarvishPrefab.Identity);
         }
 
         // you can send the message here if you already know
@@ -52,12 +52,12 @@ namespace Example.CustomCharacter
         private void OnServerStarted()
         {
             // wait for client to send us an AddPlayerMessage
-            Server.MessageHandler.RegisterHandler<CreateMMOCharacterMessage>(OnCreateCharacter);
+            this.Server.MessageHandler.RegisterHandler<CreateMMOCharacterMessage>(this.OnCreateCharacter);
         }
 
         private void OnCreateCharacter(INetworkPlayer player, CreateMMOCharacterMessage msg)
         {
-            var prefab = GetPrefab(msg);
+            var prefab = this.GetPrefab(msg);
 
             // create your character object
             // use the data in msg to configure it
@@ -70,7 +70,7 @@ namespace Example.CustomCharacter
             character.eyeColor = msg.eyeColor;
 
             // spawn it as the character object
-            ServerObjectManager.AddCharacter(player, character.Identity);
+            this.ServerObjectManager.AddCharacter(player, character.Identity);
         }
 
         private CustomCharacter GetPrefab(CreateMMOCharacterMessage msg)
@@ -79,9 +79,9 @@ namespace Example.CustomCharacter
             CustomCharacter prefab;
             switch (msg.race)
             {
-                case Race.Human: prefab = HumanPrefab; break;
-                case Race.Elvish: prefab = ElvishPrefab; break;
-                case Race.Dwarvish: prefab = DwarvishPrefab; break;
+                case Race.Human: prefab = this.HumanPrefab; break;
+                case Race.Elvish: prefab = this.ElvishPrefab; break;
+                case Race.Dwarvish: prefab = this.DwarvishPrefab; break;
                 // default case to check that client sent valid race.
                 // the only reason it should be invalid is if the client's code was modified by an attacker
                 // throw will cause the client to be kicked
@@ -99,7 +99,7 @@ namespace Example.CustomCharacter
 
         private void Awake()
         {
-            Identity.OnStartClient.AddListener(OnStartClient);
+            this.Identity.OnStartClient.AddListener(this.OnStartClient);
 
         }
 

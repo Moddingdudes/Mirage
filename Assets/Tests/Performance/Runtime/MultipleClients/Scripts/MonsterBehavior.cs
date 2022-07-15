@@ -13,25 +13,25 @@ namespace Mirage.Tests.Performance.Runtime
 
         public void Awake()
         {
-            Identity.OnStartServer.AddListener(StartServer);
-            Identity.OnStopServer.AddListener(StopServer);
+            this.Identity.OnStartServer.AddListener(this.StartServer);
+            this.Identity.OnStopServer.AddListener(this.StopServer);
         }
 
         private void StopServer()
         {
-            StopAllCoroutines();
+            this.StopAllCoroutines();
         }
 
         private void StartServer()
         {
-            StartCoroutine(MoveMonster());
+            this.StartCoroutine(this.MoveMonster());
         }
 
         private IEnumerator MoveMonster()
         {
             while (true)
             {
-                position = Random.insideUnitSphere;
+                this.position = Random.insideUnitSphere;
                 yield return new WaitForSeconds(0.1f);
             }
         }

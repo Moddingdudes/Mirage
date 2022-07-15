@@ -13,26 +13,26 @@ namespace Mirage.Tests.PlayerTests
 
         public LogErrorChecker()
         {
-            inner = Debug.unityLogger.logHandler;
+            this.inner = Debug.unityLogger.logHandler;
             Debug.unityLogger.logHandler = this;
         }
         public void Dispose()
         {
-            Debug.unityLogger.logHandler = inner;
+            Debug.unityLogger.logHandler = this.inner;
         }
 
         public void LogException(Exception exception, UnityEngine.Object context)
         {
-            HasErrors = true;
-            inner.LogException(exception, context);
+            this.HasErrors = true;
+            this.inner.LogException(exception, context);
         }
 
         public void LogFormat(LogType logType, UnityEngine.Object context, string format, params object[] args)
         {
             if (logType == LogType.Error || logType == LogType.Assert || logType == LogType.Exception)
-                HasErrors = true;
+                this.HasErrors = true;
 
-            inner.LogFormat(logType, context, format, args);
+            this.inner.LogFormat(logType, context, format, args);
         }
     }
 }

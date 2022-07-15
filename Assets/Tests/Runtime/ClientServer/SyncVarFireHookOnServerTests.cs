@@ -23,9 +23,9 @@ namespace Mirage.Tests.Runtime.ClientServer
 
         public void OnHealthChanged(int oldValue, int newValue)
         {
-            if (!IsServer) return;
+            if (!this.IsServer) return;
 
-            called++;
+            this.called++;
         }
     }
 
@@ -40,14 +40,14 @@ namespace Mirage.Tests.Runtime.ClientServer
             int newValue = default;
             var called = 0;
 
-            serverComponent.OnHealthChanged += (a, b) =>
+            this.serverComponent.OnHealthChanged += (a, b) =>
             {
                 oldValue = a;
                 newValue = b;
                 called++;
             };
 
-            serverComponent.health = SValue;
+            this.serverComponent.health = SValue;
 
             yield return new WaitUntil(() => called > 0);
 
@@ -64,18 +64,18 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator SyncVarHookMethodIsCalledOnServer()
         {
             const int SValue = 10;
-            var oldValue = serverComponent.health;
+            var oldValue = this.serverComponent.health;
             int newValue = default;
 
-            serverComponent.health = SValue;
+            this.serverComponent.health = SValue;
 
             yield return new WaitUntil(() => oldValue == newValue);
 
-            newValue = serverComponent.health;
+            newValue = this.serverComponent.health;
 
-            Assert.That(serverComponent.called, Is.EqualTo(1));
-            Assert.That(oldValue, Is.Not.EqualTo(serverComponent.health));
-            Assert.That(newValue, Is.EqualTo(serverComponent.health));
+            Assert.That(this.serverComponent.called, Is.EqualTo(1));
+            Assert.That(oldValue, Is.Not.EqualTo(this.serverComponent.health));
+            Assert.That(newValue, Is.EqualTo(this.serverComponent.health));
         }
     }
 }

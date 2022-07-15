@@ -15,36 +15,36 @@ namespace Mirage.Tests.Runtime.Host
 
         public override void ExtraSetup()
         {
-            lobby = networkManagerGo.AddComponent<LobbyReady>();
+            this.lobby = this.networkManagerGo.AddComponent<LobbyReady>();
         }
 
         public override void ExtraTearDown()
         {
-            lobby = null;
+            this.lobby = null;
         }
 
         [Test]
         public void SetAllClientsNotReadyTest()
         {
-            readyComp = identity.gameObject.AddComponent<ObjectReady>();
-            lobby.ObjectReadyList.Add(readyComp);
-            readyComp.IsReady = true;
+            this.readyComp = this.identity.gameObject.AddComponent<ObjectReady>();
+            this.lobby.ObjectReadyList.Add(this.readyComp);
+            this.readyComp.IsReady = true;
 
-            lobby.SetAllClientsNotReady();
+            this.lobby.SetAllClientsNotReady();
 
-            Assert.That(readyComp.IsReady, Is.False);
+            Assert.That(this.readyComp.IsReady, Is.False);
         }
 
         [UnityTest]
         public IEnumerator SendToReadyTest() => UniTask.ToCoroutine(async () =>
         {
-            readyComp = identity.gameObject.AddComponent<ObjectReady>();
-            lobby.ObjectReadyList.Add(readyComp);
-            readyComp.IsReady = true;
+            this.readyComp = this.identity.gameObject.AddComponent<ObjectReady>();
+            this.lobby.ObjectReadyList.Add(this.readyComp);
+            this.readyComp.IsReady = true;
 
             var invokeWovenTestMessage = false;
-            ClientMessageHandler.RegisterHandler<SceneMessage>(msg => invokeWovenTestMessage = true);
-            lobby.SendToReady(identity, new SceneMessage(), true, Channel.Reliable);
+            this.ClientMessageHandler.RegisterHandler<SceneMessage>(msg => invokeWovenTestMessage = true);
+            this.lobby.SendToReady(this.identity, new SceneMessage(), true, Channel.Reliable);
 
             await AsyncUtil.WaitUntilWithTimeout(() => invokeWovenTestMessage);
         });
@@ -52,42 +52,42 @@ namespace Mirage.Tests.Runtime.Host
         [Test]
         public void IsReadyStateTest()
         {
-            readyComp = identity.gameObject.AddComponent<ObjectReady>();
+            this.readyComp = this.identity.gameObject.AddComponent<ObjectReady>();
 
-            Assert.That(readyComp.IsReady, Is.False);
+            Assert.That(this.readyComp.IsReady, Is.False);
         }
 
         [Test]
         public void SetClientReadyTest()
         {
-            readyComp = identity.gameObject.AddComponent<ObjectReady>();
+            this.readyComp = this.identity.gameObject.AddComponent<ObjectReady>();
 
-            readyComp.SetClientReady();
+            this.readyComp.SetClientReady();
 
-            Assert.That(readyComp.IsReady, Is.True);
+            Assert.That(this.readyComp.IsReady, Is.True);
         }
 
         [Test]
         public void SetClientNotReadyTest()
         {
-            readyComp = identity.gameObject.AddComponent<ObjectReady>();
+            this.readyComp = this.identity.gameObject.AddComponent<ObjectReady>();
 
-            readyComp.SetClientNotReady();
+            this.readyComp.SetClientNotReady();
 
-            Assert.That(readyComp.IsReady, Is.False);
+            Assert.That(this.readyComp.IsReady, Is.False);
         }
 
         [UnityTest]
         public IEnumerator ClientReadyTest() => UniTask.ToCoroutine(async () =>
         {
-            readyPlayer = new GameObject();
-            readyPlayer.AddComponent<NetworkIdentity>();
-            readyComp = readyPlayer.AddComponent<ObjectReady>();
+            this.readyPlayer = new GameObject();
+            this.readyPlayer.AddComponent<NetworkIdentity>();
+            this.readyComp = this.readyPlayer.AddComponent<ObjectReady>();
 
-            serverObjectManager.Spawn(readyPlayer, server.LocalPlayer);
-            readyComp.Ready();
+            this.serverObjectManager.Spawn(this.readyPlayer, this.server.LocalPlayer);
+            this.readyComp.Ready();
 
-            await AsyncUtil.WaitUntilWithTimeout(() => readyComp.IsReady);
+            await AsyncUtil.WaitUntilWithTimeout(() => this.readyComp.IsReady);
         });
     }
 }

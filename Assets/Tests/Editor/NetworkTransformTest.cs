@@ -13,8 +13,8 @@ namespace Mirage.Tests
         [TearDown]
         public void TearDown()
         {
-            writer.Reset();
-            reader.Dispose();
+            this.writer.Reset();
+            this.reader.Dispose();
         }
 
         [Test]
@@ -24,17 +24,17 @@ namespace Mirage.Tests
             var rotation = new Quaternion(0.1f, 0.2f, 0.3f, 0.4f).normalized;
             var scale = new Vector3(0.5f, 0.6f, 0.7f);
 
-            NetworkTransformBase.SerializeIntoWriter(writer, position, rotation, scale);
+            NetworkTransformBase.SerializeIntoWriter(this.writer, position, rotation, scale);
 
-            reader.Reset(writer.ToArraySegment());
+            this.reader.Reset(this.writer.ToArraySegment());
 
-            Assert.That(reader.ReadVector3(), Is.EqualTo(position));
-            var actual = reader.ReadQuaternion();
+            Assert.That(this.reader.ReadVector3(), Is.EqualTo(position));
+            var actual = this.reader.ReadQuaternion();
             Assert.That(actual.x, Is.EqualTo(rotation.x).Within(0.01f));
             Assert.That(actual.y, Is.EqualTo(rotation.y).Within(0.01f));
             Assert.That(actual.z, Is.EqualTo(rotation.z).Within(0.01f));
             Assert.That(actual.w, Is.EqualTo(rotation.w).Within(0.01f));
-            Assert.That(reader.ReadVector3(), Is.EqualTo(scale));
+            Assert.That(this.reader.ReadVector3(), Is.EqualTo(scale));
         }
     }
 }

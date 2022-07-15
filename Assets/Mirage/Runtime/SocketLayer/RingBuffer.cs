@@ -11,7 +11,7 @@ namespace Mirage.SocketLayer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool IsDefault(T value)
         {
-            return comparer.Equals(value, default(T));
+            return this.comparer.Equals(value, default(T));
         }
 
         private readonly T[] buffer;
@@ -25,38 +25,38 @@ namespace Mirage.SocketLayer
         /// <summary>manually keep track of number of items queued/inserted, this will be different from read to write range if removing/inserting not in order</summary>
         private int count;
 
-        public uint Read => read;
-        public uint Write => write;
+        public uint Read => this.read;
+        public uint Write => this.write;
 
         /// <summary>
         /// Number of non-null items in buffer
         /// <para>NOTE: this is not distance from read to write</para>
         /// </summary>
-        public int Count => count;
+        public int Count => this.count;
 
         public T this[uint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => buffer[index];
+            get => this.buffer[index];
         }
         public T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => buffer[index];
+            get => this.buffer[index];
         }
 
         public RingBuffer(int bitCount) : this(bitCount, EqualityComparer<T>.Default) { }
         public RingBuffer(int bitCount, IEqualityComparer<T> comparer)
         {
-            Sequencer = new Sequencer(bitCount);
-            buffer = new T[1 << bitCount];
+            this.Sequencer = new Sequencer(bitCount);
+            this.buffer = new T[1 << bitCount];
             this.comparer = comparer;
         }
 
-        public bool IsFull => Sequencer.Distance(write, read) == -1;
+        public bool IsFull => this.Sequencer.Distance(this.write, this.read) == -1;
         public long DistanceToRead(uint from)
         {
-            return Sequencer.Distance(from, read);
+            return this.Sequencer.Distance(from, this.read);
         }
 
         /// <summary>
@@ -66,13 +66,13 @@ namespace Mirage.SocketLayer
         /// <returns>sequance of written item</returns>
         public uint Enqueue(T item)
         {
-            var dist = Sequencer.Distance(write, read);
-            if (dist == -1) { throw new InvalidOperationException($"Buffer is full, write:{write} read:{read}"); }
+            var dist = this.Sequencer.Distance(this.write, this.read);
+            if (dist == -1) { throw new InvalidOperationException($"Buffer is full, write:{this.write} read:{this.read}"); }
 
-            buffer[write] = item;
-            var sequence = write;
-            write = (uint)Sequencer.NextAfter(write);
-            count++;
+            this.buffer[this.write] = item;
+            var sequence = this.write;
+            this.write = (uint)this.Sequencer.NextAfter(this.write);
+            this.count++;
             return sequence;
         }
 
@@ -84,8 +84,8 @@ namespace Mirage.SocketLayer
         /// <returns>true if item exists, or false if it is missing</returns>
         public bool TryPeak(out T item)
         {
-            item = buffer[read];
-            return !IsDefault(item);
+            item = this.buffer[this.read];
+            return !this.IsDefault(item);
         }
 
         /// <summary>
@@ -96,8 +96,8 @@ namespace Mirage.SocketLayer
         /// <returns>true if item exists, or false if it is missing</returns>
         public bool Exists(uint index)
         {
-            var inBounds = (uint)Sequencer.MoveInBounds(index);
-            return !IsDefault(buffer[inBounds]);
+            var inBounds = (uint)this.Sequencer.MoveInBounds(index);
+            return !this.IsDefault(this.buffer[inBounds]);
         }
 
         /// <summary>
@@ -107,9 +107,9 @@ namespace Mirage.SocketLayer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveNext()
         {
-            buffer[read] = default;
-            read = (uint)Sequencer.NextAfter(read);
-            count--;
+            this.buffer[this.read] = default;
+            this.read = (uint)this.Sequencer.NextAfter(this.read);
+            this.count--;
         }
 
         /// <summary>
@@ -118,8 +118,8 @@ namespace Mirage.SocketLayer
         /// </summary>
         public T Dequeue()
         {
-            var item = buffer[read];
-            RemoveNext();
+            var item = this.buffer[this.read];
+            this.RemoveNext();
             return item;
         }
 
@@ -130,10 +130,10 @@ namespace Mirage.SocketLayer
         /// <returns>true if item exists, or false if it is missing</returns>
         public bool TryDequeue(out T item)
         {
-            item = buffer[read];
-            if (!IsDefault(item))
+            item = this.buffer[this.read];
+            if (!this.IsDefault(item))
             {
-                RemoveNext();
+                this.RemoveNext();
 
                 return true;
             }
@@ -146,13 +146,13 @@ namespace Mirage.SocketLayer
 
         public void InsertAt(uint index, T item)
         {
-            count++;
-            buffer[index] = item;
+            this.count++;
+            this.buffer[index] = item;
         }
         public void RemoveAt(uint index)
         {
-            count--;
-            buffer[index] = default;
+            this.count--;
+            this.buffer[index] = default;
         }
 
 
@@ -165,9 +165,9 @@ namespace Mirage.SocketLayer
         {
             // if read == write, buffer is empty, dont move it
             // if buffer[read] is empty then read to next item
-            while (write != read && IsDefault(buffer[read]))
+            while (this.write != this.read && this.IsDefault(this.buffer[this.read]))
             {
-                read = (uint)Sequencer.NextAfter(read);
+                this.read = (uint)this.Sequencer.NextAfter(this.read);
             }
         }
 
@@ -176,7 +176,7 @@ namespace Mirage.SocketLayer
         /// </summary>
         public void MoveReadOne()
         {
-            read = (uint)Sequencer.NextAfter(read);
+            this.read = (uint)this.Sequencer.NextAfter(this.read);
         }
     }
 }

@@ -13,15 +13,15 @@ namespace Mirage.Tests.Runtime.ClientServer
     public class ServerObjectManagerTests : ClientServerSetup<MockComponent>
     {
         private void AssertNoIdentityMessage(InvalidOperationException ex, string name) => Assert.That(ex.Message, Is.EqualTo($"Gameobject {name} doesn't have NetworkIdentity."));
-        private void AssertNoIdentityMessage(InvalidOperationException ex) => AssertNoIdentityMessage(ex, new GameObject().name);
+        private void AssertNoIdentityMessage(InvalidOperationException ex) => this.AssertNoIdentityMessage(ex, new GameObject().name);
 
         private NetworkIdentity CreatePlayerReplacement()
         {
             var playerReplacement = new GameObject("replacement", typeof(NetworkIdentity));
-            toDestroy.Add(playerReplacement);
+            this.toDestroy.Add(playerReplacement);
             var replacementIdentity = playerReplacement.GetComponent<NetworkIdentity>();
             replacementIdentity.PrefabHash = Guid.NewGuid().GetHashCode();
-            clientObjectManager.RegisterPrefab(replacementIdentity);
+            this.clientObjectManager.RegisterPrefab(replacementIdentity);
 
             return replacementIdentity;
         }
@@ -31,11 +31,11 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             var obj = new GameObject();
 
-            server.Stop();
+            this.server.Stop();
 
             var ex = Assert.Throws<InvalidOperationException>(() =>
             {
-                serverObjectManager.Spawn(new GameObject().AddComponent<NetworkIdentity>(), serverPlayer);
+                this.serverObjectManager.Spawn(new GameObject().AddComponent<NetworkIdentity>(), this.serverPlayer);
             });
 
             Assert.That(ex.Message, Is.EqualTo("NetworkServer is not active. Cannot spawn objects without an active server."));
@@ -47,18 +47,18 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             var ex = Assert.Throws<InvalidOperationException>(() =>
             {
-                serverObjectManager.Spawn(new GameObject(), new GameObject());
+                this.serverObjectManager.Spawn(new GameObject(), new GameObject());
             });
 
-            AssertNoIdentityMessage(ex);
+            this.AssertNoIdentityMessage(ex);
         }
 
         [UnityTest]
         public IEnumerator SpawnByIdentityTest() => UniTask.ToCoroutine(async () =>
         {
-            serverObjectManager.Spawn(serverIdentity);
+            this.serverObjectManager.Spawn(this.serverIdentity);
 
-            await AsyncUtil.WaitUntilWithTimeout(() => (NetworkServer)serverIdentity.Server == server);
+            await AsyncUtil.WaitUntilWithTimeout(() => (NetworkServer)this.serverIdentity.Server == this.server);
         });
 
         [Test]
@@ -69,7 +69,7 @@ namespace Mirage.Tests.Runtime.ClientServer
 
             var ex = Assert.Throws<InvalidOperationException>(() =>
             {
-                serverObjectManager.Spawn(new GameObject(), badOwner);
+                this.serverObjectManager.Spawn(new GameObject(), badOwner);
             });
 
             Assert.That(ex.Message, Is.EqualTo("Player object is not a player in the connection"));
@@ -81,12 +81,12 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             var invoked = false;
 
-            ClientMessageHandler.RegisterHandler<SpawnMessage>(msg => invoked = true);
+            this.ClientMessageHandler.RegisterHandler<SpawnMessage>(msg => invoked = true);
 
-            serverPlayer.SceneIsReady = true;
+            this.serverPlayer.SceneIsReady = true;
 
             // call ShowForConnection
-            serverObjectManager.ShowToPlayer(serverIdentity, serverPlayer);
+            this.serverObjectManager.ShowToPlayer(this.serverIdentity, this.serverPlayer);
 
             // todo assert correct message was sent using Substitute for socket or player
 
@@ -96,22 +96,22 @@ namespace Mirage.Tests.Runtime.ClientServer
         [Test]
         public void SpawnSceneObject()
         {
-            var sceneObject = InstantiateForTest(playerPrefab).GetComponent<NetworkIdentity>();
+            var sceneObject = this.InstantiateForTest(this.playerPrefab).GetComponent<NetworkIdentity>();
             sceneObject.SetSceneId(42);
 
             Debug.Assert(!sceneObject.IsSpawned, "Identity should be unspawned for this test");
-            serverObjectManager.SpawnObjects();
+            this.serverObjectManager.SpawnObjects();
             Assert.That(sceneObject.NetId, Is.Not.Zero);
         }
 
         [Test]
         public void DoesNotSpawnNonSceneObject()
         {
-            var sceneObject = InstantiateForTest(playerPrefab).GetComponent<NetworkIdentity>();
+            var sceneObject = this.InstantiateForTest(this.playerPrefab).GetComponent<NetworkIdentity>();
             sceneObject.SetSceneId(0);
 
             Debug.Assert(!sceneObject.IsSpawned, "Identity should be unspawned for this test");
-            serverObjectManager.SpawnObjects();
+            this.serverObjectManager.SpawnObjects();
             Assert.That(sceneObject.NetId, Is.Zero);
         }
 
@@ -119,36 +119,36 @@ namespace Mirage.Tests.Runtime.ClientServer
         public void SpawnEvent()
         {
             var mockHandler = Substitute.For<Action<NetworkIdentity>>();
-            server.World.onSpawn += mockHandler;
-            var newObj = GameObject.Instantiate(playerPrefab);
-            serverObjectManager.Spawn(newObj);
+            this.server.World.onSpawn += mockHandler;
+            var newObj = GameObject.Instantiate(this.playerPrefab);
+            this.serverObjectManager.Spawn(newObj);
 
             mockHandler.Received().Invoke(Arg.Any<NetworkIdentity>());
-            serverObjectManager.Destroy(newObj);
+            this.serverObjectManager.Destroy(newObj);
         }
 
         [UnityTest]
         public IEnumerator ClientSpawnEvent() => UniTask.ToCoroutine(async () =>
         {
             var mockHandler = Substitute.For<Action<NetworkIdentity>>();
-            client.World.onSpawn += mockHandler;
-            var newObj = GameObject.Instantiate(playerPrefab);
-            serverObjectManager.Spawn(newObj);
+            this.client.World.onSpawn += mockHandler;
+            var newObj = GameObject.Instantiate(this.playerPrefab);
+            this.serverObjectManager.Spawn(newObj);
 
             await UniTask.WaitUntil(() => mockHandler.ReceivedCalls().Any()).Timeout(TimeSpan.FromMilliseconds(200));
 
             mockHandler.Received().Invoke(Arg.Any<NetworkIdentity>());
-            serverObjectManager.Destroy(newObj);
+            this.serverObjectManager.Destroy(newObj);
         });
 
         [UnityTest]
         public IEnumerator ClientUnSpawnEvent() => UniTask.ToCoroutine(async () =>
         {
             var mockHandler = Substitute.For<Action<NetworkIdentity>>();
-            client.World.onUnspawn += mockHandler;
-            var newObj = GameObject.Instantiate(playerPrefab);
-            serverObjectManager.Spawn(newObj);
-            serverObjectManager.Destroy(newObj);
+            this.client.World.onUnspawn += mockHandler;
+            var newObj = GameObject.Instantiate(this.playerPrefab);
+            this.serverObjectManager.Spawn(newObj);
+            this.serverObjectManager.Destroy(newObj);
 
             await UniTask.WaitUntil(() => mockHandler.ReceivedCalls().Any()).Timeout(TimeSpan.FromMilliseconds(200));
             mockHandler.Received().Invoke(Arg.Any<NetworkIdentity>());
@@ -158,111 +158,111 @@ namespace Mirage.Tests.Runtime.ClientServer
         public void UnSpawnEvent()
         {
             var mockHandler = Substitute.For<Action<NetworkIdentity>>();
-            server.World.onUnspawn += mockHandler;
-            var newObj = GameObject.Instantiate(playerPrefab);
-            serverObjectManager.Spawn(newObj);
-            serverObjectManager.Destroy(newObj);
+            this.server.World.onUnspawn += mockHandler;
+            var newObj = GameObject.Instantiate(this.playerPrefab);
+            this.serverObjectManager.Spawn(newObj);
+            this.serverObjectManager.Destroy(newObj);
             mockHandler.Received().Invoke(newObj.GetComponent<NetworkIdentity>());
         }
 
         [Test]
         public void ReplacePlayerBaseTest()
         {
-            var replacement = CreatePlayerReplacement();
+            var replacement = this.CreatePlayerReplacement();
 
-            serverObjectManager.ReplaceCharacter(serverPlayer, replacement);
+            this.serverObjectManager.ReplaceCharacter(this.serverPlayer, replacement);
 
-            Assert.That(serverPlayer.Identity, Is.EqualTo(replacement));
+            Assert.That(this.serverPlayer.Identity, Is.EqualTo(replacement));
         }
 
         [Test]
         public void ReplacePlayerDontKeepAuthTest()
         {
-            var replacement = CreatePlayerReplacement();
+            var replacement = this.CreatePlayerReplacement();
 
-            serverObjectManager.ReplaceCharacter(serverPlayer, replacement, true);
+            this.serverObjectManager.ReplaceCharacter(this.serverPlayer, replacement, true);
 
-            Assert.That(clientIdentity.Owner, Is.EqualTo(null));
+            Assert.That(this.clientIdentity.Owner, Is.EqualTo(null));
         }
 
         [Test]
         public void ReplacePlayerPrefabHashTest()
         {
-            var replacement = CreatePlayerReplacement();
+            var replacement = this.CreatePlayerReplacement();
             var hash = replacement.PrefabHash;
 
-            serverObjectManager.ReplaceCharacter(serverPlayer, replacement, hash);
+            this.serverObjectManager.ReplaceCharacter(this.serverPlayer, replacement, hash);
 
-            Assert.That(serverPlayer.Identity.PrefabHash, Is.EqualTo(hash));
+            Assert.That(this.serverPlayer.Identity.PrefabHash, Is.EqualTo(hash));
         }
 
         [Test]
         public void AddPlayerForConnectionPrefabHashTest()
         {
-            var replacement = CreatePlayerReplacement();
+            var replacement = this.CreatePlayerReplacement();
             var hash = replacement.PrefabHash;
 
-            serverPlayer.Identity = null;
+            this.serverPlayer.Identity = null;
 
-            serverObjectManager.AddCharacter(serverPlayer, replacement, hash);
+            this.serverObjectManager.AddCharacter(this.serverPlayer, replacement, hash);
 
-            Assert.That(replacement == serverPlayer.Identity);
+            Assert.That(replacement == this.serverPlayer.Identity);
         }
 
         [UnityTest]
         public IEnumerator DestroyCharacter() => UniTask.ToCoroutine(async () =>
         {
-            serverObjectManager.DestroyCharacter(serverPlayer);
+            this.serverObjectManager.DestroyCharacter(this.serverPlayer);
 
             await UniTask.Yield();
             await UniTask.Yield();
 
-            Assert.That(serverPlayerGO == null);
-            Assert.That(clientPlayerGO == null);
+            Assert.That(this.serverPlayerGO == null);
+            Assert.That(this.clientPlayerGO == null);
         });
 
         [UnityTest]
         public IEnumerator DestroyCharacterKeepServerObject() => UniTask.ToCoroutine(async () =>
         {
-            serverObjectManager.DestroyCharacter(serverPlayer, destroyServerObject: false);
+            this.serverObjectManager.DestroyCharacter(this.serverPlayer, destroyServerObject: false);
 
             await UniTask.Yield();
             await UniTask.Yield();
 
-            Assert.That(serverPlayerGO != null);
-            Assert.That(clientPlayerGO == null);
+            Assert.That(this.serverPlayerGO != null);
+            Assert.That(this.clientPlayerGO == null);
         });
 
         [UnityTest]
         public IEnumerator RemoveCharacterKeepAuthority() => UniTask.ToCoroutine(async () =>
         {
-            serverObjectManager.RemoveCharacter(serverPlayer, true);
+            this.serverObjectManager.RemoveCharacter(this.serverPlayer, true);
 
             await UniTask.Yield();
             await UniTask.Yield();
 
-            Assert.That(serverPlayerGO != null);
-            Assert.That(serverIdentity.Owner == serverPlayer);
+            Assert.That(this.serverPlayerGO != null);
+            Assert.That(this.serverIdentity.Owner == this.serverPlayer);
 
-            Assert.That(clientPlayerGO != null);
-            Assert.That(clientIdentity.HasAuthority, Is.True);
-            Assert.That(clientIdentity.IsLocalPlayer, Is.False);
+            Assert.That(this.clientPlayerGO != null);
+            Assert.That(this.clientIdentity.HasAuthority, Is.True);
+            Assert.That(this.clientIdentity.IsLocalPlayer, Is.False);
         });
 
         [UnityTest]
         public IEnumerator RemoveCharacter() => UniTask.ToCoroutine(async () =>
         {
-            serverObjectManager.RemoveCharacter(serverPlayer);
+            this.serverObjectManager.RemoveCharacter(this.serverPlayer);
 
             await UniTask.Yield();
             await UniTask.Yield();
 
-            Assert.That(serverPlayerGO != null);
-            Assert.That(serverIdentity.Owner == null);
+            Assert.That(this.serverPlayerGO != null);
+            Assert.That(this.serverIdentity.Owner == null);
 
-            Assert.That(clientPlayerGO != null);
-            Assert.That(clientIdentity.HasAuthority, Is.False);
-            Assert.That(clientIdentity.IsLocalPlayer, Is.False);
+            Assert.That(this.clientPlayerGO != null);
+            Assert.That(this.clientIdentity.HasAuthority, Is.False);
+            Assert.That(this.clientIdentity.IsLocalPlayer, Is.False);
         });
 
         [Test]
@@ -272,7 +272,7 @@ namespace Mirage.Tests.Runtime.ClientServer
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                serverObjectManager.DestroyCharacter(player);
+                this.serverObjectManager.DestroyCharacter(player);
             });
         }
 
@@ -283,7 +283,7 @@ namespace Mirage.Tests.Runtime.ClientServer
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                serverObjectManager.RemoveCharacter(player, false);
+                this.serverObjectManager.RemoveCharacter(player, false);
             });
         }
 
@@ -292,10 +292,10 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             var ex = Assert.Throws<InvalidOperationException>(() =>
             {
-                serverObjectManager.Spawn(new GameObject(), clientPlayer);
+                this.serverObjectManager.Spawn(new GameObject(), this.clientPlayer);
             });
 
-            AssertNoIdentityMessage(ex);
+            this.AssertNoIdentityMessage(ex);
         }
 
 
@@ -304,9 +304,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             var ex = Assert.Throws<InvalidOperationException>(() =>
             {
-                serverObjectManager.AddCharacter(serverPlayer, new GameObject());
+                this.serverObjectManager.AddCharacter(this.serverPlayer, new GameObject());
             });
-            AssertNoIdentityMessage(ex);
+            this.AssertNoIdentityMessage(ex);
 
         }
 
@@ -315,21 +315,21 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             var ex = Assert.Throws<InvalidOperationException>(() =>
             {
-                serverObjectManager.ReplaceCharacter(serverPlayer, new GameObject(), true);
+                this.serverObjectManager.ReplaceCharacter(this.serverPlayer, new GameObject(), true);
             });
-            AssertNoIdentityMessage(ex);
+            this.AssertNoIdentityMessage(ex);
         }
 
         [UnityTest]
         public IEnumerator SpawnObjectsExceptionTest() => UniTask.ToCoroutine(async () =>
         {
-            server.Stop();
+            this.server.Stop();
 
-            await AsyncUtil.WaitUntilWithTimeout(() => !server.Active);
+            await AsyncUtil.WaitUntilWithTimeout(() => !this.server.Active);
 
             var exception = Assert.Throws<InvalidOperationException>(() =>
             {
-                serverObjectManager.SpawnObjects();
+                this.serverObjectManager.SpawnObjects();
             });
 
             Assert.That(exception, Has.Message.EqualTo("Server was not active"));

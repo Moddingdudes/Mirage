@@ -23,18 +23,18 @@ namespace Mirage.Weaver.NetworkBehaviours
 
         public int GetInBase()
         {
-            return type.BaseType.Resolve().GetConst<int>(fieldName);
+            return this.type.BaseType.Resolve().GetConst<int>(this.fieldName);
         }
 
         public void Set(int countInCurrent)
         {
-            var totalSyncVars = GetInBase() + countInCurrent;
+            var totalSyncVars = this.GetInBase() + countInCurrent;
 
-            if (totalSyncVars >= max)
+            if (totalSyncVars >= this.max)
             {
-                throw new NetworkBehaviourException($"{type.Name} has too many {errorName}. Consider refactoring your class into multiple components", type);
+                throw new NetworkBehaviourException($"{this.type.Name} has too many {this.errorName}. Consider refactoring your class into multiple components", this.type);
             }
-            type.SetConst(fieldName, totalSyncVars);
+            this.type.SetConst(this.fieldName, totalSyncVars);
         }
     }
 }

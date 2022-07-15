@@ -7,7 +7,7 @@ namespace Mirage.Examples
         [Server(error = false)]
         public void Update()
         {
-            health = (health + 1) % 10;
+            this.health = (this.health + 1) % 10;
         }
     }
 }

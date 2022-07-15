@@ -47,11 +47,11 @@ namespace Mirage
         public void RegisterHandler<T>(MessageDelegateWithPlayer<T> handler)
         {
             var msgType = MessagePacker.GetId<T>();
-            if (logger.filterLogType == LogType.Log && messageHandlers.ContainsKey(msgType))
+            if (logger.filterLogType == LogType.Log && this.messageHandlers.ContainsKey(msgType))
             {
                 logger.Log($"RegisterHandler replacing {msgType}");
             }
-            messageHandlers[msgType] = MessageWrapper(handler);
+            this.messageHandlers[msgType] = MessageWrapper(handler);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Mirage
         /// <param name="handler">Function handler which will be invoked for when this message type is received.</param>
         public void RegisterHandler<T>(MessageDelegate<T> handler)
         {
-            RegisterHandler<T>((_, value) => { handler(value); });
+            this.RegisterHandler<T>((_, value) => { handler(value); });
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Mirage
         public void UnregisterHandler<T>()
         {
             var msgType = MessagePacker.GetId<T>();
-            messageHandlers.Remove(msgType);
+            this.messageHandlers.Remove(msgType);
         }
 
         /// <summary>
@@ -81,13 +81,13 @@ namespace Mirage
         /// </summary>
         public void ClearHandlers()
         {
-            messageHandlers.Clear();
+            this.messageHandlers.Clear();
         }
 
 
         internal void InvokeHandler(INetworkPlayer player, int msgType, NetworkReader reader)
         {
-            if (messageHandlers.TryGetValue(msgType, out var msgDelegate))
+            if (this.messageHandlers.TryGetValue(msgType, out var msgDelegate))
             {
                 msgDelegate.Invoke(player, reader);
             }
@@ -109,7 +109,7 @@ namespace Mirage
 
         public void HandleMessage(INetworkPlayer player, ArraySegment<byte> packet)
         {
-            using (var networkReader = NetworkReaderPool.GetReader(packet, objectLocator))
+            using (var networkReader = NetworkReaderPool.GetReader(packet, this.objectLocator))
             {
 
                 // protect against attackers trying to send invalid data packets
@@ -126,13 +126,13 @@ namespace Mirage
                 try
                 {
                     var msgType = MessagePacker.UnpackId(networkReader);
-                    InvokeHandler(player, msgType, networkReader);
+                    this.InvokeHandler(player, msgType, networkReader);
                 }
                 catch (Exception e)
                 {
-                    var disconnectMessage = disconnectOnException ? $", Closed connection: {player}" : "";
+                    var disconnectMessage = this.disconnectOnException ? $", Closed connection: {player}" : "";
                     logger.LogError($"{e.GetType()} in Message handler (see stack below){disconnectMessage}\n{e}");
-                    if (disconnectOnException)
+                    if (this.disconnectOnException)
                     {
                         player.Disconnect();
                     }

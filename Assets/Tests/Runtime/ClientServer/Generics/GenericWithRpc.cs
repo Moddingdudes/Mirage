@@ -44,8 +44,8 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var sub = Substitute.For<Action<int>>();
-            serverComponent.serverCalled += sub;
-            clientComponent.MyRpc2(num, default);
+            this.serverComponent.serverCalled += sub;
+            this.clientComponent.MyRpc2(num, default);
 
             yield return null;
             yield return null;
@@ -58,8 +58,8 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var sub = Substitute.For<Action<int>>();
-            clientComponent.clientCalled += sub;
-            serverComponent.MyRpc(num);
+            this.clientComponent.clientCalled += sub;
+            this.serverComponent.MyRpc(num);
 
             yield return null;
             yield return null;
@@ -82,8 +82,8 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var sub = Substitute.For<Action<int>>();
-            serverComponent.serverCalled += sub;
-            clientComponent.MyRpc2(num, default);
+            this.serverComponent.serverCalled += sub;
+            this.clientComponent.MyRpc2(num, default);
 
             yield return null;
             yield return null;
@@ -96,8 +96,8 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var sub = Substitute.For<Action<int>>();
-            clientComponent.clientCalled += sub;
-            serverComponent.MyRpc(num);
+            this.clientComponent.clientCalled += sub;
+            this.serverComponent.MyRpc(num);
 
             yield return null;
             yield return null;

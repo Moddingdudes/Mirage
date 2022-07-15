@@ -17,29 +17,29 @@ namespace Mirage.Tests.Runtime
         [SetUp]
         public void SetUp()
         {
-            serverSyncSet = new SyncSetString();
-            clientSyncSet = new SyncSetString();
+            this.serverSyncSet = new SyncSetString();
+            this.clientSyncSet = new SyncSetString();
 
             // add some data to the list
-            serverSyncSet.Add("Hello");
-            serverSyncSet.Add("World");
-            serverSyncSet.Add("!");
-            SerializeHelper.SerializeAllTo(serverSyncSet, clientSyncSet);
+            this.serverSyncSet.Add("Hello");
+            this.serverSyncSet.Add("World");
+            this.serverSyncSet.Add("!");
+            SerializeHelper.SerializeAllTo(this.serverSyncSet, this.clientSyncSet);
         }
 
         [Test]
         public void TestInit()
         {
-            Assert.That(serverSyncSet, Is.EquivalentTo(new[] { "Hello", "World", "!" }));
-            Assert.That(clientSyncSet, Is.EquivalentTo(new[] { "Hello", "World", "!" }));
+            Assert.That(this.serverSyncSet, Is.EquivalentTo(new[] { "Hello", "World", "!" }));
+            Assert.That(this.clientSyncSet, Is.EquivalentTo(new[] { "Hello", "World", "!" }));
         }
 
         [Test]
         public void ClearEventOnSyncAll()
         {
             var callback = Substitute.For<Action>();
-            clientSyncSet.OnClear += callback;
-            SerializeHelper.SerializeAllTo(serverSyncSet, clientSyncSet);
+            this.clientSyncSet.OnClear += callback;
+            SerializeHelper.SerializeAllTo(this.serverSyncSet, this.clientSyncSet);
             callback.Received().Invoke();
         }
 
@@ -47,8 +47,8 @@ namespace Mirage.Tests.Runtime
         public void InsertEventOnSyncAll()
         {
             var callback = Substitute.For<Action<string>>();
-            clientSyncSet.OnAdd += callback;
-            SerializeHelper.SerializeAllTo(serverSyncSet, clientSyncSet);
+            this.clientSyncSet.OnAdd += callback;
+            SerializeHelper.SerializeAllTo(this.serverSyncSet, this.clientSyncSet);
 
             callback.Received().Invoke("Hello");
             callback.Received().Invoke("World");
@@ -59,8 +59,8 @@ namespace Mirage.Tests.Runtime
         public void ChangeEventOnSyncAll()
         {
             var callback = Substitute.For<Action>();
-            clientSyncSet.OnChange += callback;
-            SerializeHelper.SerializeAllTo(serverSyncSet, clientSyncSet);
+            this.clientSyncSet.OnChange += callback;
+            SerializeHelper.SerializeAllTo(this.serverSyncSet, this.clientSyncSet);
             callback.Received().Invoke();
         }
 
@@ -68,51 +68,51 @@ namespace Mirage.Tests.Runtime
         [Test]
         public void TestAdd()
         {
-            serverSyncSet.Add("yay");
-            Assert.That(serverSyncSet.IsDirty, Is.True);
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new[] { "Hello", "World", "!", "yay" }));
-            Assert.That(serverSyncSet.IsDirty, Is.False);
+            this.serverSyncSet.Add("yay");
+            Assert.That(this.serverSyncSet.IsDirty, Is.True);
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
+            Assert.That(this.clientSyncSet, Is.EquivalentTo(new[] { "Hello", "World", "!", "yay" }));
+            Assert.That(this.serverSyncSet.IsDirty, Is.False);
         }
 
         [Test]
         public void TestClear()
         {
-            serverSyncSet.Clear();
-            Assert.That(serverSyncSet.IsDirty, Is.True);
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new string[] { }));
-            Assert.That(serverSyncSet.IsDirty, Is.False);
+            this.serverSyncSet.Clear();
+            Assert.That(this.serverSyncSet.IsDirty, Is.True);
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
+            Assert.That(this.clientSyncSet, Is.EquivalentTo(new string[] { }));
+            Assert.That(this.serverSyncSet.IsDirty, Is.False);
         }
 
         [Test]
         public void TestRemove()
         {
-            serverSyncSet.Remove("World");
-            Assert.That(serverSyncSet.IsDirty, Is.True);
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new[] { "Hello", "!" }));
-            Assert.That(serverSyncSet.IsDirty, Is.False);
+            this.serverSyncSet.Remove("World");
+            Assert.That(this.serverSyncSet.IsDirty, Is.True);
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
+            Assert.That(this.clientSyncSet, Is.EquivalentTo(new[] { "Hello", "!" }));
+            Assert.That(this.serverSyncSet.IsDirty, Is.False);
         }
 
         [Test]
         public void TestMultSync()
         {
-            serverSyncSet.Add("1");
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
+            this.serverSyncSet.Add("1");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
             // add some delta and see if it applies
-            serverSyncSet.Add("2");
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new[] { "Hello", "World", "!", "1", "2" }));
+            this.serverSyncSet.Add("2");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
+            Assert.That(this.clientSyncSet, Is.EquivalentTo(new[] { "Hello", "World", "!", "1", "2" }));
         }
 
         [Test]
         public void AddClientCallbackTest()
         {
             var callback = Substitute.For<Action<string>>();
-            clientSyncSet.OnAdd += callback;
-            serverSyncSet.Add("yay");
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
+            this.clientSyncSet.OnAdd += callback;
+            this.serverSyncSet.Add("yay");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
             callback.Received().Invoke("yay");
         }
 
@@ -120,9 +120,9 @@ namespace Mirage.Tests.Runtime
         public void RemoveClientCallbackTest()
         {
             var callback = Substitute.For<Action<string>>();
-            clientSyncSet.OnRemove += callback;
-            serverSyncSet.Remove("World");
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
+            this.clientSyncSet.OnRemove += callback;
+            this.serverSyncSet.Remove("World");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
             callback.Received().Invoke("World");
         }
 
@@ -130,9 +130,9 @@ namespace Mirage.Tests.Runtime
         public void ClearClientCallbackTest()
         {
             var callback = Substitute.For<Action>();
-            clientSyncSet.OnClear += callback;
-            serverSyncSet.Clear();
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
+            this.clientSyncSet.OnClear += callback;
+            this.serverSyncSet.Clear();
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
             callback.Received().Invoke();
         }
 
@@ -140,151 +140,151 @@ namespace Mirage.Tests.Runtime
         public void ChangeClientCallbackTest()
         {
             var callback = Substitute.For<Action>();
-            clientSyncSet.OnChange += callback;
-            serverSyncSet.Add("1");
-            serverSyncSet.Add("2");
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
+            this.clientSyncSet.OnChange += callback;
+            this.serverSyncSet.Add("1");
+            this.serverSyncSet.Add("2");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
             callback.Received(1).Invoke();
         }
 
         [Test]
         public void CountTest()
         {
-            Assert.That(serverSyncSet.Count, Is.EqualTo(3));
+            Assert.That(this.serverSyncSet.Count, Is.EqualTo(3));
         }
 
         [Test]
         public void TestExceptWith()
         {
-            serverSyncSet.ExceptWith(new[] { "World", "Hello" });
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new[] { "!" }));
+            this.serverSyncSet.ExceptWith(new[] { "World", "Hello" });
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
+            Assert.That(this.clientSyncSet, Is.EquivalentTo(new[] { "!" }));
         }
 
         [Test]
         public void TestExceptWithSelf()
         {
-            serverSyncSet.ExceptWith(serverSyncSet);
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new string[] { }));
+            this.serverSyncSet.ExceptWith(this.serverSyncSet);
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
+            Assert.That(this.clientSyncSet, Is.EquivalentTo(new string[] { }));
         }
 
         [Test]
         public void TestIntersectWith()
         {
-            serverSyncSet.IntersectWith(new[] { "World", "Hello" });
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new[] { "World", "Hello" }));
+            this.serverSyncSet.IntersectWith(new[] { "World", "Hello" });
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
+            Assert.That(this.clientSyncSet, Is.EquivalentTo(new[] { "World", "Hello" }));
         }
 
         [Test]
         public void TestIntersectWithSet()
         {
-            serverSyncSet.IntersectWith(new HashSet<string> { "World", "Hello" });
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new[] { "World", "Hello" }));
+            this.serverSyncSet.IntersectWith(new HashSet<string> { "World", "Hello" });
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
+            Assert.That(this.clientSyncSet, Is.EquivalentTo(new[] { "World", "Hello" }));
         }
 
         [Test]
         public void TestIsProperSubsetOf()
         {
-            Assert.That(clientSyncSet.IsProperSubsetOf(new[] { "World", "Hello", "!", "pepe" }));
+            Assert.That(this.clientSyncSet.IsProperSubsetOf(new[] { "World", "Hello", "!", "pepe" }));
         }
 
         [Test]
         public void TestIsProperSubsetOfSet()
         {
-            Assert.That(clientSyncSet.IsProperSubsetOf(new HashSet<string> { "World", "Hello", "!", "pepe" }));
+            Assert.That(this.clientSyncSet.IsProperSubsetOf(new HashSet<string> { "World", "Hello", "!", "pepe" }));
         }
 
         [Test]
         public void TestIsNotProperSubsetOf()
         {
-            Assert.That(clientSyncSet.IsProperSubsetOf(new[] { "World", "!", "pepe" }), Is.False);
+            Assert.That(this.clientSyncSet.IsProperSubsetOf(new[] { "World", "!", "pepe" }), Is.False);
         }
 
         [Test]
         public void TestIsProperSuperSetOf()
         {
-            Assert.That(clientSyncSet.IsProperSupersetOf(new[] { "World", "Hello" }));
+            Assert.That(this.clientSyncSet.IsProperSupersetOf(new[] { "World", "Hello" }));
         }
 
         [Test]
         public void TestIsSubsetOf()
         {
-            Assert.That(clientSyncSet.IsSubsetOf(new[] { "World", "Hello", "!" }));
+            Assert.That(this.clientSyncSet.IsSubsetOf(new[] { "World", "Hello", "!" }));
         }
 
         [Test]
         public void TestIsSupersetOf()
         {
-            Assert.That(clientSyncSet.IsSupersetOf(new[] { "World", "Hello" }));
+            Assert.That(this.clientSyncSet.IsSupersetOf(new[] { "World", "Hello" }));
         }
 
         [Test]
         public void TestOverlaps()
         {
-            Assert.That(clientSyncSet.Overlaps(new[] { "World", "my", "baby" }));
+            Assert.That(this.clientSyncSet.Overlaps(new[] { "World", "my", "baby" }));
         }
 
         [Test]
         public void TestSetEquals()
         {
-            Assert.That(clientSyncSet.SetEquals(new[] { "World", "Hello", "!" }));
+            Assert.That(this.clientSyncSet.SetEquals(new[] { "World", "Hello", "!" }));
         }
 
         [Test]
         public void TestSymmetricExceptWith()
         {
-            serverSyncSet.SymmetricExceptWith(new HashSet<string> { "Hello", "is" });
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new[] { "World", "is", "!" }));
+            this.serverSyncSet.SymmetricExceptWith(new HashSet<string> { "Hello", "is" });
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
+            Assert.That(this.clientSyncSet, Is.EquivalentTo(new[] { "World", "is", "!" }));
         }
 
         [Test]
         public void TestSymmetricExceptWithSelf()
         {
-            serverSyncSet.SymmetricExceptWith(serverSyncSet);
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new string[] { }));
+            this.serverSyncSet.SymmetricExceptWith(this.serverSyncSet);
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
+            Assert.That(this.clientSyncSet, Is.EquivalentTo(new string[] { }));
         }
 
         [Test]
         public void TestUnionWith()
         {
-            serverSyncSet.UnionWith(new HashSet<string> { "Hello", "is" });
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new[] { "World", "Hello", "is", "!" }));
+            this.serverSyncSet.UnionWith(new HashSet<string> { "Hello", "is" });
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
+            Assert.That(this.clientSyncSet, Is.EquivalentTo(new[] { "World", "Hello", "is", "!" }));
         }
 
         [Test]
         public void TestUnionWithSelf()
         {
-            serverSyncSet.UnionWith(serverSyncSet);
-            SerializeHelper.SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new[] { "World", "Hello", "!" }));
+            this.serverSyncSet.UnionWith(this.serverSyncSet);
+            SerializeHelper.SerializeDeltaTo(this.serverSyncSet, this.clientSyncSet);
+            Assert.That(this.clientSyncSet, Is.EquivalentTo(new[] { "World", "Hello", "!" }));
         }
 
         [Test]
         public void ReadOnlyTest()
         {
-            Assert.That(serverSyncSet.IsReadOnly, Is.False);
-            Assert.That(clientSyncSet.IsReadOnly, Is.True);
+            Assert.That(this.serverSyncSet.IsReadOnly, Is.False);
+            Assert.That(this.clientSyncSet.IsReadOnly, Is.True);
         }
 
         [Test]
         public void WritingToReadOnlyThrows()
         {
-            Assert.Throws<InvalidOperationException>(() => { clientSyncSet.Add("5"); });
+            Assert.Throws<InvalidOperationException>(() => { this.clientSyncSet.Add("5"); });
         }
 
         [Test]
         public void ObjectCanBeReusedAfterReset()
         {
-            clientSyncSet.Reset();
+            this.clientSyncSet.Reset();
 
             // make old client the host
-            var hostList = clientSyncSet;
+            var hostList = this.clientSyncSet;
             var clientList2 = new SyncSetString();
 
             Assert.That(hostList.IsReadOnly, Is.False);
@@ -299,25 +299,25 @@ namespace Mirage.Tests.Runtime
         [Test]
         public void ResetShouldSetReadOnlyToFalse()
         {
-            clientSyncSet.Reset();
+            this.clientSyncSet.Reset();
 
-            Assert.That(clientSyncSet.IsReadOnly, Is.False);
+            Assert.That(this.clientSyncSet.IsReadOnly, Is.False);
         }
 
         [Test]
         public void ResetShouldClearChanges()
         {
-            serverSyncSet.Reset();
+            this.serverSyncSet.Reset();
 
-            Assert.That(serverSyncSet.ChangeCount, Is.Zero);
+            Assert.That(this.serverSyncSet.ChangeCount, Is.Zero);
         }
 
         [Test]
         public void ResetShouldClearItems()
         {
-            serverSyncSet.Reset();
+            this.serverSyncSet.Reset();
 
-            Assert.That(serverSyncSet, Is.Empty);
+            Assert.That(this.serverSyncSet, Is.Empty);
         }
     }
 }

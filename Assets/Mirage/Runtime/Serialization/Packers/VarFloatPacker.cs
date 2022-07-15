@@ -39,21 +39,21 @@ namespace Mirage.Serialization
         {
             this.precision = precision;
             this.blockSize = blockSize;
-            inversePrecision = 1 / precision;
+            this.inversePrecision = 1 / precision;
         }
 
         public void Pack(NetworkWriter writer, float value)
         {
-            var scaled = Mathf.RoundToInt(value * inversePrecision);
+            var scaled = Mathf.RoundToInt(value * this.inversePrecision);
             var zig = ZigZag.Encode(scaled);
-            VarIntBlocksPacker.Pack(writer, zig, blockSize);
+            VarIntBlocksPacker.Pack(writer, zig, this.blockSize);
         }
 
         public float Unpack(NetworkReader reader)
         {
-            var zig = (uint)VarIntBlocksPacker.Unpack(reader, blockSize);
+            var zig = (uint)VarIntBlocksPacker.Unpack(reader, this.blockSize);
             var scaled = ZigZag.Decode(zig);
-            return scaled * precision;
+            return scaled * this.precision;
         }
     }
 

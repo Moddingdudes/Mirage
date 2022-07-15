@@ -8,18 +8,18 @@ namespace Mirage.Examples.Light
         [SyncVar] public int health = 10;
         private void Awake()
         {
-            Identity.OnStartServer.AddListener(OnStartServer);
-            Identity.OnStopServer.AddListener(OnStopServer);
+            this.Identity.OnStartServer.AddListener(this.OnStartServer);
+            this.Identity.OnStopServer.AddListener(this.OnStopServer);
         }
 
         public void OnStartServer()
         {
-            StartCoroutine(UpdateHealth());
+            this.StartCoroutine(this.UpdateHealth());
         }
 
         public void OnStopServer()
         {
-            StopAllCoroutines();
+            this.StopAllCoroutines();
         }
 
         internal IEnumerator UpdateHealth()
@@ -27,7 +27,7 @@ namespace Mirage.Examples.Light
             while (true)
             {
                 yield return new WaitForSeconds(Random.Range(0f, 5f));
-                health = (health + 1) % 10;
+                this.health = (this.health + 1) % 10;
             }
         }
     }

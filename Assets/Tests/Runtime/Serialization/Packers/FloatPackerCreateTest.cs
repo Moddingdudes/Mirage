@@ -16,8 +16,8 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         {
             var packer = new FloatPacker(100, precision);
 
-            packer.Pack(writer, 1f);
-            return writer.BitPosition;
+            packer.Pack(this.writer, 1f);
+            return this.writer.BitPosition;
         }
 
         [Test]
@@ -28,8 +28,8 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         {
             var packer = new FloatPacker(100, precision, false);
 
-            packer.Pack(writer, 1f);
-            return writer.BitPosition;
+            packer.Pack(this.writer, 1f);
+            return this.writer.BitPosition;
         }
 
         [Test]
@@ -37,9 +37,9 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         {
             var packer = new FloatPacker(100, bitCount, signed);
 
-            packer.Pack(writer, 1f);
+            packer.Pack(this.writer, 1f);
 
-            Assert.That(writer.BitPosition, Is.EqualTo(bitCount));
+            Assert.That(this.writer.BitPosition, Is.EqualTo(bitCount));
         }
 
         [Test]

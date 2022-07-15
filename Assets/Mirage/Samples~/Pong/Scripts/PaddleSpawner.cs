@@ -13,10 +13,10 @@ namespace Mirage.Examples.Pong
         {
             base.Awake();
 
-            if (Server != null)
+            if (this.Server != null)
             {
                 // add disconnect event so that OnServerDisconnect will be called when player disconnects
-                Server.Disconnected.AddListener(OnServerDisconnect);
+                this.Server.Disconnected.AddListener(this.OnServerDisconnect);
             }
         }
 
@@ -25,23 +25,23 @@ namespace Mirage.Examples.Pong
         public override void OnServerAddPlayer(INetworkPlayer player)
         {
             // add player at correct spawn position
-            var start = Server.NumberOfPlayers == 0 ? leftRacketSpawn : rightRacketSpawn;
-            var character = Instantiate(PlayerPrefab, start.position, start.rotation);
-            ServerObjectManager.AddCharacter(player, character.gameObject);
+            var start = this.Server.NumberOfPlayers == 0 ? this.leftRacketSpawn : this.rightRacketSpawn;
+            var character = Instantiate(this.PlayerPrefab, start.position, start.rotation);
+            this.ServerObjectManager.AddCharacter(player, character.gameObject);
 
             // spawn ball if two players
-            if (Server.NumberOfPlayers == 2)
+            if (this.Server.NumberOfPlayers == 2)
             {
-                ball = Instantiate(ballPrefab);
-                ServerObjectManager.Spawn(ball);
+                this.ball = Instantiate(this.ballPrefab);
+                this.ServerObjectManager.Spawn(this.ball);
             }
         }
 
         public void OnServerDisconnect(INetworkPlayer _)
         {
             // after 1 player disconnects then destroy the balll
-            if (ball != null)
-                ServerObjectManager.Destroy(ball);
+            if (this.ball != null)
+                this.ServerObjectManager.Destroy(this.ball);
         }
     }
 }

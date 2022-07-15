@@ -14,15 +14,15 @@ namespace Mirage.Tests.Runtime.Serialization
         public void Setup()
         {
             // dont allow resizing for this test, because we test throw
-            writer = new NetworkWriter(1300, false);
-            reader = new NetworkReader();
+            this.writer = new NetworkWriter(1300, false);
+            this.reader = new NetworkReader();
         }
 
         [TearDown]
         public void TearDown()
         {
-            writer.Reset();
-            reader.Dispose();
+            this.writer.Reset();
+            this.reader.Dispose();
         }
 
         [Test]
@@ -31,10 +31,10 @@ namespace Mirage.Tests.Runtime.Serialization
         [TestCase(0x_FFFF_FFFF_12Ul)]
         public void WritesCorrectUlongValue(ulong value)
         {
-            writer.Write(value, 64);
-            reader.Reset(writer.ToArray());
+            this.writer.Write(value, 64);
+            this.reader.Reset(this.writer.ToArray());
 
-            var result = reader.Read(64);
+            var result = this.reader.Read(64);
             Assert.That(result, Is.EqualTo(value));
         }
 
@@ -44,10 +44,10 @@ namespace Mirage.Tests.Runtime.Serialization
         [TestCase(0x_FFFF_FF12U)]
         public void WritesCorrectUIntValue(uint value)
         {
-            writer.Write(value, 32);
-            reader.Reset(writer.ToArray());
+            this.writer.Write(value, 32);
+            this.reader.Reset(this.writer.ToArray());
 
-            var result = reader.Read(32);
+            var result = this.reader.Read(32);
             Assert.That(result, Is.EqualTo(value));
         }
 
@@ -57,12 +57,12 @@ namespace Mirage.Tests.Runtime.Serialization
         [TestCase(1u, 1, 250u, 8)]
         public void WritesCorrectValues(uint value1, int bits1, uint value2, int bits2)
         {
-            writer.Write(value1, bits1);
-            writer.Write(value2, bits2);
-            reader.Reset(writer.ToArray());
+            this.writer.Write(value1, bits1);
+            this.writer.Write(value2, bits2);
+            this.reader.Reset(this.writer.ToArray());
 
-            var result1 = reader.Read(bits1);
-            var result2 = reader.Read(bits2);
+            var result1 = this.reader.Read(bits1);
+            var result2 = this.reader.Read(bits2);
             Assert.That(result1, Is.EqualTo(value1));
             Assert.That(result2, Is.EqualTo(value2));
         }
@@ -73,10 +73,10 @@ namespace Mirage.Tests.Runtime.Serialization
         {
             for (var i = 0; i < 208; i++)
             {
-                writer.Write((ulong)i, 50);
+                this.writer.Write((ulong)i, 50);
             }
 
-            var result = writer.ToArray();
+            var result = this.writer.ToArray();
 
             // written bits/8
             var expectedLength = (208 * 50) / 8;
@@ -89,19 +89,19 @@ namespace Mirage.Tests.Runtime.Serialization
             // write 1296 up to last word
             for (var i = 0; i < 162; i++)
             {
-                writer.Write((ulong)i, 64);
+                this.writer.Write((ulong)i, 64);
             }
 
-            writer.Write(0, 63);
+            this.writer.Write(0, 63);
 
             Assert.DoesNotThrow(() =>
             {
-                writer.Write(0, 1);
+                this.writer.Write(0, 1);
             });
 
             var exception = Assert.Throws<InvalidOperationException>(() =>
             {
-                writer.Write(0, 1);
+                this.writer.Write(0, 1);
             });
             const int max = 162 * 64 + 64;
             Assert.That(exception, Has.Message.EqualTo($"Can not write over end of buffer, new length {max + 1}, capacity {max}"));
@@ -112,15 +112,15 @@ namespace Mirage.Tests.Runtime.Serialization
         public void WritesAllValueSizesCorrectly([Range(0, 63)] int startPosition, [Range(0, 64)] int valueBits)
         {
             var randomValue = ULongRandom.Next();
-            writer.Write(0, startPosition);
+            this.writer.Write(0, startPosition);
 
             var maskedValue = randomValue & BitMask.Mask(valueBits);
 
-            writer.Write(randomValue, valueBits);
-            reader.Reset(writer.ToArray());
+            this.writer.Write(randomValue, valueBits);
+            this.reader.Reset(this.writer.ToArray());
 
-            _ = reader.Read(startPosition);
-            var result = reader.Read(valueBits);
+            _ = this.reader.Read(startPosition);
+            var result = this.reader.Read(valueBits);
             Assert.That(result, Is.EqualTo(maskedValue));
         }
 

@@ -74,10 +74,10 @@ namespace Mirage.Serialization
         /// </summary>
         public void Release()
         {
-            Reset();
-            pool.Put(this);
+            this.Reset();
+            this.pool.Put(this);
         }
 
-        void IDisposable.Dispose() => Release();
+        void IDisposable.Dispose() => this.Release();
     }
 }

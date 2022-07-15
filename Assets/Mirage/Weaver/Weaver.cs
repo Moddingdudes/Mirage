@@ -42,68 +42,68 @@ namespace Mirage.Weaver
         {
             try
             {
-                timer = new WeaverDiagnosticsTimer() { writeToFile = true };
-                timer.Start(compiledAssembly.Name);
+                this.timer = new WeaverDiagnosticsTimer() { writeToFile = true };
+                this.timer.Start(compiledAssembly.Name);
 
-                using (timer.Sample("AssemblyDefinitionFor"))
+                using (this.timer.Sample("AssemblyDefinitionFor"))
                 {
-                    CurrentAssembly = AssemblyDefinitionFor(compiledAssembly);
+                    this.CurrentAssembly = AssemblyDefinitionFor(compiledAssembly);
                 }
 
-                var module = CurrentAssembly.MainModule;
-                readers = new Readers(module, logger);
-                writers = new Writers(module, logger);
-                propertySiteProcessor = new PropertySiteProcessor();
-                var rwProcessor = new ReaderWriterProcessor(module, readers, writers);
+                var module = this.CurrentAssembly.MainModule;
+                this.readers = new Readers(module, this.logger);
+                this.writers = new Writers(module, this.logger);
+                this.propertySiteProcessor = new PropertySiteProcessor();
+                var rwProcessor = new ReaderWriterProcessor(module, this.readers, this.writers);
 
                 var modified = false;
-                using (timer.Sample("ReaderWriterProcessor"))
+                using (this.timer.Sample("ReaderWriterProcessor"))
                 {
                     modified = rwProcessor.Process();
                 }
 
-                var foundTypes = FindAllClasses(module);
+                var foundTypes = this.FindAllClasses(module);
 
-                using (timer.Sample("AttributeProcessor"))
+                using (this.timer.Sample("AttributeProcessor"))
                 {
-                    var attributeProcessor = new AttributeProcessor(module, logger);
+                    var attributeProcessor = new AttributeProcessor(module, this.logger);
                     modified |= attributeProcessor.ProcessTypes(foundTypes);
                 }
 
-                using (timer.Sample("WeaveNetworkBehavior"))
+                using (this.timer.Sample("WeaveNetworkBehavior"))
                 {
                     foreach (var foundType in foundTypes)
                     {
                         if (foundType.IsNetworkBehaviour)
-                            modified |= WeaveNetworkBehavior(foundType);
+                            modified |= this.WeaveNetworkBehavior(foundType);
                     }
                 }
 
 
                 if (modified)
                 {
-                    using (timer.Sample("propertySiteProcessor"))
+                    using (this.timer.Sample("propertySiteProcessor"))
                     {
-                        propertySiteProcessor.Process(module);
+                        this.propertySiteProcessor.Process(module);
                     }
 
-                    using (timer.Sample("InitializeReaderAndWriters"))
+                    using (this.timer.Sample("InitializeReaderAndWriters"))
                     {
                         rwProcessor.InitializeReaderAndWriters();
                     }
                 }
 
-                return CurrentAssembly;
+                return this.CurrentAssembly;
             }
             catch (Exception e)
             {
-                logger.Error("Exception :" + e);
+                this.logger.Error("Exception :" + e);
                 return null;
             }
             finally
             {
                 // end in finally incase it return early
-                timer?.End();
+                this.timer?.End();
             }
         }
 
@@ -132,16 +132,16 @@ namespace Mirage.Weaver
 
         private IReadOnlyList<FoundType> FindAllClasses(ModuleDefinition module)
         {
-            using (timer.Sample("FindAllClasses"))
+            using (this.timer.Sample("FindAllClasses"))
             {
                 var foundTypes = new List<FoundType>();
                 foreach (var type in module.Types)
                 {
-                    ProcessType(type, foundTypes);
+                    this.ProcessType(type, foundTypes);
 
                     foreach (var nested in type.NestedTypes)
                     {
-                        ProcessType(nested, foundTypes);
+                        this.ProcessType(nested, foundTypes);
                     }
                 }
 
@@ -187,7 +187,7 @@ namespace Mirage.Weaver
                 var behaviour = behaviourClasses[i];
                 if (NetworkBehaviourProcessor.WasProcessed(behaviour)) { continue; }
 
-                modified |= new NetworkBehaviourProcessor(behaviour, readers, writers, propertySiteProcessor, logger).Process();
+                modified |= new NetworkBehaviourProcessor(behaviour, this.readers, this.writers, this.propertySiteProcessor, this.logger).Process();
             }
             return modified;
         }
@@ -230,14 +230,14 @@ namespace Mirage.Weaver
 
         public FoundType(TypeDefinition typeDefinition, bool isNetworkBehaviour, bool isMonoBehaviour)
         {
-            TypeDefinition = typeDefinition;
-            IsNetworkBehaviour = isNetworkBehaviour;
-            IsMonoBehaviour = isMonoBehaviour;
+            this.TypeDefinition = typeDefinition;
+            this.IsNetworkBehaviour = isNetworkBehaviour;
+            this.IsMonoBehaviour = isMonoBehaviour;
         }
 
         public override string ToString()
         {
-            return TypeDefinition.ToString();
+            return this.TypeDefinition.ToString();
         }
     }
 }

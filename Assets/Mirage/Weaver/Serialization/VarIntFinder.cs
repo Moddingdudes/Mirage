@@ -90,7 +90,7 @@ namespace Mirage.Weaver.Serialization
             {
                 // use underlying enum type for max size
                 var enumType = fieldType.Resolve().GetEnumUnderlyingType();
-                return GetPackMethod(enumType);
+                return this.GetPackMethod(enumType);
             }
 
             throw new VarIntException($"{fieldType.FullName} is not a supported type for [VarInt]");
@@ -125,7 +125,7 @@ namespace Mirage.Weaver.Serialization
             {
                 // use underlying enum type for max size
                 var enumType = fieldType.Resolve().GetEnumUnderlyingType();
-                return GetUnpackMethod(enumType);
+                return this.GetUnpackMethod(enumType);
             }
 
             throw new VarIntException($"{fieldType.FullName} is not a supported type for [VarInt]");

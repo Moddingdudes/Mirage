@@ -19,14 +19,14 @@ namespace Mirage.Tests.Runtime
         [SetUp]
         public void SetUp()
         {
-            serverSyncDictionary = new SyncDictionaryIntString();
-            clientSyncDictionary = new SyncDictionaryIntString();
+            this.serverSyncDictionary = new SyncDictionaryIntString();
+            this.clientSyncDictionary = new SyncDictionaryIntString();
 
             // add some data to the list
-            serverSyncDictionary.Add(0, "Hello");
-            serverSyncDictionary.Add(1, "World");
-            serverSyncDictionary.Add(2, "!");
-            SerializeHelper.SerializeAllTo(serverSyncDictionary, clientSyncDictionary);
+            this.serverSyncDictionary.Add(0, "Hello");
+            this.serverSyncDictionary.Add(1, "World");
+            this.serverSyncDictionary.Add(2, "!");
+            SerializeHelper.SerializeAllTo(this.serverSyncDictionary, this.clientSyncDictionary);
         }
 
         [Test]
@@ -38,16 +38,16 @@ namespace Mirage.Tests.Runtime
                 [1] = "World",
                 [2] = "!"
             };
-            Assert.That(clientSyncDictionary[0], Is.EqualTo("Hello"));
-            Assert.That(clientSyncDictionary, Is.EquivalentTo(comparer));
+            Assert.That(this.clientSyncDictionary[0], Is.EqualTo("Hello"));
+            Assert.That(this.clientSyncDictionary, Is.EquivalentTo(comparer));
         }
 
         [Test]
         public void ClearEventOnSyncAll()
         {
             var callback = Substitute.For<Action>();
-            clientSyncDictionary.OnClear += callback;
-            SerializeHelper.SerializeAllTo(serverSyncDictionary, clientSyncDictionary);
+            this.clientSyncDictionary.OnClear += callback;
+            SerializeHelper.SerializeAllTo(this.serverSyncDictionary, this.clientSyncDictionary);
             callback.Received().Invoke();
         }
 
@@ -55,8 +55,8 @@ namespace Mirage.Tests.Runtime
         public void InsertEventOnSyncAll()
         {
             var callback = Substitute.For<Action<int, string>>();
-            clientSyncDictionary.OnInsert += callback;
-            SerializeHelper.SerializeAllTo(serverSyncDictionary, clientSyncDictionary);
+            this.clientSyncDictionary.OnInsert += callback;
+            SerializeHelper.SerializeAllTo(this.serverSyncDictionary, this.clientSyncDictionary);
 
             callback.Received().Invoke(0, "Hello");
             callback.Received().Invoke(1, "World");
@@ -67,111 +67,111 @@ namespace Mirage.Tests.Runtime
         public void ChangeEventOnSyncAll()
         {
             var callback = Substitute.For<Action>();
-            clientSyncDictionary.OnChange += callback;
-            SerializeHelper.SerializeAllTo(serverSyncDictionary, clientSyncDictionary);
+            this.clientSyncDictionary.OnChange += callback;
+            SerializeHelper.SerializeAllTo(this.serverSyncDictionary, this.clientSyncDictionary);
             callback.Received().Invoke();
         }
 
         [Test]
         public void TestAdd()
         {
-            serverSyncDictionary.Add(4, "yay");
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
-            Assert.That(clientSyncDictionary.ContainsKey(4));
-            Assert.That(clientSyncDictionary[4], Is.EqualTo("yay"));
+            this.serverSyncDictionary.Add(4, "yay");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
+            Assert.That(this.clientSyncDictionary.ContainsKey(4));
+            Assert.That(this.clientSyncDictionary[4], Is.EqualTo("yay"));
         }
 
         [Test]
         public void TestClear()
         {
-            serverSyncDictionary.Clear();
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
-            Assert.That(serverSyncDictionary, Is.EquivalentTo(new SyncDictionaryIntString()));
+            this.serverSyncDictionary.Clear();
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
+            Assert.That(this.serverSyncDictionary, Is.EquivalentTo(new SyncDictionaryIntString()));
         }
 
         [Test]
         public void TestSet()
         {
-            serverSyncDictionary[1] = "yay";
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
-            Assert.That(clientSyncDictionary.ContainsKey(1));
-            Assert.That(clientSyncDictionary[1], Is.EqualTo("yay"));
+            this.serverSyncDictionary[1] = "yay";
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
+            Assert.That(this.clientSyncDictionary.ContainsKey(1));
+            Assert.That(this.clientSyncDictionary[1], Is.EqualTo("yay"));
         }
 
         [Test]
         public void TestBareSet()
         {
-            serverSyncDictionary[4] = "yay";
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
-            Assert.That(clientSyncDictionary.ContainsKey(4));
-            Assert.That(clientSyncDictionary[4], Is.EqualTo("yay"));
+            this.serverSyncDictionary[4] = "yay";
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
+            Assert.That(this.clientSyncDictionary.ContainsKey(4));
+            Assert.That(this.clientSyncDictionary[4], Is.EqualTo("yay"));
         }
 
         [Test]
         public void TestBareSetNull()
         {
-            serverSyncDictionary[4] = null;
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
-            Assert.That(clientSyncDictionary[4], Is.Null);
-            Assert.That(clientSyncDictionary.ContainsKey(4));
+            this.serverSyncDictionary[4] = null;
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
+            Assert.That(this.clientSyncDictionary[4], Is.Null);
+            Assert.That(this.clientSyncDictionary.ContainsKey(4));
         }
 
         [Test]
         public void TestConsecutiveSet()
         {
-            serverSyncDictionary[1] = "yay";
-            serverSyncDictionary[1] = "world";
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
-            Assert.That(clientSyncDictionary[1], Is.EqualTo("world"));
+            this.serverSyncDictionary[1] = "yay";
+            this.serverSyncDictionary[1] = "world";
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
+            Assert.That(this.clientSyncDictionary[1], Is.EqualTo("world"));
         }
 
         [Test]
         public void TestNullSet()
         {
-            serverSyncDictionary[1] = null;
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
-            Assert.That(clientSyncDictionary.ContainsKey(1));
-            Assert.That(clientSyncDictionary[1], Is.Null);
+            this.serverSyncDictionary[1] = null;
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
+            Assert.That(this.clientSyncDictionary.ContainsKey(1));
+            Assert.That(this.clientSyncDictionary[1], Is.Null);
         }
 
         [Test]
         public void TestRemove()
         {
-            serverSyncDictionary.Remove(1);
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
-            Assert.That(!clientSyncDictionary.ContainsKey(1));
+            this.serverSyncDictionary.Remove(1);
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
+            Assert.That(!this.clientSyncDictionary.ContainsKey(1));
         }
 
         [Test]
         public void TestMultSync()
         {
-            serverSyncDictionary.Add(10, "1");
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
+            this.serverSyncDictionary.Add(10, "1");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
             // add some delta and see if it applies
-            serverSyncDictionary.Add(11, "2");
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
-            Assert.That(clientSyncDictionary.ContainsKey(10));
-            Assert.That(clientSyncDictionary[10], Is.EqualTo("1"));
-            Assert.That(clientSyncDictionary.ContainsKey(11));
-            Assert.That(clientSyncDictionary[11], Is.EqualTo("2"));
+            this.serverSyncDictionary.Add(11, "2");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
+            Assert.That(this.clientSyncDictionary.ContainsKey(10));
+            Assert.That(this.clientSyncDictionary[10], Is.EqualTo("1"));
+            Assert.That(this.clientSyncDictionary.ContainsKey(11));
+            Assert.That(this.clientSyncDictionary[11], Is.EqualTo("2"));
         }
 
         [Test]
         public void TestContains()
         {
-            Assert.That(!clientSyncDictionary.Contains(new KeyValuePair<int, string>(2, "Hello")));
-            serverSyncDictionary[2] = "Hello";
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
-            Assert.That(clientSyncDictionary.Contains(new KeyValuePair<int, string>(2, "Hello")));
+            Assert.That(!this.clientSyncDictionary.Contains(new KeyValuePair<int, string>(2, "Hello")));
+            this.serverSyncDictionary[2] = "Hello";
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
+            Assert.That(this.clientSyncDictionary.Contains(new KeyValuePair<int, string>(2, "Hello")));
         }
 
         [Test]
         public void AddClientCallbackTest()
         {
             var callback = Substitute.For<Action<int, string>>();
-            clientSyncDictionary.OnInsert += callback;
-            serverSyncDictionary.Add(3, "yay");
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
+            this.clientSyncDictionary.OnInsert += callback;
+            this.serverSyncDictionary.Add(3, "yay");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
             callback.Received().Invoke(3, "yay");
         }
 
@@ -179,9 +179,9 @@ namespace Mirage.Tests.Runtime
         public void AddServerCallbackTest()
         {
             var callback = Substitute.For<Action<int, string>>();
-            serverSyncDictionary.OnInsert += callback;
-            serverSyncDictionary.Add(3, "yay");
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
+            this.serverSyncDictionary.OnInsert += callback;
+            this.serverSyncDictionary.Add(3, "yay");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
             callback.Received().Invoke(3, "yay");
         }
 
@@ -189,9 +189,9 @@ namespace Mirage.Tests.Runtime
         public void RemoveClientCallbackTest()
         {
             var callback = Substitute.For<Action<int, string>>();
-            clientSyncDictionary.OnRemove += callback;
-            serverSyncDictionary.Remove(1);
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
+            this.clientSyncDictionary.OnRemove += callback;
+            this.serverSyncDictionary.Remove(1);
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
             callback.Received().Invoke(1, "World");
         }
 
@@ -199,9 +199,9 @@ namespace Mirage.Tests.Runtime
         public void ClearClientCallbackTest()
         {
             var callback = Substitute.For<Action>();
-            clientSyncDictionary.OnClear += callback;
-            serverSyncDictionary.Clear();
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
+            this.clientSyncDictionary.OnClear += callback;
+            this.serverSyncDictionary.Clear();
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
             callback.Received().Invoke();
         }
 
@@ -209,10 +209,10 @@ namespace Mirage.Tests.Runtime
         public void ChangeClientCallbackTest()
         {
             var callback = Substitute.For<Action>();
-            clientSyncDictionary.OnChange += callback;
-            serverSyncDictionary.Add(3, "1");
-            serverSyncDictionary.Add(4, "1");
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
+            this.clientSyncDictionary.OnChange += callback;
+            this.serverSyncDictionary.Add(3, "1");
+            this.serverSyncDictionary.Add(4, "1");
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
             callback.Received(1).Invoke();
         }
 
@@ -220,16 +220,16 @@ namespace Mirage.Tests.Runtime
         public void SetClientCallbackTest()
         {
             var callback = Substitute.For<Action<int, string, string>>();
-            clientSyncDictionary.OnSet += callback;
-            serverSyncDictionary[0] = "yay";
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
+            this.clientSyncDictionary.OnSet += callback;
+            this.serverSyncDictionary[0] = "yay";
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
             callback.Received().Invoke(0, "Hello", "yay");
         }
 
         [Test]
         public void CountTest()
         {
-            Assert.That(serverSyncDictionary.Count, Is.EqualTo(3));
+            Assert.That(this.serverSyncDictionary.Count, Is.EqualTo(3));
         }
 
         [Test]
@@ -237,7 +237,7 @@ namespace Mirage.Tests.Runtime
         {
             var data = new KeyValuePair<int, string>[3];
 
-            clientSyncDictionary.CopyTo(data, 0);
+            this.clientSyncDictionary.CopyTo(data, 0);
 
             Assert.That(data, Is.EquivalentTo(new[]
             {
@@ -255,7 +255,7 @@ namespace Mirage.Tests.Runtime
 
             Assert.Throws(typeof(ArgumentOutOfRangeException), delegate
             {
-                clientSyncDictionary.CopyTo(data, -1);
+                this.clientSyncDictionary.CopyTo(data, -1);
             });
         }
 
@@ -266,7 +266,7 @@ namespace Mirage.Tests.Runtime
 
             Assert.Throws(typeof(ArgumentException), delegate
             {
-                clientSyncDictionary.CopyTo(data, 2);
+                this.clientSyncDictionary.CopyTo(data, 2);
             });
         }
 
@@ -275,9 +275,9 @@ namespace Mirage.Tests.Runtime
         {
             var data = new KeyValuePair<int, string>(0, "Hello");
 
-            serverSyncDictionary.Remove(data);
+            this.serverSyncDictionary.Remove(data);
 
-            Assert.That(serverSyncDictionary, Is.EquivalentTo(new[]
+            Assert.That(this.serverSyncDictionary, Is.EquivalentTo(new[]
             {
                 new KeyValuePair<int, string>(1, "World"),
                 new KeyValuePair<int, string>(2, "!"),
@@ -288,42 +288,42 @@ namespace Mirage.Tests.Runtime
         [Test]
         public void ReadOnlyTest()
         {
-            Assert.That(serverSyncDictionary.IsReadOnly, Is.False);
-            Assert.That(clientSyncDictionary.IsReadOnly, Is.True);
+            Assert.That(this.serverSyncDictionary.IsReadOnly, Is.False);
+            Assert.That(this.clientSyncDictionary.IsReadOnly, Is.True);
         }
 
         [Test]
         public void WritingToReadOnlyThrows()
         {
-            Assert.Throws<InvalidOperationException>(() => clientSyncDictionary.Add(50, "fail"));
+            Assert.Throws<InvalidOperationException>(() => this.clientSyncDictionary.Add(50, "fail"));
         }
 
         [Test]
         public void DirtyTest()
         {
             // Sync Delta to clear dirty
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
 
             // nothing to send
-            Assert.That(serverSyncDictionary.IsDirty, Is.False);
+            Assert.That(this.serverSyncDictionary.IsDirty, Is.False);
 
             // something has changed
-            serverSyncDictionary.Add(15, "yay");
-            Assert.That(serverSyncDictionary.IsDirty, Is.True);
-            SerializeHelper.SerializeDeltaTo(serverSyncDictionary, clientSyncDictionary);
+            this.serverSyncDictionary.Add(15, "yay");
+            Assert.That(this.serverSyncDictionary.IsDirty, Is.True);
+            SerializeHelper.SerializeDeltaTo(this.serverSyncDictionary, this.clientSyncDictionary);
 
             // data has been flushed,  should go back to clear
-            Assert.That(serverSyncDictionary.IsDirty, Is.False);
+            Assert.That(this.serverSyncDictionary.IsDirty, Is.False);
         }
 
 
         [Test]
         public void ObjectCanBeReusedAfterReset()
         {
-            clientSyncDictionary.Reset();
+            this.clientSyncDictionary.Reset();
 
             // make old client the host
-            var hostList = clientSyncDictionary;
+            var hostList = this.clientSyncDictionary;
             var clientList2 = new SyncDictionaryIntString();
 
             Assert.That(hostList.IsReadOnly, Is.False);
@@ -337,25 +337,25 @@ namespace Mirage.Tests.Runtime
         [Test]
         public void ResetShouldSetReadOnlyToFalse()
         {
-            clientSyncDictionary.Reset();
+            this.clientSyncDictionary.Reset();
 
-            Assert.That(clientSyncDictionary.IsReadOnly, Is.False);
+            Assert.That(this.clientSyncDictionary.IsReadOnly, Is.False);
         }
 
         [Test]
         public void ResetShouldClearChanges()
         {
-            serverSyncDictionary.Reset();
+            this.serverSyncDictionary.Reset();
 
-            Assert.That(serverSyncDictionary.ChangeCount, Is.Zero);
+            Assert.That(this.serverSyncDictionary.ChangeCount, Is.Zero);
         }
 
         [Test]
         public void ResetShouldClearItems()
         {
-            serverSyncDictionary.Reset();
+            this.serverSyncDictionary.Reset();
 
-            Assert.That(serverSyncDictionary, Is.Empty);
+            Assert.That(this.serverSyncDictionary, Is.Empty);
         }
     }
 }

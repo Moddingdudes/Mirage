@@ -21,33 +21,33 @@ namespace Mirage.Examples.InterestManagement
         [Server]
         public void SetRandomName()
         {
-            playerName = "PLAYER" + Random.Range(1, 99);
+            this.playerName = "PLAYER" + Random.Range(1, 99);
         }
 
         private void Update()
         {
             if (Camera.main)
             {
-                nameText.text = playerName;
-                nameText.transform.rotation = Camera.main.transform.rotation;
+                this.nameText.text = this.playerName;
+                this.nameText.transform.rotation = Camera.main.transform.rotation;
             }
 
             // movement for local player
-            if (!IsLocalPlayer)
+            if (!this.IsLocalPlayer)
                 return;
 
             //Set local players name color to green
-            nameText.color = Color.green;
+            this.nameText.color = Color.green;
 
             // rotate
             var horizontal = Input.GetAxis("Horizontal");
-            transform.Rotate(0, horizontal * rotationSpeed * Time.deltaTime, 0);
+            this.transform.Rotate(0, horizontal * this.rotationSpeed * Time.deltaTime, 0);
 
             // move
             var vertical = Input.GetAxis("Vertical");
-            var forward = transform.TransformDirection(Vector3.forward);
-            agent.velocity = forward * Mathf.Max(vertical, 0) * agent.speed;
-            animator.SetBool("Moving", agent.velocity != Vector3.zero);
+            var forward = this.transform.TransformDirection(Vector3.forward);
+            this.agent.velocity = forward * Mathf.Max(vertical, 0) * this.agent.speed;
+            this.animator.SetBool("Moving", this.agent.velocity != Vector3.zero);
 
         }
 

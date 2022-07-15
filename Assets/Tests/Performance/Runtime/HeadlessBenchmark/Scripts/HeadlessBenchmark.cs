@@ -22,11 +22,11 @@ namespace Mirage.HeadlessBenchmark
 
         private void Start()
         {
-            cachedArgs = Application.isEditor ?
-                cachedArgs = editorArgs.Split(' ') :
+            this.cachedArgs = Application.isEditor ?
+                this.cachedArgs = this.editorArgs.Split(' ') :
                 Environment.GetCommandLineArgs();
 
-            HeadlessStart();
+            this.HeadlessStart();
 
         }
         private IEnumerator DisplayFramesPerSecons()
@@ -50,9 +50,9 @@ namespace Mirage.HeadlessBenchmark
                 var messages = messageCount - previousMessageCount;
 
                 if (Application.isEditor)
-                    Debug.LogFormat("{0} FPS {1} messages {2} clients", frames, messages, server.NumberOfPlayers);
+                    Debug.LogFormat("{0} FPS {1} messages {2} clients", frames, messages, this.server.NumberOfPlayers);
                 else
-                    Console.WriteLine("{0} FPS {1} messages {2} clients", frames, messages, server.NumberOfPlayers);
+                    Console.WriteLine("{0} FPS {1} messages {2} clients", frames, messages, this.server.NumberOfPlayers);
                 previousFrameCount = frameCount;
                 previousMessageCount = messageCount;
             }
@@ -61,74 +61,74 @@ namespace Mirage.HeadlessBenchmark
         private void HeadlessStart()
         {
             //Try to find port
-            port = GetArgValue("-port");
+            this.port = this.GetArgValue("-port");
 
             //Try to find Socket
-            ParseForSocket();
+            this.ParseForSocket();
 
             //Server mode?
-            ParseForServerMode();
+            this.ParseForServerMode();
 
             //Or client mode?
-            StartClients().Forget();
+            this.StartClients().Forget();
 
-            ParseForHelp();
+            this.ParseForHelp();
         }
 
         private void OnServerStarted()
         {
-            StartCoroutine(DisplayFramesPerSecons());
+            this.StartCoroutine(this.DisplayFramesPerSecons());
 
-            var monster = GetArgValue("-monster");
+            var monster = this.GetArgValue("-monster");
             if (!string.IsNullOrEmpty(monster))
             {
                 for (var i = 0; i < int.Parse(monster); i++)
-                    SpawnMonsters(i);
+                    this.SpawnMonsters(i);
             }
         }
 
         private void SpawnMonsters(int i)
         {
-            var monster = Instantiate(MonsterPrefab);
+            var monster = Instantiate(this.MonsterPrefab);
             monster.gameObject.name = $"Monster {i}";
-            serverObjectManager.Spawn(monster.gameObject);
+            this.serverObjectManager.Spawn(monster.gameObject);
         }
 
         private void ParseForServerMode()
         {
-            if (string.IsNullOrEmpty(GetArg("-server"))) return;
+            if (string.IsNullOrEmpty(this.GetArg("-server"))) return;
 
-            var serverGo = Instantiate(ServerPrefab);
+            var serverGo = Instantiate(this.ServerPrefab);
             serverGo.name = "Server";
-            server = serverGo.GetComponent<NetworkServer>();
-            server.MaxConnections = 9999;
-            server.SocketFactory = socketFactory;
-            serverObjectManager = serverGo.GetComponent<ServerObjectManager>();
+            this.server = serverGo.GetComponent<NetworkServer>();
+            this.server.MaxConnections = 9999;
+            this.server.SocketFactory = this.socketFactory;
+            this.serverObjectManager = serverGo.GetComponent<ServerObjectManager>();
 
             var networkSceneManager = serverGo.GetComponent<NetworkSceneManager>();
-            networkSceneManager.Server = server;
+            networkSceneManager.Server = this.server;
 
-            serverObjectManager.Server = server;
-            serverObjectManager.NetworkSceneManager = networkSceneManager;
-            serverObjectManager.Start();
+            this.serverObjectManager.Server = this.server;
+            this.serverObjectManager.NetworkSceneManager = networkSceneManager;
+            this.serverObjectManager.Start();
 
             var spawner = serverGo.GetComponent<CharacterSpawner>();
-            spawner.ServerObjectManager = serverObjectManager;
-            spawner.Server = server;
+            spawner.ServerObjectManager = this.serverObjectManager;
+            spawner.Server = this.server;
 
-            server.Started.AddListener(OnServerStarted);
-            server.Authenticated.AddListener(conn => serverObjectManager.SpawnVisibleObjects(conn, true));
-            server.StartServer();
+            this.server.Started.AddListener(this.OnServerStarted);
+            this.server.Authenticated.AddListener(conn => this.serverObjectManager.SpawnVisibleObjects(conn, true));
+            this.server.StartServer();
             Console.WriteLine("Starting Server Only Mode");
         }
 
         private async UniTaskVoid StartClients()
         {
-            var clientArg = GetArg("-client");
+            var clientArg = this.GetArg("-client");
             if (!string.IsNullOrEmpty(clientArg))
             {
                 //network address provided?
-                var address = GetArgValue("-address");
+                var address = this.GetArgValue("-address");
                 if (string.IsNullOrEmpty(address))
                 {
                     address = "localhost";
@@ -136,7 +136,7 @@ namespace Mirage.HeadlessBenchmark
 
                 //nested clients
                 var clonesCount = 1;
-                var clonesString = GetArgValue("-client");
+                var clonesString = this.GetArgValue("-client");
                 if (!string.IsNullOrEmpty(clonesString))
                 {
                     clonesCount = int.Parse(clonesString);
@@ -147,7 +147,7 @@ namespace Mirage.HeadlessBenchmark
                 // connect from a bunch of clients
                 for (var i = 0; i < clonesCount; i++)
                 {
-                    StartClient(i, address);
+                    this.StartClient(i, address);
                     await UniTask.Delay(500);
 
                     Debug.LogFormat("Started {0} clients", i + 1);
@@ -157,7 +157,7 @@ namespace Mirage.HeadlessBenchmark
 
         private void StartClient(int i, string networkAddress)
         {
-            var clientGo = Instantiate(ClientPrefab);
+            var clientGo = Instantiate(this.ClientPrefab);
             clientGo.name = $"Client {i}";
             var client = clientGo.GetComponent<NetworkClient>();
             var objectManager = clientGo.GetComponent<ClientObjectManager>();
@@ -168,15 +168,15 @@ namespace Mirage.HeadlessBenchmark
             objectManager.Client = client;
             objectManager.NetworkSceneManager = networkSceneManager;
             objectManager.Start();
-            objectManager.RegisterPrefab(MonsterPrefab.GetComponent<NetworkIdentity>());
-            objectManager.RegisterPrefab(PlayerPrefab.GetComponent<NetworkIdentity>());
+            objectManager.RegisterPrefab(this.MonsterPrefab.GetComponent<NetworkIdentity>());
+            objectManager.RegisterPrefab(this.PlayerPrefab.GetComponent<NetworkIdentity>());
 
             spawner.Client = client;
-            spawner.PlayerPrefab = PlayerPrefab.GetComponent<NetworkIdentity>();
+            spawner.PlayerPrefab = this.PlayerPrefab.GetComponent<NetworkIdentity>();
             spawner.ClientObjectManager = objectManager;
             spawner.SceneManager = networkSceneManager;
 
-            client.SocketFactory = socketFactory;
+            client.SocketFactory = this.socketFactory;
 
             try
             {
@@ -190,7 +190,7 @@ namespace Mirage.HeadlessBenchmark
 
         private void ParseForHelp()
         {
-            if (!string.IsNullOrEmpty(GetArg("-help")))
+            if (!string.IsNullOrEmpty(this.GetArg("-help")))
             {
                 Console.WriteLine("--==Mirage HeadlessClients Benchmark==--");
                 Console.WriteLine("Please start your standalone application with the -nographics and -batchmode options");
@@ -208,11 +208,11 @@ namespace Mirage.HeadlessBenchmark
 
         private void ParseForSocket()
         {
-            var socket = GetArgValue("-socket");
+            var socket = this.GetArgValue("-socket");
             if (string.IsNullOrEmpty(socket) || socket.Equals("udp"))
             {
-                var newSocket = gameObject.AddComponent<UdpSocketFactory>();
-                socketFactory = newSocket;
+                var newSocket = this.gameObject.AddComponent<UdpSocketFactory>();
+                this.socketFactory = newSocket;
 
                 //Try to apply port if exists and needed by transport.
 
@@ -227,11 +227,11 @@ namespace Mirage.HeadlessBenchmark
 
         private string GetArgValue(string name)
         {
-            for (var i = 0; i < cachedArgs.Length; i++)
+            for (var i = 0; i < this.cachedArgs.Length; i++)
             {
-                if (cachedArgs[i] == name && cachedArgs.Length > i + 1)
+                if (this.cachedArgs[i] == name && this.cachedArgs.Length > i + 1)
                 {
-                    return cachedArgs[i + 1];
+                    return this.cachedArgs[i + 1];
                 }
             }
             return null;
@@ -239,11 +239,11 @@ namespace Mirage.HeadlessBenchmark
 
         private string GetArg(string name)
         {
-            for (var i = 0; i < cachedArgs.Length; i++)
+            for (var i = 0; i < this.cachedArgs.Length; i++)
             {
-                if (cachedArgs[i] == name)
+                if (this.cachedArgs[i] == name)
                 {
-                    return cachedArgs[i];
+                    return this.cachedArgs[i];
                 }
             }
             return null;

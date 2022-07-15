@@ -11,29 +11,29 @@ namespace Mirage.Examples.MultipleAdditiveScenes
 
         private void Start()
         {
-            if (IsServer)
+            if (this.IsServer)
             {
-                physicsScene = gameObject.scene.GetPhysicsScene();
-                simulatePhysicsScene = physicsScene.IsValid() && physicsScene != Physics.defaultPhysicsScene;
+                this.physicsScene = this.gameObject.scene.GetPhysicsScene();
+                this.simulatePhysicsScene = this.physicsScene.IsValid() && this.physicsScene != Physics.defaultPhysicsScene;
 
-                physicsScene2D = gameObject.scene.GetPhysicsScene2D();
-                simulatePhysicsScene2D = physicsScene2D.IsValid() && physicsScene2D != Physics2D.defaultPhysicsScene;
+                this.physicsScene2D = this.gameObject.scene.GetPhysicsScene2D();
+                this.simulatePhysicsScene2D = this.physicsScene2D.IsValid() && this.physicsScene2D != Physics2D.defaultPhysicsScene;
             }
             else
             {
-                enabled = false;
+                this.enabled = false;
             }
         }
 
         private void FixedUpdate()
         {
-            if (!IsServer) return;
+            if (!this.IsServer) return;
 
-            if (simulatePhysicsScene)
-                physicsScene.Simulate(Time.fixedDeltaTime);
+            if (this.simulatePhysicsScene)
+                this.physicsScene.Simulate(Time.fixedDeltaTime);
 
-            if (simulatePhysicsScene2D)
-                physicsScene2D.Simulate(Time.fixedDeltaTime);
+            if (this.simulatePhysicsScene2D)
+                this.physicsScene2D.Simulate(Time.fixedDeltaTime);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test]
         public void NetworkPingMessageTest()
         {
-            TestSerializeDeserialize(new NetworkPingMessage
+            this.TestSerializeDeserialize(new NetworkPingMessage
             {
                 clientTime = DateTime.Now.ToOADate()
             });
@@ -54,7 +54,7 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test]
         public void NetworkPongMessageTest()
         {
-            TestSerializeDeserialize(new NetworkPongMessage
+            this.TestSerializeDeserialize(new NetworkPongMessage
             {
                 clientTime = DateTime.Now.ToOADate(),
                 serverTime = DateTime.Now.ToOADate(),
@@ -64,13 +64,13 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test]
         public void NotReadyMessageTest()
         {
-            TestSerializeDeserialize(new SceneNotReadyMessage());
+            this.TestSerializeDeserialize(new SceneNotReadyMessage());
         }
 
         [Test]
         public void ObjectDestroyMessageTest()
         {
-            TestSerializeDeserialize(new ObjectDestroyMessage
+            this.TestSerializeDeserialize(new ObjectDestroyMessage
             {
                 netId = 42,
             });
@@ -79,7 +79,7 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test]
         public void ObjectHideMessageTest()
         {
-            TestSerializeDeserialize(new ObjectHideMessage
+            this.TestSerializeDeserialize(new ObjectHideMessage
             {
                 netId = 42,
             });
@@ -88,13 +88,13 @@ namespace Mirage.Tests.Runtime.Serialization
         [Test]
         public void SceneReadyMessageTest()
         {
-            TestSerializeDeserialize(new SceneReadyMessage());
+            this.TestSerializeDeserialize(new SceneReadyMessage());
         }
 
         [Test]
         public void AddPlayerMessageTest()
         {
-            TestSerializeDeserialize(new AddCharacterMessage());
+            this.TestSerializeDeserialize(new AddCharacterMessage());
         }
 
         [Test]

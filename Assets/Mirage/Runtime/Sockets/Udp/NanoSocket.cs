@@ -19,27 +19,27 @@ namespace Mirage.Sockets.Udp
 
         public NanoSocket(UdpSocketFactory factory)
         {
-            bufferSize = factory.BufferSize;
+            this.bufferSize = factory.BufferSize;
         }
         ~NanoSocket()
         {
-            Dispose();
+            this.Dispose();
         }
 
         private void InitSocket()
         {
-            socket = UDP.Create(bufferSize, bufferSize);
-            UDP.SetDontFragment(socket);
-            UDP.SetNonBlocking(socket);
-            needsDisposing = true;
+            this.socket = UDP.Create(this.bufferSize, this.bufferSize);
+            UDP.SetDontFragment(this.socket);
+            UDP.SetNonBlocking(this.socket);
+            this.needsDisposing = true;
         }
 
         public void Bind(IEndPoint endPoint)
         {
-            receiveEndPoint = (NanoEndPoint)endPoint;
+            this.receiveEndPoint = (NanoEndPoint)endPoint;
 
-            InitSocket();
-            var result = UDP.Bind(socket, ref receiveEndPoint.address);
+            this.InitSocket();
+            var result = UDP.Bind(this.socket, ref this.receiveEndPoint.address);
             if (result != 0)
             {
                 throw new NanoSocketException("Socket Bind failed: address or port might already be in use");
@@ -48,22 +48,22 @@ namespace Mirage.Sockets.Udp
 
         public void Dispose()
         {
-            if (!needsDisposing) return;
-            UDP.Destroy(ref socket);
-            needsDisposing = false;
+            if (!this.needsDisposing) return;
+            UDP.Destroy(ref this.socket);
+            this.needsDisposing = false;
         }
 
         public void Close()
         {
-            Dispose();
+            this.Dispose();
         }
 
         public void Connect(IEndPoint endPoint)
         {
-            receiveEndPoint = (NanoEndPoint)endPoint;
+            this.receiveEndPoint = (NanoEndPoint)endPoint;
 
-            InitSocket();
-            var result = UDP.Connect(socket, ref receiveEndPoint.address);
+            this.InitSocket();
+            var result = UDP.Connect(this.socket, ref this.receiveEndPoint.address);
             if (result != 0)
             {
                 throw new NanoSocketException("Socket Connect failed");
@@ -72,13 +72,13 @@ namespace Mirage.Sockets.Udp
 
         public bool Poll()
         {
-            return UDP.Poll(socket, 0) > 0;
+            return UDP.Poll(this.socket, 0) > 0;
         }
 
         public int Receive(byte[] buffer, out IEndPoint endPoint)
         {
-            var count = UDP.Receive(socket, ref receiveEndPoint.address, buffer, buffer.Length);
-            endPoint = receiveEndPoint;
+            var count = UDP.Receive(this.socket, ref this.receiveEndPoint.address, buffer, buffer.Length);
+            endPoint = this.receiveEndPoint;
 
             return count;
         }
@@ -86,7 +86,7 @@ namespace Mirage.Sockets.Udp
         public void Send(IEndPoint endPoint, byte[] packet, int length)
         {
             var nanoEndPoint = (NanoEndPoint)endPoint;
-            UDP.Send(socket, ref nanoEndPoint.address, packet, length);
+            UDP.Send(this.socket, ref nanoEndPoint.address, packet, length);
         }
     }
 }

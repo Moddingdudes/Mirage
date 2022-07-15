@@ -12,31 +12,31 @@ namespace Mirage.Tests.Runtime.Host
 
         public override void ExtraSetup()
         {
-            serverConnectedCalls.Clear();
-            clientConnectedCalls.Clear();
+            this.serverConnectedCalls.Clear();
+            this.clientConnectedCalls.Clear();
 
-            server.Connected.AddListener(player => serverConnectedCalls.Add(player));
-            client.Connected.AddListener(player => clientConnectedCalls.Add(player));
+            this.server.Connected.AddListener(player => this.serverConnectedCalls.Add(player));
+            this.client.Connected.AddListener(player => this.clientConnectedCalls.Add(player));
         }
 
         [Test]
         public void ConnectedEventIsCalledOnceForServer()
         {
-            Assert.That(serverConnectedCalls, Has.Count.EqualTo(1));
-            Assert.That(serverConnectedCalls[0].Connection, Is.TypeOf<PipePeerConnection>());
+            Assert.That(this.serverConnectedCalls, Has.Count.EqualTo(1));
+            Assert.That(this.serverConnectedCalls[0].Connection, Is.TypeOf<PipePeerConnection>());
         }
         [Test]
         public void ConnectedEventIsCalledOnceForClient()
         {
-            Assert.That(clientConnectedCalls, Has.Count.EqualTo(1));
-            Assert.That(clientConnectedCalls[0].Connection, Is.TypeOf<PipePeerConnection>());
+            Assert.That(this.clientConnectedCalls, Has.Count.EqualTo(1));
+            Assert.That(this.clientConnectedCalls[0].Connection, Is.TypeOf<PipePeerConnection>());
         }
 
 
         [Test]
         public void LocalClientActiveTest()
         {
-            Assert.That(server.LocalClientActive, Is.True);
+            Assert.That(this.server.LocalClientActive, Is.True);
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace Mirage.Tests.Runtime.Host
         {
             Assert.Throws<InvalidOperationException>(() =>
             {
-                server.AddLocalConnection(null, null);
+                this.server.AddLocalConnection(null, null);
             });
         }
 
@@ -53,49 +53,49 @@ namespace Mirage.Tests.Runtime.Host
         [Test]
         public void StartedNotNullTest()
         {
-            Assert.That(server.Started, Is.Not.Null);
+            Assert.That(this.server.Started, Is.Not.Null);
         }
 
         [Test]
         public void ConnectedNotNullTest()
         {
-            Assert.That(server.Connected, Is.Not.Null);
+            Assert.That(this.server.Connected, Is.Not.Null);
         }
 
         [Test]
         public void AuthenticatedNotNullTest()
         {
-            Assert.That(server.Authenticated, Is.Not.Null);
+            Assert.That(this.server.Authenticated, Is.Not.Null);
         }
 
         [Test]
         public void DisconnectedNotNullTest()
         {
-            Assert.That(server.Disconnected, Is.Not.Null);
+            Assert.That(this.server.Disconnected, Is.Not.Null);
         }
 
         [Test]
         public void StoppedNotNullTest()
         {
-            Assert.That(server.Stopped, Is.Not.Null);
+            Assert.That(this.server.Stopped, Is.Not.Null);
         }
 
         [Test]
         public void OnStartHostNotNullTest()
         {
-            Assert.That(server.OnStartHost, Is.Not.Null);
+            Assert.That(this.server.OnStartHost, Is.Not.Null);
         }
 
         [Test]
         public void OnStopHostNotNullTest()
         {
-            Assert.That(server.OnStopHost, Is.Not.Null);
+            Assert.That(this.server.OnStopHost, Is.Not.Null);
         }
 
         [Test]
         public void TimeNotNullTest()
         {
-            Assert.That(server.World.Time, Is.Not.Null);
+            Assert.That(this.server.World.Time, Is.Not.Null);
         }
     }
 }

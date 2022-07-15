@@ -62,7 +62,7 @@ namespace Mirage.SocketLayer.Tests.PeerTests
         public void CloseShouldThrowIfNoActive()
         {
             LogAssert.Expect(LogType.Warning, "Peer is not active");
-            peer.Close();
+            this.peer.Close();
             LogAssert.NoUnexpectedReceived();
         }
 
@@ -70,45 +70,45 @@ namespace Mirage.SocketLayer.Tests.PeerTests
         public void CloseShouldCallSocketClose()
         {
             // activate peer
-            peer.Bind(default);
+            this.peer.Bind(default);
             // close peer
-            peer.Close();
-            socket.Received(1).Close();
+            this.peer.Close();
+            this.socket.Received(1).Close();
         }
 
         [Test]
         public void IgnoresMessageThatIsTooShort()
         {
-            peer.Bind(TestEndPoint.CreateSubstitute());
+            this.peer.Bind(TestEndPoint.CreateSubstitute());
 
             var connectAction = Substitute.For<Action<IConnection>>();
-            peer.OnConnected += connectAction;
+            this.peer.OnConnected += connectAction;
 
-            socket.SetupReceiveCall(new byte[1] {
+            this.socket.SetupReceiveCall(new byte[1] {
                 (byte)UnityEngine.Random.Range(0, 255),
             });
 
-            peer.UpdateTest();
+            this.peer.UpdateTest();
 
             // server does nothing for invalid
-            socket.DidNotReceiveWithAnyArgs().Send(default, default, default);
+            this.socket.DidNotReceiveWithAnyArgs().Send(default, default, default);
             connectAction.DidNotReceiveWithAnyArgs().Invoke(default);
         }
 
         [Test]
         public void ThrowsIfSocketGivesLengthThatIsTooHigh()
         {
-            peer.Bind(TestEndPoint.CreateSubstitute());
+            this.peer.Bind(TestEndPoint.CreateSubstitute());
 
             var connectAction = Substitute.For<Action<IConnection>>();
-            peer.OnConnected += connectAction;
+            this.peer.OnConnected += connectAction;
 
             const int aboveMTU = 5000;
-            socket.SetupReceiveCall(new byte[1000], length: aboveMTU);
+            this.socket.SetupReceiveCall(new byte[1000], length: aboveMTU);
 
             var exception = Assert.Throws<IndexOutOfRangeException>(() =>
             {
-                peer.UpdateTest();
+                this.peer.UpdateTest();
             });
 
             Assert.That(exception, Has.Message.EqualTo($"Socket returned length above MTU. MaxPacketSize:{MAX_PACKET_SIZE} length:{aboveMTU}"));
@@ -118,10 +118,10 @@ namespace Mirage.SocketLayer.Tests.PeerTests
         [Repeat(10)]
         public void IgnoresRandomData()
         {
-            peer.Bind(TestEndPoint.CreateSubstitute());
+            this.peer.Bind(TestEndPoint.CreateSubstitute());
 
             var connectAction = Substitute.For<Action<IConnection>>();
-            peer.OnConnected += connectAction;
+            this.peer.OnConnected += connectAction;
 
             var endPoint = TestEndPoint.CreateSubstitute();
 
@@ -139,12 +139,12 @@ namespace Mirage.SocketLayer.Tests.PeerTests
                 randomData[0] = 0;
             }
 
-            socket.SetupReceiveCall(randomData);
+            this.socket.SetupReceiveCall(randomData);
 
-            peer.UpdateTest();
+            this.peer.UpdateTest();
 
             // server does nothing for invalid
-            socket.DidNotReceiveWithAnyArgs().Send(default, default, default);
+            this.socket.DidNotReceiveWithAnyArgs().Send(default, default, default);
             connectAction.DidNotReceiveWithAnyArgs().Invoke(default);
         }
 
@@ -152,10 +152,10 @@ namespace Mirage.SocketLayer.Tests.PeerTests
         [Repeat(10)]
         public void SendsInvalidKeyForRandomKey()
         {
-            peer.Bind(TestEndPoint.CreateSubstitute());
+            this.peer.Bind(TestEndPoint.CreateSubstitute());
 
             var connectAction = Substitute.For<Action<IConnection>>();
-            peer.OnConnected += connectAction;
+            this.peer.OnConnected += connectAction;
 
             var endPoint = TestEndPoint.CreateSubstitute();
 
@@ -172,12 +172,12 @@ namespace Mirage.SocketLayer.Tests.PeerTests
             if (randomData.Length >= 3)
                 randomData[2] = 1; // set to 1 so tests desn't randomly pick valid key
 
-            socket.SetupReceiveCall(randomData, endPoint);
+            this.socket.SetupReceiveCall(randomData, endPoint);
 
-            peer.UpdateTest();
+            this.peer.UpdateTest();
 
             // server does nothing for invalid
-            socket.Received(1).Send(
+            this.socket.Received(1).Send(
                 endPoint: endPoint,
                 length: 3,
                 packet: Arg.Is<byte[]>(sent =>

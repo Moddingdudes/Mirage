@@ -13,7 +13,7 @@ namespace Mirage.Examples.Chat
         public void CmdSend(string message)
         {
             if (message.Trim() != "")
-                RpcReceive(message.Trim());
+                this.RpcReceive(message.Trim());
         }
 
         [ClientRpc]

@@ -9,12 +9,12 @@ namespace Mirage.Examples.Basic
 
         public override void OnServerAddPlayer(INetworkPlayer player)
         {
-            var character = Instantiate(PlayerPrefab);
+            var character = Instantiate(this.PlayerPrefab);
             // Make this a child of the layout panel in the Canvas
-            character.transform.SetParent(Parent);
+            character.transform.SetParent(this.Parent);
 
-            SetCharacterName(player, character);
-            ServerObjectManager.AddCharacter(player, character.gameObject);
+            this.SetCharacterName(player, character);
+            this.ServerObjectManager.AddCharacter(player, character.gameObject);
         }
     }
 }

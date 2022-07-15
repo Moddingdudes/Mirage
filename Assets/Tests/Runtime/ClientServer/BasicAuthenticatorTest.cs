@@ -11,16 +11,16 @@ namespace Mirage.Tests.Runtime.ClientServer
         public void CheckConnected()
         {
             // Should have connected
-            Assert.That(clientPlayer, Is.Not.Null);
-            Assert.That(serverPlayer, Is.Not.Null);
+            Assert.That(this.clientPlayer, Is.Not.Null);
+            Assert.That(this.serverPlayer, Is.Not.Null);
         }
 
         public override void ExtraSetup()
         {
-            authenticator = server.gameObject.AddComponent<BasicAuthenticator>();
+            this.authenticator = this.server.gameObject.AddComponent<BasicAuthenticator>();
 
-            server.authenticator = authenticator;
-            client.authenticator = authenticator;
+            this.server.authenticator = this.authenticator;
+            this.client.authenticator = this.authenticator;
 
             base.ExtraSetup();
         }

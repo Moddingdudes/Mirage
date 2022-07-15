@@ -12,29 +12,29 @@ namespace Mirage
 
         public void AddDirtyObject(NetworkIdentity dirty)
         {
-            DirtyObjects.Add(dirty);
+            this.DirtyObjects.Add(dirty);
         }
 
 
         internal void Update()
         {
-            DirtyObjectsTmp.Clear();
+            this.DirtyObjectsTmp.Clear();
 
-            foreach (var identity in DirtyObjects)
+            foreach (var identity in this.DirtyObjects)
             {
                 if (identity != null)
                 {
                     identity.UpdateVars();
 
                     if (identity.StillDirty())
-                        DirtyObjectsTmp.Add(identity);
+                        this.DirtyObjectsTmp.Add(identity);
                 }
             }
 
-            DirtyObjects.Clear();
+            this.DirtyObjects.Clear();
 
-            foreach (var obj in DirtyObjectsTmp)
-                DirtyObjects.Add(obj);
+            foreach (var obj in this.DirtyObjectsTmp)
+                this.DirtyObjects.Add(obj);
         }
     }
 }

@@ -26,8 +26,8 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         public int WriteCorrectNumberOfBits(Vector3 max, Vector3 precision)
         {
             var packer = new Vector3Packer(max, precision);
-            packer.Pack(writer, Vector3.zero);
-            return writer.BitPosition;
+            packer.Pack(this.writer, Vector3.zero);
+            return this.writer.BitPosition;
         }
 
         private static IEnumerable ThrowsIfAnyMaxIsZeroCases()
@@ -71,8 +71,8 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
                 Random.Range(-max.z, -max.z)
                 );
 
-            packer.Pack(writer, expected);
-            var unpacked = packer.Unpack(GetReader());
+            packer.Pack(this.writer, expected);
+            var unpacked = packer.Unpack(this.GetReader());
 
             Assert.That(unpacked.x, Is.EqualTo(expected.x).Within(precision.x));
             Assert.That(unpacked.y, Is.EqualTo(expected.y).Within(precision.y));
@@ -86,8 +86,8 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
             var packer = new Vector3Packer(max, precision);
             var zero = Vector3.zero;
 
-            packer.Pack(writer, zero);
-            var unpacked = packer.Unpack(GetReader());
+            packer.Pack(this.writer, zero);
+            var unpacked = packer.Unpack(this.GetReader());
 
             Assert.That(unpacked, Is.EqualTo(zero));
         }

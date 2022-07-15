@@ -45,7 +45,7 @@ namespace NanoSockets
         {
             get
             {
-                return handle > 0;
+                return this.handle > 0;
             }
         }
     }
@@ -64,13 +64,13 @@ namespace NanoSockets
 
         public bool Equals(Address other)
         {
-            return address0 == other.address0 && address1 == other.address1 && port == other.port;
+            return this.address0 == other.address0 && this.address1 == other.address1 && this.port == other.port;
         }
 
         public override bool Equals(object obj)
         {
             if (obj is Address)
-                return Equals((Address)obj);
+                return this.Equals((Address)obj);
 
             return false;
         }
@@ -79,9 +79,9 @@ namespace NanoSockets
         {
             var hash = 17;
 
-            hash = hash * 31 + address0.GetHashCode();
-            hash = hash * 31 + address1.GetHashCode();
-            hash = hash * 31 + port.GetHashCode();
+            hash = hash * 31 + this.address0.GetHashCode();
+            hash = hash * 31 + this.address1.GetHashCode();
+            hash = hash * 31 + this.port.GetHashCode();
 
             return hash;
         }

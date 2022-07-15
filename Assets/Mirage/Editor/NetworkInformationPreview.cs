@@ -29,33 +29,33 @@ namespace Mirage
             public Styles()
             {
                 var fontColor = new Color(0.7f, 0.7f, 0.7f);
-                LabelStyle.padding.right += 20;
-                LabelStyle.normal.textColor = fontColor;
-                LabelStyle.active.textColor = fontColor;
-                LabelStyle.focused.textColor = fontColor;
-                LabelStyle.hover.textColor = fontColor;
-                LabelStyle.onNormal.textColor = fontColor;
-                LabelStyle.onActive.textColor = fontColor;
-                LabelStyle.onFocused.textColor = fontColor;
-                LabelStyle.onHover.textColor = fontColor;
+                this.LabelStyle.padding.right += 20;
+                this.LabelStyle.normal.textColor = fontColor;
+                this.LabelStyle.active.textColor = fontColor;
+                this.LabelStyle.focused.textColor = fontColor;
+                this.LabelStyle.hover.textColor = fontColor;
+                this.LabelStyle.onNormal.textColor = fontColor;
+                this.LabelStyle.onActive.textColor = fontColor;
+                this.LabelStyle.onFocused.textColor = fontColor;
+                this.LabelStyle.onHover.textColor = fontColor;
 
-                ComponentName.normal.textColor = fontColor;
-                ComponentName.active.textColor = fontColor;
-                ComponentName.focused.textColor = fontColor;
-                ComponentName.hover.textColor = fontColor;
-                ComponentName.onNormal.textColor = fontColor;
-                ComponentName.onActive.textColor = fontColor;
-                ComponentName.onFocused.textColor = fontColor;
-                ComponentName.onHover.textColor = fontColor;
+                this.ComponentName.normal.textColor = fontColor;
+                this.ComponentName.active.textColor = fontColor;
+                this.ComponentName.focused.textColor = fontColor;
+                this.ComponentName.hover.textColor = fontColor;
+                this.ComponentName.onNormal.textColor = fontColor;
+                this.ComponentName.onActive.textColor = fontColor;
+                this.ComponentName.onFocused.textColor = fontColor;
+                this.ComponentName.onHover.textColor = fontColor;
 
-                DisabledName.normal.textColor = fontColor;
-                DisabledName.active.textColor = fontColor;
-                DisabledName.focused.textColor = fontColor;
-                DisabledName.hover.textColor = fontColor;
-                DisabledName.onNormal.textColor = fontColor;
-                DisabledName.onActive.textColor = fontColor;
-                DisabledName.onFocused.textColor = fontColor;
-                DisabledName.onHover.textColor = fontColor;
+                this.DisabledName.normal.textColor = fontColor;
+                this.DisabledName.active.textColor = fontColor;
+                this.DisabledName.focused.textColor = fontColor;
+                this.DisabledName.hover.textColor = fontColor;
+                this.DisabledName.onNormal.textColor = fontColor;
+                this.DisabledName.onActive.textColor = fontColor;
+                this.DisabledName.onFocused.textColor = fontColor;
+                this.DisabledName.onHover.textColor = fontColor;
             }
         }
 
@@ -64,17 +64,17 @@ namespace Mirage
 
         public override GUIContent GetPreviewTitle()
         {
-            if (title == null)
+            if (this.title == null)
             {
-                title = new GUIContent("Network Information");
+                this.title = new GUIContent("Network Information");
             }
-            return title;
+            return this.title;
         }
 
         public override bool HasPreviewGUI()
         {
             // need to check if target is null to stop MissingReferenceException 
-            return target != null && target is GameObject gameObject && gameObject.GetComponent<NetworkIdentity>() != null;
+            return this.target != null && this.target is GameObject gameObject && gameObject.GetComponent<NetworkIdentity>() != null;
         }
 
         public override void OnPreviewGUI(Rect r, GUIStyle background)
@@ -82,10 +82,10 @@ namespace Mirage
             if (Event.current.type != EventType.Repaint)
                 return;
 
-            if (target == null)
+            if (this.target == null)
                 return;
 
-            var targetGameObject = target as GameObject;
+            var targetGameObject = this.target as GameObject;
 
             if (targetGameObject == null)
                 return;
@@ -95,8 +95,8 @@ namespace Mirage
             if (identity == null)
                 return;
 
-            if (styles == null)
-                styles = new Styles();
+            if (this.styles == null)
+                this.styles = new Styles();
 
             // padding
             var previewPadding = new RectOffset(-5, -5, -5, -5);
@@ -106,31 +106,31 @@ namespace Mirage
             var initialX = paddedRect.x + 10;
             var Y = paddedRect.y + 10;
 
-            Y = DrawNetworkIdentityInfo(identity, initialX, Y);
+            Y = this.DrawNetworkIdentityInfo(identity, initialX, Y);
 
-            Y = DrawNetworkBehaviors(identity, initialX, Y);
+            Y = this.DrawNetworkBehaviors(identity, initialX, Y);
 
-            Y = DrawObservers(identity, initialX, Y);
+            Y = this.DrawObservers(identity, initialX, Y);
 
-            _ = DrawOwner(identity, initialX, Y);
+            _ = this.DrawOwner(identity, initialX, Y);
 
         }
 
         private float DrawNetworkIdentityInfo(NetworkIdentity identity, float initialX, float Y)
         {
-            var infos = GetNetworkIdentityInfo(identity);
+            var infos = this.GetNetworkIdentityInfo(identity);
             // Get required label size for the names of the information values we're going to show
             // There are two columns, one with label for the name of the info and the next for the value
             var maxNameLabelSize = new Vector2(140, 16);
-            var maxValueLabelSize = GetMaxNameLabelSize(infos);
+            var maxValueLabelSize = this.GetMaxNameLabelSize(infos);
 
             var labelRect = new Rect(initialX, Y, maxNameLabelSize.x, maxNameLabelSize.y);
             var idLabelRect = new Rect(maxNameLabelSize.x, Y, maxValueLabelSize.x, maxValueLabelSize.y);
 
             foreach (var info in infos)
             {
-                GUI.Label(labelRect, info.Name, styles.LabelStyle);
-                GUI.Label(idLabelRect, info.Value, styles.ComponentName);
+                GUI.Label(labelRect, info.Name, this.styles.LabelStyle);
+                GUI.Label(idLabelRect, info.Value, this.styles.ComponentName);
                 labelRect.y += labelRect.height;
                 labelRect.x = initialX;
                 idLabelRect.y += idLabelRect.height;
@@ -141,14 +141,14 @@ namespace Mirage
 
         private float DrawNetworkBehaviors(NetworkIdentity identity, float initialX, float Y)
         {
-            var behavioursInfo = GetNetworkBehaviorInfo(identity);
+            var behavioursInfo = this.GetNetworkBehaviorInfo(identity);
 
             // Show behaviours list in a different way than the name/value pairs above
 
-            var maxBehaviourLabelSize = GetMaxBehaviourLabelSize(behavioursInfo);
+            var maxBehaviourLabelSize = this.GetMaxBehaviourLabelSize(behavioursInfo);
             var behaviourRect = new Rect(initialX, Y + 10, maxBehaviourLabelSize.x, maxBehaviourLabelSize.y);
 
-            GUI.Label(behaviourRect, new GUIContent("Network Behaviours"), styles.LabelStyle);
+            GUI.Label(behaviourRect, new GUIContent("Network Behaviours"), this.styles.LabelStyle);
             // indent names
             behaviourRect.x += 20;
             behaviourRect.y += behaviourRect.height;
@@ -162,7 +162,7 @@ namespace Mirage
                     continue;
                 }
 
-                GUI.Label(behaviourRect, info.Name, info.Behaviour.enabled ? styles.ComponentName : styles.DisabledName);
+                GUI.Label(behaviourRect, info.Name, info.Behaviour.enabled ? this.styles.ComponentName : this.styles.DisabledName);
                 behaviourRect.y += behaviourRect.height;
                 Y = behaviourRect.y;
             }
@@ -176,14 +176,14 @@ namespace Mirage
             {
                 var observerRect = new Rect(initialX, Y + 10, 200, 20);
 
-                GUI.Label(observerRect, new GUIContent("Network observers"), styles.LabelStyle);
+                GUI.Label(observerRect, new GUIContent("Network observers"), this.styles.LabelStyle);
                 // indent names
                 observerRect.x += 20;
                 observerRect.y += observerRect.height;
 
                 foreach (var player in identity.observers)
                 {
-                    GUI.Label(observerRect, player.Connection.EndPoint + ":" + player, styles.ComponentName);
+                    GUI.Label(observerRect, player.Connection.EndPoint + ":" + player, this.styles.ComponentName);
                     observerRect.y += observerRect.height;
                     Y = observerRect.y;
                 }
@@ -197,7 +197,7 @@ namespace Mirage
             if (identity.Owner != null)
             {
                 var ownerRect = new Rect(initialX, Y + 10, 400, 20);
-                GUI.Label(ownerRect, new GUIContent("Client Authority: " + identity.Owner), styles.LabelStyle);
+                GUI.Label(ownerRect, new GUIContent("Client Authority: " + identity.Owner), this.styles.LabelStyle);
                 Y += ownerRect.height;
             }
             return Y;
@@ -209,7 +209,7 @@ namespace Mirage
             var maxLabelSize = Vector2.zero;
             foreach (var info in infos)
             {
-                var labelSize = styles.LabelStyle.CalcSize(info.Value);
+                var labelSize = this.styles.LabelStyle.CalcSize(info.Value);
                 if (maxLabelSize.x < labelSize.x)
                 {
                     maxLabelSize.x = labelSize.x;
@@ -227,7 +227,7 @@ namespace Mirage
             var maxLabelSize = Vector2.zero;
             foreach (var behaviour in behavioursInfo)
             {
-                var labelSize = styles.LabelStyle.CalcSize(behaviour.Name);
+                var labelSize = this.styles.LabelStyle.CalcSize(behaviour.Name);
                 if (maxLabelSize.x < labelSize.x)
                 {
                     maxLabelSize.x = labelSize.x;
@@ -244,7 +244,7 @@ namespace Mirage
         {
             var infos = new List<NetworkIdentityInfo>
             {
-                GetAssetId(identity),
+                this.GetAssetId(identity),
                 GetString("Scene ID", identity.SceneId.ToString("X"))
             };
 

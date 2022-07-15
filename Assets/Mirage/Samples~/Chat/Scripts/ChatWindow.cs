@@ -21,12 +21,12 @@ namespace Mirage.Examples.Chat
 
         public void Awake()
         {
-            Player.OnMessage += OnPlayerMessage;
+            Player.OnMessage += this.OnPlayerMessage;
         }
 
         public void OnDestroy()
         {
-            Player.OnMessage -= OnPlayerMessage;
+            Player.OnMessage -= this.OnPlayerMessage;
         }
 
         private void OnPlayerMessage(Player player, string message)
@@ -34,40 +34,40 @@ namespace Mirage.Examples.Chat
             var prettyMessage = player.IsLocalPlayer ?
                 $"<color=red>{player.playerName}: </color> {message}" :
                 $"<color=blue>{player.playerName}: </color> {message}";
-            AppendMessage(prettyMessage);
+            this.AppendMessage(prettyMessage);
 
             logger.Log(message);
         }
 
         public void OnSend()
         {
-            if (ChatMessage.text.Trim() == "")
+            if (this.ChatMessage.text.Trim() == "")
                 return;
 
             // get our player
-            var player = Client.Player.Identity.GetComponent<Player>();
+            var player = this.Client.Player.Identity.GetComponent<Player>();
 
             // send a message
-            player.CmdSend(ChatMessage.text.Trim());
+            player.CmdSend(this.ChatMessage.text.Trim());
 
-            ChatMessage.text = "";
+            this.ChatMessage.text = "";
         }
 
         internal void AppendMessage(string message)
         {
-            StartCoroutine(AppendAndScroll(message));
+            this.StartCoroutine(this.AppendAndScroll(message));
         }
 
         private IEnumerator AppendAndScroll(string message)
         {
-            ChatHistory.text += message + "\n";
+            this.ChatHistory.text += message + "\n";
 
             // it takes 2 frames for the UI to update ?!?!
             yield return null;
             yield return null;
 
             // slam the scrollbar down
-            Scrollbar.value = 0;
+            this.Scrollbar.value = 0;
         }
     }
 }

@@ -14,8 +14,8 @@ namespace Mirage.Tests.Performance
 
         private GameObject Spawn()
         {
-            var clone = GameObject.Instantiate(prefab);
-            spawned.Add(clone);
+            var clone = GameObject.Instantiate(this.prefab);
+            this.spawned.Add(clone);
             clone.SetActive(true);
             return clone;
         }
@@ -23,19 +23,19 @@ namespace Mirage.Tests.Performance
         [SetUp]
         public void SetUp()
         {
-            prefab = new GameObject("NetworkPrefab");
-            prefab.SetActive(false); // disable so that NetworkIdentity.Awake is not called
-            prefab.AddComponent<NetworkIdentity>();
+            this.prefab = new GameObject("NetworkPrefab");
+            this.prefab.SetActive(false); // disable so that NetworkIdentity.Awake is not called
+            this.prefab.AddComponent<NetworkIdentity>();
         }
 
         [TearDown]
         public void TearDown()
         {
-            UnityEngine.Object.DestroyImmediate(prefab);
-            foreach (var item in spawned)
+            UnityEngine.Object.DestroyImmediate(this.prefab);
+            foreach (var item in this.spawned)
                 UnityEngine.Object.DestroyImmediate(item);
 
-            spawned.Clear();
+            this.spawned.Clear();
         }
 
         [Test]
@@ -48,7 +48,7 @@ namespace Mirage.Tests.Performance
                 // spawn 100 objects
                 for (var i = 0; i < 100; i++)
                 {
-                    _ = Spawn();
+                    _ = this.Spawn();
                 }
             })
                 .WarmupCount(10)

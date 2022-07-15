@@ -11,35 +11,35 @@ namespace Mirage.HeadlessBenchmark
 
         private void Update()
         {
-            if (!IsLocalPlayer)
+            if (!this.IsLocalPlayer)
                 return;
 
-            if (!hasArrived)
+            if (!this.hasArrived)
             {
-                hasArrived = true;
+                this.hasArrived = true;
                 var randX = Random.Range(-15.0f, 15.0f);
                 var randY = Random.Range(-15.0f, 15.0f);
-                StartCoroutine(MoveToPoint(new Vector3(randX, randY, 0)));
+                this.StartCoroutine(this.MoveToPoint(new Vector3(randX, randY, 0)));
             }
         }
 
         private IEnumerator MoveToPoint(Vector3 targetPos)
         {
             var timer = 0.0f;
-            var startPos = transform.position;
+            var startPos = this.transform.position;
 
-            while (timer < movementDuration)
+            while (timer < this.movementDuration)
             {
                 timer += Time.deltaTime;
-                var t = timer / movementDuration;
+                var t = timer / this.movementDuration;
                 t = t * t * t * (t * (6f * t - 15f) + 10f);
-                transform.position = Vector3.Lerp(startPos, targetPos, t);
+                this.transform.position = Vector3.Lerp(startPos, targetPos, t);
 
                 yield return null;
             }
 
-            yield return new WaitForSeconds(waitBeforeMoving);
-            hasArrived = false;
+            yield return new WaitForSeconds(this.waitBeforeMoving);
+            this.hasArrived = false;
         }
     }
 }

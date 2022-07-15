@@ -24,34 +24,34 @@ namespace Mirage.Weaver
             this.logger = logger;
 
             // Cache these so that we dont import them for each site we process
-            IsServer = module.ImportReference((NetworkBehaviour nb) => nb.IsServer);
-            IsClient = module.ImportReference((NetworkBehaviour nb) => nb.IsClient);
-            HasAuthority = module.ImportReference((NetworkBehaviour nb) => nb.HasAuthority);
-            IsLocalPlayer = module.ImportReference((NetworkBehaviour nb) => nb.IsLocalPlayer);
+            this.IsServer = module.ImportReference((NetworkBehaviour nb) => nb.IsServer);
+            this.IsClient = module.ImportReference((NetworkBehaviour nb) => nb.IsClient);
+            this.HasAuthority = module.ImportReference((NetworkBehaviour nb) => nb.HasAuthority);
+            this.IsLocalPlayer = module.ImportReference((NetworkBehaviour nb) => nb.IsLocalPlayer);
         }
 
         public bool ProcessTypes(IReadOnlyList<FoundType> foundTypes)
         {
             foreach (var foundType in foundTypes)
             {
-                ProcessType(foundType);
+                this.ProcessType(foundType);
             }
 
-            return modified;
+            return this.modified;
         }
 
         private void ProcessType(FoundType foundType)
         {
             foreach (var md in foundType.TypeDefinition.Methods)
             {
-                ProcessMethod(md, foundType);
+                this.ProcessMethod(md, foundType);
             }
 
             if (!foundType.IsNetworkBehaviour)
             {
                 foreach (var fd in foundType.TypeDefinition.Fields)
                 {
-                    ProcessFields(fd, foundType);
+                    this.ProcessFields(fd, foundType);
                 }
             }
         }
@@ -64,12 +64,12 @@ namespace Mirage.Weaver
         private void ProcessFields(FieldDefinition fd, FoundType foundType)
         {
             if (fd.HasCustomAttribute<SyncVarAttribute>())
-                logger.Error($"SyncVar {fd.Name} must be inside a NetworkBehaviour. {foundType.TypeDefinition.Name} is not a NetworkBehaviour", fd);
+                this.logger.Error($"SyncVar {fd.Name} must be inside a NetworkBehaviour. {foundType.TypeDefinition.Name} is not a NetworkBehaviour", fd);
 
             // only check SyncObjects inside Monobehaviours
             if (foundType.IsMonoBehaviour && SyncObjectProcessor.ImplementsSyncObject(fd.FieldType))
             {
-                logger.Error($"{fd.Name} is a SyncObject and can not be used inside Monobehaviour. {foundType.TypeDefinition.Name} is not a NetworkBehaviour", fd);
+                this.logger.Error($"{fd.Name} is a SyncObject and can not be used inside Monobehaviour. {foundType.TypeDefinition.Name} is not a NetworkBehaviour", fd);
             }
         }
 
@@ -78,7 +78,7 @@ namespace Mirage.Weaver
             if (IgnoreMethod(md))
                 return;
 
-            ProcessMethodAttributes(md, foundType);
+            this.ProcessMethodAttributes(md, foundType);
         }
 
         /// <summary>
@@ -94,12 +94,12 @@ namespace Mirage.Weaver
 
         private void ProcessMethodAttributes(MethodDefinition md, FoundType foundType)
         {
-            InjectGuard<ServerAttribute>(md, foundType, IsServer, "[Server] function '{0}' called when server not active");
-            InjectGuard<ClientAttribute>(md, foundType, IsClient, "[Client] function '{0}' called when client not active");
-            InjectGuard<HasAuthorityAttribute>(md, foundType, HasAuthority, "[Has Authority] function '{0}' called on player without authority");
-            InjectGuard<LocalPlayerAttribute>(md, foundType, IsLocalPlayer, "[Local Player] function '{0}' called on nonlocal player");
-            CheckAttribute<ServerRpcAttribute>(md, foundType);
-            CheckAttribute<ClientRpcAttribute>(md, foundType);
+            this.InjectGuard<ServerAttribute>(md, foundType, this.IsServer, "[Server] function '{0}' called when server not active");
+            this.InjectGuard<ClientAttribute>(md, foundType, this.IsClient, "[Client] function '{0}' called when client not active");
+            this.InjectGuard<HasAuthorityAttribute>(md, foundType, this.HasAuthority, "[Has Authority] function '{0}' called on player without authority");
+            this.InjectGuard<LocalPlayerAttribute>(md, foundType, this.IsLocalPlayer, "[Local Player] function '{0}' called on nonlocal player");
+            this.CheckAttribute<ServerRpcAttribute>(md, foundType);
+            this.CheckAttribute<ClientRpcAttribute>(md, foundType);
         }
 
         private void CheckAttribute<TAttribute>(MethodDefinition md, FoundType foundType)
@@ -110,7 +110,7 @@ namespace Mirage.Weaver
 
             if (!foundType.IsNetworkBehaviour)
             {
-                logger.Error($"{attribute.AttributeType.Name} method {md.Name} must be declared in a NetworkBehaviour", md);
+                this.logger.Error($"{attribute.AttributeType.Name} method {md.Name} must be declared in a NetworkBehaviour", md);
             }
         }
 
@@ -122,24 +122,24 @@ namespace Mirage.Weaver
 
             if (md.IsAbstract)
             {
-                logger.Error($"{typeof(TAttribute)} can't be applied to abstract method. Apply to override methods instead.", md);
+                this.logger.Error($"{typeof(TAttribute)} can't be applied to abstract method. Apply to override methods instead.", md);
                 return;
             }
 
             if (!foundType.IsNetworkBehaviour)
             {
-                logger.Error($"{attribute.AttributeType.Name} method {md.Name} must be declared in a NetworkBehaviour", md);
+                this.logger.Error($"{attribute.AttributeType.Name} method {md.Name} must be declared in a NetworkBehaviour", md);
                 return;
             }
 
             if (md.Name == "Awake" && !md.HasParameters)
             {
-                logger.Error($"{attribute.AttributeType.Name} will not work on the Awake method.", md);
+                this.logger.Error($"{attribute.AttributeType.Name} will not work on the Awake method.", md);
                 return;
             }
 
             // dont need to set modified for errors, so we set it here when we start doing ILProcessing
-            modified = true;
+            this.modified = true;
 
             var throwError = attribute.GetField("error", true);
             var worker = md.Body.GetILProcessor();

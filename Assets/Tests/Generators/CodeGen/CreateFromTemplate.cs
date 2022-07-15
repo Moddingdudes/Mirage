@@ -12,17 +12,17 @@ namespace JamesFrowen.SimpleCodeGen
 
         public CreateFromTemplate(string templatePath)
         {
-            template = File.ReadAllText(templatePath);
-            output = template;
+            this.template = File.ReadAllText(templatePath);
+            this.output = this.template;
         }
 
         public void Replace(string oldValue, string newValue)
         {
-            output = output.Replace(oldValue, newValue);
+            this.output = this.output.Replace(oldValue, newValue);
         }
         public void Replace(string oldValue, object newValue)
         {
-            output = output.Replace(oldValue, newValue.ToString());
+            this.output = this.output.Replace(oldValue, newValue.ToString());
         }
 
         public void WriteToFile(string path)
@@ -32,16 +32,16 @@ namespace JamesFrowen.SimpleCodeGen
             {
                 Directory.CreateDirectory(directory);
             }
-            if (createdFiles.Contains(path))
+            if (this.createdFiles.Contains(path))
             {
                 throw new ArgumentException($"File already created from this template with same path: {path}");
             }
 
-            createdFiles.Add(path);
+            this.createdFiles.Add(path);
 
-            File.WriteAllText(path, output);
+            File.WriteAllText(path, this.output);
             // reset output to template after writing
-            output = template;
+            this.output = this.template;
         }
     }
 }

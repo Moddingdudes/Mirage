@@ -73,34 +73,34 @@ namespace Mirage.SocketLayer
         private ConnectionState _state;
         public ConnectionState State
         {
-            get => _state;
+            get => this._state;
             set
             {
                 // check new state is allowed for current state
                 switch (value)
                 {
                     case ConnectionState.Connected:
-                        logger?.Assert(_state == ConnectionState.Created || _state == ConnectionState.Connecting);
+                        this.logger?.Assert(this._state == ConnectionState.Created || this._state == ConnectionState.Connecting);
                         break;
 
                     case ConnectionState.Connecting:
-                        logger?.Assert(_state == ConnectionState.Created);
+                        this.logger?.Assert(this._state == ConnectionState.Created);
                         break;
 
                     case ConnectionState.Disconnected:
-                        logger?.Assert(_state == ConnectionState.Connected);
+                        this.logger?.Assert(this._state == ConnectionState.Connected);
                         break;
 
                     case ConnectionState.Destroyed:
-                        logger?.Assert(_state == ConnectionState.Removing);
+                        this.logger?.Assert(this._state == ConnectionState.Removing);
                         break;
                 }
 
-                if (logger.Enabled(LogType.Log)) logger.Log($"{EndPoint} changed state from {_state} to {value}");
-                _state = value;
+                if (this.logger.Enabled(LogType.Log)) this.logger.Log($"{this.EndPoint} changed state from {this._state} to {value}");
+                this._state = value;
             }
         }
-        public bool Connected => State == ConnectionState.Connected;
+        public bool Connected => this.State == ConnectionState.Connected;
 
         private readonly Peer peer;
         public readonly IEndPoint EndPoint;
@@ -114,29 +114,29 @@ namespace Mirage.SocketLayer
         private readonly Metrics metrics;
         private readonly AckSystem ackSystem;
 
-        IEndPoint IConnection.EndPoint => EndPoint;
+        IEndPoint IConnection.EndPoint => this.EndPoint;
 
         internal Connection(Peer peer, IEndPoint endPoint, IDataHandler dataHandler, Config config, int maxPacketSize, Time time, Pool<ByteBuffer> bufferPool, ILogger logger, Metrics metrics)
         {
             this.peer = peer;
             this.logger = logger;
 
-            EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
+            this.EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
             this.dataHandler = dataHandler ?? throw new ArgumentNullException(nameof(dataHandler));
-            State = ConnectionState.Created;
+            this.State = ConnectionState.Created;
 
-            connectingTracker = new ConnectingTracker(config, time);
-            timeoutTracker = new TimeoutTracker(config, time);
-            keepAliveTracker = new KeepAliveTracker(config, time);
-            disconnectedTracker = new DisconnectedTracker(config, time);
+            this.connectingTracker = new ConnectingTracker(config, time);
+            this.timeoutTracker = new TimeoutTracker(config, time);
+            this.keepAliveTracker = new KeepAliveTracker(config, time);
+            this.disconnectedTracker = new DisconnectedTracker(config, time);
 
             this.metrics = metrics;
-            ackSystem = new AckSystem(this, config, maxPacketSize, time, bufferPool, metrics);
+            this.ackSystem = new AckSystem(this, config, maxPacketSize, time, bufferPool, metrics);
         }
 
         public override string ToString()
         {
-            return $"[{EndPoint}]";
+            return $"[{this.EndPoint}]";
         }
 
         /// <summary>
@@ -145,51 +145,51 @@ namespace Mirage.SocketLayer
         /// </summary>
         public void Update()
         {
-            switch (State)
+            switch (this.State)
             {
                 case ConnectionState.Connecting:
-                    UpdateConnecting();
+                    this.UpdateConnecting();
                     break;
 
                 case ConnectionState.Connected:
-                    UpdateConnected();
+                    this.UpdateConnected();
                     break;
 
                 case ConnectionState.Disconnected:
-                    UpdateDisconnected();
+                    this.UpdateDisconnected();
                     break;
             }
         }
 
         public void SetReceiveTime()
         {
-            timeoutTracker.SetReceiveTime();
+            this.timeoutTracker.SetReceiveTime();
         }
         public void SetSendTime()
         {
-            keepAliveTracker.SetSendTime();
+            this.keepAliveTracker.SetSendTime();
         }
 
         private void ThrowIfNotConnected()
         {
-            if (_state != ConnectionState.Connected)
+            if (this._state != ConnectionState.Connected)
                 throw new InvalidOperationException("Connection is not connected");
         }
 
 
         public void SendUnreliable(byte[] packet, int offset, int length)
         {
-            ThrowIfNotConnected();
-            metrics?.OnSendMessageUnreliable(length);
-            peer.SendUnreliable(this, packet, offset, length);
+            this.ThrowIfNotConnected();
+            this.metrics?.OnSendMessageUnreliable(length);
+            this.peer.SendUnreliable(this, packet, offset, length);
         }
         public void SendUnreliable(byte[] packet)
         {
-            SendUnreliable(packet, 0, packet.Length);
+            this.SendUnreliable(packet, 0, packet.Length);
         }
         public void SendUnreliable(ArraySegment<byte> packet)
         {
-            SendUnreliable(packet.Array, packet.Offset, packet.Count);
+            this.SendUnreliable(packet.Array, packet.Offset, packet.Count);
         }
 
         /// <summary>
@@ -197,23 +197,23 @@ namespace Mirage.SocketLayer
         /// </summary>
         public INotifyToken SendNotify(byte[] packet, int offset, int length)
         {
-            ThrowIfNotConnected();
-            metrics?.OnSendMessageNotify(length);
-            return ackSystem.SendNotify(packet, offset, length);
+            this.ThrowIfNotConnected();
+            this.metrics?.OnSendMessageNotify(length);
+            return this.ackSystem.SendNotify(packet, offset, length);
         }
         /// <summary>
         /// Use <see cref="INotifyCallBack"/> version for non-alloc
         /// </summary>
         public INotifyToken SendNotify(byte[] packet)
         {
-            return SendNotify(packet, 0, packet.Length);
+            return this.SendNotify(packet, 0, packet.Length);
         }
         /// <summary>
         /// Use <see cref="INotifyCallBack"/> version for non-alloc
         /// </summary>
         public INotifyToken SendNotify(ArraySegment<byte> packet)
         {
-            return SendNotify(packet.Array, packet.Offset, packet.Count);
+            return this.SendNotify(packet.Array, packet.Offset, packet.Count);
         }
 
         /// <summary>
@@ -221,23 +221,23 @@ namespace Mirage.SocketLayer
         /// </summary>
         public void SendNotify(byte[] packet, int offset, int length, INotifyCallBack callBacks)
         {
-            ThrowIfNotConnected();
-            metrics?.OnSendMessageNotify(length);
-            ackSystem.SendNotify(packet, offset, length, callBacks);
+            this.ThrowIfNotConnected();
+            this.metrics?.OnSendMessageNotify(length);
+            this.ackSystem.SendNotify(packet, offset, length, callBacks);
         }
         /// <summary>
         /// Use <see cref="INotifyCallBack"/> version for non-alloc
         /// </summary>
         public void SendNotify(byte[] packet, INotifyCallBack callBacks)
         {
-            SendNotify(packet, 0, packet.Length, callBacks);
+            this.SendNotify(packet, 0, packet.Length, callBacks);
         }
         /// <summary>
         /// Use <see cref="INotifyCallBack"/> version for non-alloc
         /// </summary>
         public void SendNotify(ArraySegment<byte> packet, INotifyCallBack callBacks)
         {
-            SendNotify(packet.Array, packet.Offset, packet.Count, callBacks);
+            this.SendNotify(packet.Array, packet.Offset, packet.Count, callBacks);
         }
 
 
@@ -247,23 +247,23 @@ namespace Mirage.SocketLayer
         /// <param name="message"></param>
         public void SendReliable(byte[] message, int offset, int length)
         {
-            ThrowIfNotConnected();
-            metrics?.OnSendMessageReliable(length);
-            ackSystem.SendReliable(message, offset, length);
+            this.ThrowIfNotConnected();
+            this.metrics?.OnSendMessageReliable(length);
+            this.ackSystem.SendReliable(message, offset, length);
         }
         public void SendReliable(byte[] packet)
         {
-            SendReliable(packet, 0, packet.Length);
+            this.SendReliable(packet, 0, packet.Length);
         }
         public void SendReliable(ArraySegment<byte> packet)
         {
-            SendReliable(packet.Array, packet.Offset, packet.Count);
+            this.SendReliable(packet.Array, packet.Offset, packet.Count);
         }
 
 
         void IRawConnection.SendRaw(byte[] packet, int length)
         {
-            peer.Send(this, packet, length);
+            this.peer.Send(this, packet, length);
         }
 
         /// <summary>
@@ -271,21 +271,21 @@ namespace Mirage.SocketLayer
         /// </summary>
         public void Disconnect()
         {
-            Disconnect(DisconnectReason.RequestedByLocalPeer);
+            this.Disconnect(DisconnectReason.RequestedByLocalPeer);
         }
         internal void Disconnect(DisconnectReason reason, bool sendToOther = true)
         {
-            if (logger.Enabled(LogType.Log)) logger.Log($"Disconnect with reason: {reason}");
-            switch (State)
+            if (this.logger.Enabled(LogType.Log)) this.logger.Log($"Disconnect with reason: {reason}");
+            switch (this.State)
             {
                 case ConnectionState.Connecting:
-                    peer.FailedToConnect(this, RejectReason.ClosedByPeer);
+                    this.peer.FailedToConnect(this, RejectReason.ClosedByPeer);
                     break;
 
                 case ConnectionState.Connected:
-                    State = ConnectionState.Disconnected;
-                    disconnectedTracker.OnDisconnect();
-                    peer.OnConnectionDisconnected(this, reason, sendToOther);
+                    this.State = ConnectionState.Disconnected;
+                    this.disconnectedTracker.OnDisconnect();
+                    this.peer.OnConnectionDisconnected(this, reason, sendToOther);
                     break;
 
                 default:
@@ -298,42 +298,42 @@ namespace Mirage.SocketLayer
             var offset = 1;
             var count = packet.length - offset;
             var segment = new ArraySegment<byte>(packet.buffer.array, offset, count);
-            metrics?.OnReceiveMessageUnreliable(count);
-            dataHandler.ReceiveMessage(this, segment);
+            this.metrics?.OnReceiveMessageUnreliable(count);
+            this.dataHandler.ReceiveMessage(this, segment);
         }
 
         internal void ReceiveReliablePacket(Packet packet)
         {
-            ackSystem.ReceiveReliable(packet.buffer.array, packet.length, false);
+            this.ackSystem.ReceiveReliable(packet.buffer.array, packet.length, false);
 
-            HandleQueuedMessages();
+            this.HandleQueuedMessages();
         }
 
         internal void ReceiveReliableFragment(Packet packet)
         {
-            if (ackSystem.InvalidFragment(packet.buffer.array))
+            if (this.ackSystem.InvalidFragment(packet.buffer.array))
             {
-                Disconnect(DisconnectReason.InvalidPacket);
+                this.Disconnect(DisconnectReason.InvalidPacket);
                 return;
             }
 
-            ackSystem.ReceiveReliable(packet.buffer.array, packet.length, true);
+            this.ackSystem.ReceiveReliable(packet.buffer.array, packet.length, true);
 
-            HandleQueuedMessages();
+            this.HandleQueuedMessages();
         }
 
         private void HandleQueuedMessages()
         {
             // gets messages in order
-            while (ackSystem.NextReliablePacket(out var received))
+            while (this.ackSystem.NextReliablePacket(out var received))
             {
                 if (received.isFragment)
                 {
-                    HandleFragmentedMessage(received);
+                    this.HandleFragmentedMessage(received);
                 }
                 else
                 {
-                    HandleBatchedMessageInPacket(received);
+                    this.HandleBatchedMessageInPacket(received);
                 }
             }
         }
@@ -346,11 +346,11 @@ namespace Mirage.SocketLayer
             var fragmentLength = firstArray[0] + 1;
 
             // todo find way to remove allocation? (can't use buffers because they will be too small for this bigger message)
-            var message = new byte[fragmentLength * ackSystem.SizePerFragment];
+            var message = new byte[fragmentLength * this.ackSystem.SizePerFragment];
 
             // copy first
             var copyLength = received.length - 1;
-            logger?.Assert(copyLength == ackSystem.SizePerFragment, "First should be max size");
+            this.logger?.Assert(copyLength == this.ackSystem.SizePerFragment, "First should be max size");
             Buffer.BlockCopy(firstArray, 1, message, 0, copyLength);
             received.buffer.Release();
 
@@ -358,20 +358,20 @@ namespace Mirage.SocketLayer
             // start at 1 because first copied above
             for (var i = 1; i < fragmentLength; i++)
             {
-                var next = ackSystem.GetNextFragment();
+                var next = this.ackSystem.GetNextFragment();
                 var nextArray = next.buffer.array;
 
-                logger?.Assert(i == (fragmentLength - 1 - nextArray[0]), "fragment index should decrement each time");
+                this.logger?.Assert(i == (fragmentLength - 1 - nextArray[0]), "fragment index should decrement each time");
 
                 // +1 because first is copied above
                 copyLength = next.length - 1;
-                Buffer.BlockCopy(nextArray, 1, message, ackSystem.SizePerFragment * i, copyLength);
+                Buffer.BlockCopy(nextArray, 1, message, this.ackSystem.SizePerFragment * i, copyLength);
                 messageLength += copyLength;
                 next.buffer.Release();
             }
 
-            metrics?.OnReceiveMessageReliable(messageLength);
-            dataHandler.ReceiveMessage(this, new ArraySegment<byte>(message, 0, messageLength));
+            this.metrics?.OnReceiveMessageReliable(messageLength);
+            this.dataHandler.ReceiveMessage(this, new ArraySegment<byte>(message, 0, messageLength));
         }
 
         private void HandleBatchedMessageInPacket(AckSystem.ReliableReceived received)
@@ -385,8 +385,8 @@ namespace Mirage.SocketLayer
                 var message = new ArraySegment<byte>(array, offset, length);
                 offset += length;
 
-                metrics?.OnReceiveMessageReliable(length);
-                dataHandler.ReceiveMessage(this, message);
+                this.metrics?.OnReceiveMessageReliable(length);
+                this.dataHandler.ReceiveMessage(this, message);
             }
 
             // release buffer after all its message have been handled
@@ -395,17 +395,17 @@ namespace Mirage.SocketLayer
 
         internal void ReceiveNotifyPacket(Packet packet)
         {
-            var segment = ackSystem.ReceiveNotify(packet.buffer.array, packet.length);
+            var segment = this.ackSystem.ReceiveNotify(packet.buffer.array, packet.length);
             if (segment != default)
             {
-                metrics?.OnReceiveMessageNotify(packet.length);
-                dataHandler.ReceiveMessage(this, segment);
+                this.metrics?.OnReceiveMessageNotify(packet.length);
+                this.dataHandler.ReceiveMessage(this, segment);
             }
         }
 
         internal void ReceiveNotifyAck(Packet packet)
         {
-            ackSystem.ReceiveAck(packet.buffer.array);
+            this.ackSystem.ReceiveAck(packet.buffer.array);
         }
 
 
@@ -414,16 +414,16 @@ namespace Mirage.SocketLayer
         /// </summary>
         private void UpdateConnecting()
         {
-            if (connectingTracker.TimeAttempt())
+            if (this.connectingTracker.TimeAttempt())
             {
-                if (connectingTracker.MaxAttempts())
+                if (this.connectingTracker.MaxAttempts())
                 {
-                    peer.FailedToConnect(this, RejectReason.Timeout);
+                    this.peer.FailedToConnect(this, RejectReason.Timeout);
                 }
                 else
                 {
-                    connectingTracker.OnAttempt();
-                    peer.SendConnectRequest(this);
+                    this.connectingTracker.OnAttempt();
+                    this.peer.SendConnectRequest(this);
                 }
             }
         }
@@ -433,9 +433,9 @@ namespace Mirage.SocketLayer
         /// </summary>
         private void UpdateDisconnected()
         {
-            if (disconnectedTracker.TimeToRemove())
+            if (this.disconnectedTracker.TimeToRemove())
             {
-                peer.RemoveConnection(this);
+                this.peer.RemoveConnection(this);
             }
         }
 
@@ -449,16 +449,16 @@ namespace Mirage.SocketLayer
         /// </summary>
         private void UpdateConnected()
         {
-            if (timeoutTracker.TimeToDisconnect())
+            if (this.timeoutTracker.TimeToDisconnect())
             {
-                Disconnect(DisconnectReason.Timeout);
+                this.Disconnect(DisconnectReason.Timeout);
             }
 
-            ackSystem.Update();
+            this.ackSystem.Update();
 
-            if (keepAliveTracker.TimeToSend())
+            if (this.keepAliveTracker.TimeToSend())
             {
-                peer.SendKeepAlive(this);
+                this.peer.SendKeepAlive(this);
             }
         }
 
@@ -477,18 +477,18 @@ namespace Mirage.SocketLayer
 
             public bool TimeAttempt()
             {
-                return lastAttempt + config.ConnectAttemptInterval < time.Now;
+                return this.lastAttempt + this.config.ConnectAttemptInterval < this.time.Now;
             }
 
             public bool MaxAttempts()
             {
-                return AttemptCount >= config.MaxConnectAttempts;
+                return this.AttemptCount >= this.config.MaxConnectAttempts;
             }
 
             public void OnAttempt()
             {
-                AttemptCount++;
-                lastAttempt = time.Now;
+                this.AttemptCount++;
+                this.lastAttempt = this.time.Now;
             }
         }
 
@@ -506,12 +506,12 @@ namespace Mirage.SocketLayer
 
             public bool TimeToDisconnect()
             {
-                return lastRecvTime + config.TimeoutDuration < time.Now;
+                return this.lastRecvTime + this.config.TimeoutDuration < this.time.Now;
             }
 
             public void SetReceiveTime()
             {
-                lastRecvTime = time.Now;
+                this.lastRecvTime = this.time.Now;
             }
         }
 
@@ -530,12 +530,12 @@ namespace Mirage.SocketLayer
 
             public bool TimeToSend()
             {
-                return lastSendTime + config.KeepAliveInterval < time.Now;
+                return this.lastSendTime + this.config.KeepAliveInterval < this.time.Now;
             }
 
             public void SetSendTime()
             {
-                lastSendTime = time.Now;
+                this.lastSendTime = this.time.Now;
             }
         }
 
@@ -554,13 +554,13 @@ namespace Mirage.SocketLayer
 
             public void OnDisconnect()
             {
-                disconnectTime = time.Now + config.DisconnectDuration;
-                isDisonnected = true;
+                this.disconnectTime = this.time.Now + this.config.DisconnectDuration;
+                this.isDisonnected = true;
             }
 
             public bool TimeToRemove()
             {
-                return isDisonnected && disconnectTime < time.Now;
+                return this.isDisonnected && this.disconnectTime < this.time.Now;
             }
         }
     }

@@ -21,10 +21,10 @@ namespace Mirage.Examples.MultipleAdditiveScenes
         /// </summary>
         public void Start()
         {
-            Server.Started.AddListener(() => StartCoroutine(LoadSubScenes()));
-            Server.Authenticated.AddListener(OnServerAddPlayer);
-            Server.Stopped.AddListener(OnStopServer);
-            Client.Disconnected.AddListener(OnStopClient);
+            this.Server.Started.AddListener(() => this.StartCoroutine(this.LoadSubScenes()));
+            this.Server.Authenticated.AddListener(this.OnServerAddPlayer);
+            this.Server.Stopped.AddListener(this.OnStopServer);
+            this.Client.Disconnected.AddListener(this.OnStopClient);
         }
 
         #region Server System Callbacks
@@ -37,7 +37,7 @@ namespace Mirage.Examples.MultipleAdditiveScenes
         public void OnServerAddPlayer(INetworkPlayer player)
         {
             // This delay is really for the host player that loads too fast for the server to have subscene loaded
-            StartCoroutine(AddPlayerDelayed(player));
+            this.StartCoroutine(this.AddPlayerDelayed(player));
         }
 
         private int playerId = 1;
@@ -46,17 +46,17 @@ namespace Mirage.Examples.MultipleAdditiveScenes
         {
             yield return new WaitForSeconds(.5f);
 
-            ServerObjectManager.NetworkSceneManager.ServerLoadSceneAdditively(gameScene, Server.Players);
+            this.ServerObjectManager.NetworkSceneManager.ServerLoadSceneAdditively(this.gameScene, this.Server.Players);
 
             var playerScore = player.Identity.GetComponent<PlayerScore>();
-            playerScore.playerNumber = playerId;
-            playerScore.scoreIndex = playerId / subScenes.Count;
-            playerScore.matchIndex = playerId % subScenes.Count;
+            playerScore.playerNumber = this.playerId;
+            playerScore.scoreIndex = this.playerId / this.subScenes.Count;
+            playerScore.matchIndex = this.playerId % this.subScenes.Count;
 
-            if (subScenes.Count > 0)
-                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(player.Identity.gameObject, subScenes[playerId % subScenes.Count]);
+            if (this.subScenes.Count > 0)
+                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(player.Identity.gameObject, this.subScenes[this.playerId % this.subScenes.Count]);
 
-            playerId++;
+            this.playerId++;
         }
 
         #endregion
@@ -67,10 +67,10 @@ namespace Mirage.Examples.MultipleAdditiveScenes
 
         private IEnumerator LoadSubScenes()
         {
-            for (var index = 0; index < instances; index++)
+            for (var index = 0; index < this.instances; index++)
             {
-                yield return UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(gameScene, new LoadSceneParameters { loadSceneMode = LoadSceneMode.Additive, localPhysicsMode = LocalPhysicsMode.Physics3D });
-                subScenes.Add(UnityEngine.SceneManagement.SceneManager.GetSceneAt(index + 1));
+                yield return UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(this.gameScene, new LoadSceneParameters { loadSceneMode = LoadSceneMode.Additive, localPhysicsMode = LocalPhysicsMode.Physics3D });
+                this.subScenes.Add(UnityEngine.SceneManagement.SceneManager.GetSceneAt(index + 1));
             }
         }
 
@@ -79,14 +79,14 @@ namespace Mirage.Examples.MultipleAdditiveScenes
         /// </summary>
         public void OnStopServer()
         {
-            Server.SendToAll(new SceneMessage { MainActivateScene = gameScene, SceneOperation = SceneOperation.UnloadAdditive });
-            StartCoroutine(UnloadSubScenes());
+            this.Server.SendToAll(new SceneMessage { MainActivateScene = gameScene, SceneOperation = SceneOperation.UnloadAdditive });
+            this.StartCoroutine(this.UnloadSubScenes());
         }
 
         public void OnStopClient(ClientStoppedReason reason)
         {
-            if (!Server.Active)
-                StartCoroutine(UnloadClientSubScenes());
+            if (!this.Server.Active)
+                this.StartCoroutine(this.UnloadClientSubScenes());
         }
 
         private IEnumerator UnloadClientSubScenes()
@@ -100,10 +100,10 @@ namespace Mirage.Examples.MultipleAdditiveScenes
 
         private IEnumerator UnloadSubScenes()
         {
-            for (var index = 0; index < subScenes.Count; index++)
-                yield return UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(subScenes[index]);
+            for (var index = 0; index < this.subScenes.Count; index++)
+                yield return UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(this.subScenes[index]);
 
-            subScenes.Clear();
+            this.subScenes.Clear();
 
             yield return Resources.UnloadUnusedAssets();
         }

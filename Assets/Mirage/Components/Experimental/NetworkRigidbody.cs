@@ -44,9 +44,9 @@ namespace Mirage.Experimental
 
         private void OnValidate()
         {
-            if (target == null)
+            if (this.target == null)
             {
-                target = GetComponent<Rigidbody>();
+                this.target = this.GetComponent<Rigidbody>();
             }
         }
 
@@ -73,82 +73,82 @@ namespace Mirage.Experimental
         /// Ignore value if is host or client with Authority
         /// </summary>
         /// <returns></returns>
-        private bool IgnoreSync => IsServer || ClientWithAuthority;
+        private bool IgnoreSync => this.IsServer || this.ClientWithAuthority;
 
-        private bool ClientWithAuthority => clientAuthority && HasAuthority;
+        private bool ClientWithAuthority => this.clientAuthority && this.HasAuthority;
 
         private void OnVelocityChanged(Vector3 _, Vector3 newValue)
         {
-            if (IgnoreSync)
+            if (this.IgnoreSync)
                 return;
 
-            target.velocity = newValue;
+            this.target.velocity = newValue;
         }
 
         private void OnAngularVelocityChanged(Vector3 _, Vector3 newValue)
         {
-            if (IgnoreSync)
+            if (this.IgnoreSync)
                 return;
 
-            target.angularVelocity = newValue;
+            this.target.angularVelocity = newValue;
         }
 
         private void OnIsKinematicChanged(bool _, bool newValue)
         {
-            if (IgnoreSync)
+            if (this.IgnoreSync)
                 return;
 
-            target.isKinematic = newValue;
+            this.target.isKinematic = newValue;
         }
 
         private void OnUseGravityChanged(bool _, bool newValue)
         {
-            if (IgnoreSync)
+            if (this.IgnoreSync)
                 return;
 
-            target.useGravity = newValue;
+            this.target.useGravity = newValue;
         }
 
         private void OnuDragChanged(float _, float newValue)
         {
-            if (IgnoreSync)
+            if (this.IgnoreSync)
                 return;
 
-            target.drag = newValue;
+            this.target.drag = newValue;
         }
 
         private void OnAngularDragChanged(float _, float newValue)
         {
-            if (IgnoreSync)
+            if (this.IgnoreSync)
                 return;
 
-            target.angularDrag = newValue;
+            this.target.angularDrag = newValue;
         }
         #endregion
 
 
         internal void Update()
         {
-            if (IsServer)
+            if (this.IsServer)
             {
-                SyncToClients();
+                this.SyncToClients();
             }
-            else if (ClientWithAuthority)
+            else if (this.ClientWithAuthority)
             {
-                SendToServer();
+                this.SendToServer();
             }
         }
 
         internal void FixedUpdate()
         {
-            if (clearAngularVelocity && !syncAngularVelocity)
+            if (this.clearAngularVelocity && !this.syncAngularVelocity)
             {
-                target.angularVelocity = Vector3.zero;
+                this.target.angularVelocity = Vector3.zero;
             }
 
-            if (clearVelocity && !syncVelocity)
+            if (this.clearVelocity && !this.syncVelocity)
             {
-                target.velocity = Vector3.zero;
+                this.target.velocity = Vector3.zero;
             }
         }
 
@@ -160,29 +160,29 @@ namespace Mirage.Experimental
         {
             // only update if they have changed more than Sensitivity
 
-            var currentVelocity = syncVelocity ? target.velocity : default;
-            var currentAngularVelocity = syncAngularVelocity ? target.angularVelocity : default;
+            var currentVelocity = this.syncVelocity ? this.target.velocity : default;
+            var currentAngularVelocity = this.syncAngularVelocity ? this.target.angularVelocity : default;
 
-            var velocityChanged = syncVelocity && ((previousValue.velocity - currentVelocity).sqrMagnitude > velocitySensitivity * velocitySensitivity);
-            var angularVelocityChanged = syncAngularVelocity && ((previousValue.angularVelocity - currentAngularVelocity).sqrMagnitude > angularVelocitySensitivity * angularVelocitySensitivity);
+            var velocityChanged = this.syncVelocity && ((this.previousValue.velocity - currentVelocity).sqrMagnitude > this.velocitySensitivity * this.velocitySensitivity);
+            var angularVelocityChanged = this.syncAngularVelocity && ((this.previousValue.angularVelocity - currentAngularVelocity).sqrMagnitude > this.angularVelocitySensitivity * this.angularVelocitySensitivity);
 
             if (velocityChanged)
             {
-                velocity = currentVelocity;
-                previousValue.velocity = currentVelocity;
+                this.velocity = currentVelocity;
+                this.previousValue.velocity = currentVelocity;
             }
 
             if (angularVelocityChanged)
             {
-                angularVelocity = currentAngularVelocity;
-                previousValue.angularVelocity = currentAngularVelocity;
+                this.angularVelocity = currentAngularVelocity;
+                this.previousValue.angularVelocity = currentAngularVelocity;
             }
 
             // other rigidbody settings
-            isKinematic = target.isKinematic;
-            useGravity = target.useGravity;
-            drag = target.drag;
-            angularDrag = target.angularDrag;
+            this.isKinematic = this.target.isKinematic;
+            this.useGravity = this.target.useGravity;
+            this.drag = this.target.drag;
+            this.angularDrag = this.target.angularDrag;
         }
 
         /// <summary>
@@ -191,48 +191,48 @@ namespace Mirage.Experimental
         [Client]
         private void SendToServer()
         {
-            if (!HasAuthority)
+            if (!this.HasAuthority)
             {
                 logger.LogWarning("SendToServer called without authority");
                 return;
             }
 
-            SendVelocity();
-            SendRigidBodySettings();
+            this.SendVelocity();
+            this.SendRigidBodySettings();
         }
 
         [Client]
         private void SendVelocity()
         {
             var now = Time.time;
-            if (now < previousValue.nextSyncTime)
+            if (now < this.previousValue.nextSyncTime)
                 return;
 
-            var currentVelocity = syncVelocity ? target.velocity : default;
-            var currentAngularVelocity = syncAngularVelocity ? target.angularVelocity : default;
+            var currentVelocity = this.syncVelocity ? this.target.velocity : default;
+            var currentAngularVelocity = this.syncAngularVelocity ? this.target.angularVelocity : default;
 
-            var velocityChanged = syncVelocity && ((previousValue.velocity - currentVelocity).sqrMagnitude > velocitySensitivity * velocitySensitivity);
-            var angularVelocityChanged = syncAngularVelocity && ((previousValue.angularVelocity - currentAngularVelocity).sqrMagnitude > angularVelocitySensitivity * angularVelocitySensitivity);
+            var velocityChanged = this.syncVelocity && ((this.previousValue.velocity - currentVelocity).sqrMagnitude > this.velocitySensitivity * this.velocitySensitivity);
+            var angularVelocityChanged = this.syncAngularVelocity && ((this.previousValue.angularVelocity - currentAngularVelocity).sqrMagnitude > this.angularVelocitySensitivity * this.angularVelocitySensitivity);
 
             // if angularVelocity has changed it is likely that velocity has also changed so just sync both values
             // however if only velocity has changed just send velocity
             if (angularVelocityChanged)
             {
-                CmdSendVelocityAndAngular(currentVelocity, currentAngularVelocity);
-                previousValue.velocity = currentVelocity;
-                previousValue.angularVelocity = currentAngularVelocity;
+                this.CmdSendVelocityAndAngular(currentVelocity, currentAngularVelocity);
+                this.previousValue.velocity = currentVelocity;
+                this.previousValue.angularVelocity = currentAngularVelocity;
             }
             else if (velocityChanged)
             {
-                CmdSendVelocity(currentVelocity);
-                previousValue.velocity = currentVelocity;
+                this.CmdSendVelocity(currentVelocity);
+                this.previousValue.velocity = currentVelocity;
             }
 
 
             // only update syncTime if either has changed
             if (angularVelocityChanged || velocityChanged)
             {
-                previousValue.nextSyncTime = now + syncInterval;
+                this.previousValue.nextSyncTime = now + this.syncInterval;
             }
         }
 
@@ -240,25 +240,25 @@ namespace Mirage.Experimental
         private void SendRigidBodySettings()
         {
             // These shouldn't change often so it is ok to send in their own ServerRpc
-            if (previousValue.isKinematic != target.isKinematic)
+            if (this.previousValue.isKinematic != this.target.isKinematic)
             {
-                CmdSendIsKinematic(target.isKinematic);
-                previousValue.isKinematic = target.isKinematic;
+                this.CmdSendIsKinematic(this.target.isKinematic);
+                this.previousValue.isKinematic = this.target.isKinematic;
             }
-            if (previousValue.useGravity != target.useGravity)
+            if (this.previousValue.useGravity != this.target.useGravity)
             {
-                CmdSendUseGravity(target.useGravity);
-                previousValue.useGravity = target.useGravity;
+                this.CmdSendUseGravity(this.target.useGravity);
+                this.previousValue.useGravity = this.target.useGravity;
             }
-            if (previousValue.drag != target.drag)
+            if (this.previousValue.drag != this.target.drag)
             {
-                CmdSendDrag(target.drag);
-                previousValue.drag = target.drag;
+                this.CmdSendDrag(this.target.drag);
+                this.previousValue.drag = this.target.drag;
             }
-            if (previousValue.angularDrag != target.angularDrag)
+            if (this.previousValue.angularDrag != this.target.angularDrag)
             {
-                CmdSendAngularDrag(target.angularDrag);
-                previousValue.angularDrag = target.angularDrag;
+                this.CmdSendAngularDrag(this.target.angularDrag);
+                this.previousValue.angularDrag = this.target.angularDrag;
             }
         }
 
@@ -269,11 +269,11 @@ namespace Mirage.Experimental
         private void CmdSendVelocity(Vector3 velocity)
         {
             // Ignore messages from client if not in client authority mode
-            if (!clientAuthority)
+            if (!this.clientAuthority)
                 return;
 
             this.velocity = velocity;
-            target.velocity = velocity;
+            this.target.velocity = velocity;
         }
 
         /// <summary>
@@ -283,62 +283,62 @@ namespace Mirage.Experimental
         private void CmdSendVelocityAndAngular(Vector3 velocity, Vector3 angularVelocity)
         {
             // Ignore messages from client if not in client authority mode
-            if (!clientAuthority)
+            if (!this.clientAuthority)
                 return;
 
-            if (syncVelocity)
+            if (this.syncVelocity)
             {
                 this.velocity = velocity;
 
-                target.velocity = velocity;
+                this.target.velocity = velocity;
 
             }
             this.angularVelocity = angularVelocity;
-            target.angularVelocity = angularVelocity;
+            this.target.angularVelocity = angularVelocity;
         }
 
         [ServerRpc]
         private void CmdSendIsKinematic(bool isKinematic)
         {
             // Ignore messages from client if not in client authority mode
-            if (!clientAuthority)
+            if (!this.clientAuthority)
                 return;
 
             this.isKinematic = isKinematic;
-            target.isKinematic = isKinematic;
+            this.target.isKinematic = isKinematic;
         }
 
         [ServerRpc]
         private void CmdSendUseGravity(bool useGravity)
         {
             // Ignore messages from client if not in client authority mode
-            if (!clientAuthority)
+            if (!this.clientAuthority)
                 return;
 
             this.useGravity = useGravity;
-            target.useGravity = useGravity;
+            this.target.useGravity = useGravity;
         }
 
         [ServerRpc]
         private void CmdSendDrag(float drag)
         {
             // Ignore messages from client if not in client authority mode
-            if (!clientAuthority)
+            if (!this.clientAuthority)
                 return;
 
             this.drag = drag;
-            target.drag = drag;
+            this.target.drag = drag;
         }
 
         [ServerRpc]
         private void CmdSendAngularDrag(float angularDrag)
         {
             // Ignore messages from client if not in client authority mode
-            if (!clientAuthority)
+            if (!this.clientAuthority)
                 return;
 
             this.angularDrag = angularDrag;
-            target.angularDrag = angularDrag;
+            this.target.angularDrag = angularDrag;
         }
 
         /// <summary>

@@ -9,7 +9,7 @@ namespace Mirage.Events
 
         protected void MarkInvoked()
         {
-            hasInvoked = true;
+            this.hasInvoked = true;
         }
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace Mirage.Events
         /// </summary>
         public void Reset()
         {
-            hasInvoked = false;
+            this.hasInvoked = false;
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Mirage.Events
         /// </summary>
         public void RemoveAllListeners()
         {
-            baseEvent.RemoveAllListeners();
+            this.baseEvent.RemoveAllListeners();
         }
     }
 }

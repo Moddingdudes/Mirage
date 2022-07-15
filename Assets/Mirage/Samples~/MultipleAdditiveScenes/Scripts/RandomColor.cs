@@ -6,7 +6,7 @@ namespace Mirage.Examples.MultipleAdditiveScenes
     {
         public void OnStartServer()
         {
-            color = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+            this.color = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
         }
 
         // Color32 packs to 4 bytes
@@ -19,13 +19,13 @@ namespace Mirage.Examples.MultipleAdditiveScenes
 
         private void SetColor(Color32 _, Color32 newColor)
         {
-            if (cachedMaterial == null) cachedMaterial = GetComponentInChildren<Renderer>().material;
-            cachedMaterial.color = newColor;
+            if (this.cachedMaterial == null) this.cachedMaterial = this.GetComponentInChildren<Renderer>().material;
+            this.cachedMaterial.color = newColor;
         }
 
         private void OnDestroy()
         {
-            Destroy(cachedMaterial);
+            Destroy(this.cachedMaterial);
         }
     }
 }

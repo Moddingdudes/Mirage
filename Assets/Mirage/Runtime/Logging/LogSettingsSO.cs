@@ -21,10 +21,10 @@ namespace Mirage.Logging
                 get
                 {
                     // need lazy property here because unity deserializes without using constructor
-                    if (string.IsNullOrEmpty(fullNameCache))
-                        fullNameCache = CreateFullName(Name, Namespace);
+                    if (string.IsNullOrEmpty(this.fullNameCache))
+                        this.fullNameCache = CreateFullName(this.Name, this.Namespace);
 
-                    return fullNameCache;
+                    return this.fullNameCache;
                 }
             }
 
@@ -43,16 +43,16 @@ namespace Mirage.Logging
             public LoggerSettings(string name, string @namespace, LogType level)
             {
                 // if string is null, use empty string instead
-                Name = name ?? string.Empty;
-                Namespace = @namespace ?? string.Empty;
-                logLevel = level;
-                fullNameCache = CreateFullName(Name, Namespace);
+                this.Name = name ?? string.Empty;
+                this.Namespace = @namespace ?? string.Empty;
+                this.logLevel = level;
+                this.fullNameCache = CreateFullName(this.Name, this.Namespace);
             }
             public LoggerSettings(string fullname, LogType level)
             {
-                (Name, Namespace) = GetNameAndNameSpaceFromFullname(fullname);
-                logLevel = level;
-                fullNameCache = CreateFullName(Name, Namespace);
+                (this.Name, this.Namespace) = GetNameAndNameSpaceFromFullname(fullname);
+                this.logLevel = level;
+                this.fullNameCache = CreateFullName(this.Name, this.Namespace);
             }
 
             private static (string name, string @namespace) GetNameAndNameSpaceFromFullname(string fullname)

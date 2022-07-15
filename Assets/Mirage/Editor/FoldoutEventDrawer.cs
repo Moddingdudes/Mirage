@@ -9,7 +9,7 @@ namespace Mirage
     {
         private UnityEventDrawer _unityEventDrawer;
 
-        private UnityEventDrawer UnityEventDrawer => _unityEventDrawer ?? (_unityEventDrawer = new UnityEventDrawer());
+        private UnityEventDrawer UnityEventDrawer => this._unityEventDrawer ?? (this._unityEventDrawer = new UnityEventDrawer());
 
         private static GUIStyle Style => EditorStyles.label;
 
@@ -20,7 +20,7 @@ namespace Mirage
             var labelHeight = GetLabelHeight(label);
             if (property.isExpanded)
             {
-                return labelHeight + Margin + UnityEventDrawer.GetPropertyHeight(property, label);
+                return labelHeight + Margin + this.UnityEventDrawer.GetPropertyHeight(property, label);
             }
             else
             {
@@ -50,7 +50,7 @@ namespace Mirage
             EditorGUI.EndFoldoutHeaderGroup();
             if (property.isExpanded)
             {
-                UnityEventDrawer.OnGUI(eventRec, property, label);
+                this.UnityEventDrawer.OnGUI(eventRec, property, label);
             }
         }
     }

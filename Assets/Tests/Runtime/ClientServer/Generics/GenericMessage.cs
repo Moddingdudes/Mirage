@@ -35,13 +35,13 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
             var called = 0;
 
             var msg = new MyMessage<int> { Value = num };
-            server.MessageHandler.RegisterHandler<MyMessage<int>>((result) =>
+            this.server.MessageHandler.RegisterHandler<MyMessage<int>>((result) =>
             {
                 called++;
                 Assert.That(result, Is.EqualTo(msg));
             });
 
-            client.Send(msg);
+            this.client.Send(msg);
             yield return null;
             yield return null;
 

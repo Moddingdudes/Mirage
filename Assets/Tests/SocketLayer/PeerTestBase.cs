@@ -22,36 +22,36 @@ namespace Mirage.SocketLayer.Tests.PeerTests
         protected Action<IConnection, DisconnectReason> disconnectAction;
 
         // helper properties to access instance
-        protected ISocket socket => instance.socket;
-        protected IDataHandler dataHandler => instance.dataHandler;
-        protected Config config => instance.config;
-        protected ILogger logger => instance.logger;
-        protected Peer peer => instance.peer;
+        protected ISocket socket => this.instance.socket;
+        protected IDataHandler dataHandler => this.instance.dataHandler;
+        protected Config config => this.instance.config;
+        protected ILogger logger => this.instance.logger;
+        protected Peer peer => this.instance.peer;
 
         internal readonly Time time = new Time();
 
         [SetUp]
         public void SetUp()
         {
-            instance = new PeerInstance();
+            this.instance = new PeerInstance();
 
-            connectAction = Substitute.For<Action<IConnection>>();
-            connectFailedAction = Substitute.For<Action<IConnection, RejectReason>>();
-            disconnectAction = Substitute.For<Action<IConnection, DisconnectReason>>();
-            peer.OnConnected += connectAction;
-            peer.OnConnectionFailed += connectFailedAction;
-            peer.OnDisconnected += disconnectAction;
+            this.connectAction = Substitute.For<Action<IConnection>>();
+            this.connectFailedAction = Substitute.For<Action<IConnection, RejectReason>>();
+            this.disconnectAction = Substitute.For<Action<IConnection, DisconnectReason>>();
+            this.peer.OnConnected += this.connectAction;
+            this.peer.OnConnectionFailed += this.connectFailedAction;
+            this.peer.OnDisconnected += this.disconnectAction;
 
-            CreateConnectPacket();
+            this.CreateConnectPacket();
         }
 
         private void CreateConnectPacket()
         {
-            var keyValidator = new ConnectKeyValidator(instance.config.key);
-            connectRequest = new byte[2 + keyValidator.KeyLength];
-            connectRequest[0] = (byte)PacketType.Command;
-            connectRequest[1] = (byte)Commands.ConnectRequest;
-            keyValidator.CopyTo(connectRequest);
+            var keyValidator = new ConnectKeyValidator(this.instance.config.key);
+            this.connectRequest = new byte[2 + keyValidator.KeyLength];
+            this.connectRequest[0] = (byte)PacketType.Command;
+            this.connectRequest[1] = (byte)Commands.ConnectRequest;
+            keyValidator.CopyTo(this.connectRequest);
         }
     }
 
@@ -69,7 +69,7 @@ namespace Mirage.SocketLayer.Tests.PeerTests
         public PeerInstance(Config config = null, ISocket socket = null)
         {
             this.socket = socket ?? Substitute.For<ISocket>();
-            dataHandler = Substitute.For<IDataHandler>();
+            this.dataHandler = Substitute.For<IDataHandler>();
 
             this.config = config ?? new Config()
             {
@@ -78,8 +78,8 @@ namespace Mirage.SocketLayer.Tests.PeerTests
                 MaxConnectAttempts = 5,
                 ConnectAttemptInterval = 0.2f,
             };
-            logger = LogFactory.GetLogger<PeerInstance>();
-            peer = new Peer(this.socket, PeerTestBase.MAX_PACKET_SIZE, dataHandler, this.config, logger);
+            this.logger = LogFactory.GetLogger<PeerInstance>();
+            this.peer = new Peer(this.socket, PeerTestBase.MAX_PACKET_SIZE, this.dataHandler, this.config, this.logger);
         }
     }
 
@@ -96,8 +96,8 @@ namespace Mirage.SocketLayer.Tests.PeerTests
 
         public PeerInstanceWithSocket(Config config = null) : base(config, socket: new TestSocket("TestInstance"))
         {
-            socket = (TestSocket)base.socket;
-            endPoint = socket.endPoint;
+            this.socket = (TestSocket)base.socket;
+            this.endPoint = this.socket.endPoint;
         }
     }
 

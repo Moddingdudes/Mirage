@@ -11,30 +11,30 @@ namespace Mirage
         public ExponentialMovingAverage(int n)
         {
             // standard N-day EMA alpha calculation
-            alpha = 2.0f / (n + 1);
+            this.alpha = 2.0f / (n + 1);
         }
 
         public void Reset()
         {
-            initialized = false;
-            Value = 0;
-            Var = 0;
+            this.initialized = false;
+            this.Value = 0;
+            this.Var = 0;
         }
 
         public void Add(double newValue)
         {
             // simple algorithm for EMA described here:
             // https://en.wikipedia.org/wiki/Moving_average#Exponentially_weighted_moving_variance_and_standard_deviation
-            if (initialized)
+            if (this.initialized)
             {
-                var delta = newValue - Value;
-                Value += alpha * delta;
-                Var = (1 - alpha) * (Var + alpha * delta * delta);
+                var delta = newValue - this.Value;
+                this.Value += this.alpha * delta;
+                this.Var = (1 - this.alpha) * (this.Var + this.alpha * delta * delta);
             }
             else
             {
-                Value = newValue;
-                initialized = true;
+                this.Value = newValue;
+                this.initialized = true;
             }
         }
 

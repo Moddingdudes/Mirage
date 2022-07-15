@@ -21,38 +21,38 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         {
             if (largeValue.HasValue)
             {
-                packer = new VarIntPacker(smallValue, mediumValue, largeValue.Value, false);
-                max = largeValue.Value;
+                this.packer = new VarIntPacker(smallValue, mediumValue, largeValue.Value, false);
+                this.max = largeValue.Value;
             }
             else
             {
-                packer = new VarIntPacker(smallValue, mediumValue);
-                max = ulong.MaxValue;
+                this.packer = new VarIntPacker(smallValue, mediumValue);
+                this.max = ulong.MaxValue;
             }
         }
 
         private ulong GetRandonUlongBias()
         {
-            return (ulong)(Math.Abs(random.NextDouble() - random.NextDouble()) * max);
+            return (ulong)(Math.Abs(this.random.NextDouble() - this.random.NextDouble()) * this.max);
         }
 
         private uint GetRandonUintBias()
         {
-            return (uint)(Math.Abs(random.NextDouble() - random.NextDouble()) * Math.Min(max, uint.MaxValue));
+            return (uint)(Math.Abs(this.random.NextDouble() - this.random.NextDouble()) * Math.Min(this.max, uint.MaxValue));
         }
 
         private ushort GetRandonUshortBias()
         {
-            return (ushort)(Math.Abs(random.NextDouble() - random.NextDouble()) * Math.Min(max, ushort.MaxValue));
+            return (ushort)(Math.Abs(this.random.NextDouble() - this.random.NextDouble()) * Math.Min(this.max, ushort.MaxValue));
         }
 
         [Test]
         [Repeat(1000)]
         public void UnpacksCorrectUlongValue()
         {
-            var start = GetRandonUlongBias();
-            packer.PackUlong(writer, start);
-            var unpacked = packer.UnpackUlong(GetReader());
+            var start = this.GetRandonUlongBias();
+            this.packer.PackUlong(this.writer, start);
+            var unpacked = this.packer.UnpackUlong(this.GetReader());
 
             Assert.That(unpacked, Is.EqualTo(start));
         }
@@ -61,9 +61,9 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         [Repeat(1000)]
         public void UnpacksCorrectUintValue()
         {
-            var start = GetRandonUintBias();
-            packer.PackUint(writer, start);
-            var unpacked = packer.UnpackUint(GetReader());
+            var start = this.GetRandonUintBias();
+            this.packer.PackUint(this.writer, start);
+            var unpacked = this.packer.UnpackUint(this.GetReader());
 
             Assert.That(unpacked, Is.EqualTo(start));
         }
@@ -72,9 +72,9 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         [Repeat(1000)]
         public void UnpacksCorrectUshortValue()
         {
-            var start = GetRandonUshortBias();
-            packer.PackUshort(writer, start);
-            var unpacked = packer.UnpackUshort(GetReader());
+            var start = this.GetRandonUshortBias();
+            this.packer.PackUshort(this.writer, start);
+            var unpacked = this.packer.UnpackUshort(this.GetReader());
 
             Assert.That(unpacked, Is.EqualTo(start));
         }

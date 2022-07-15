@@ -12,12 +12,12 @@ namespace Mirage.Weaver
         private Stopwatch stopwatch;
         private string name;
 
-        public long ElapsedMilliseconds => stopwatch?.ElapsedMilliseconds ?? 0;
+        public long ElapsedMilliseconds => this.stopwatch?.ElapsedMilliseconds ?? 0;
 
         ~WeaverDiagnosticsTimer()
         {
-            writer?.Dispose();
-            writer = null;
+            this.writer?.Dispose();
+            this.writer = null;
         }
 
         [Conditional("WEAVER_DEBUG_TIMER")]
@@ -25,31 +25,31 @@ namespace Mirage.Weaver
         {
             this.name = name;
 
-            if (writeToFile)
+            if (this.writeToFile)
             {
                 var path = $"./Build/WeaverLogs/Timer_{name}.log";
                 try
                 {
-                    writer = new StreamWriter(path)
+                    this.writer = new StreamWriter(path)
                     {
                         AutoFlush = true,
                     };
                 }
                 catch (Exception e)
                 {
-                    writer?.Dispose();
-                    writeToFile = false;
-                    WriteLine($"Failed to open {path}: {e}");
+                    this.writer?.Dispose();
+                    this.writeToFile = false;
+                    this.WriteLine($"Failed to open {path}: {e}");
                 }
             }
 
-            stopwatch = Stopwatch.StartNew();
+            this.stopwatch = Stopwatch.StartNew();
 
-            WriteLine($"Weave Started - {name}");
+            this.WriteLine($"Weave Started - {name}");
 #if WEAVER_DEBUG_LOGS
             WriteLine($"Debug logs enabled");
 #else
-            WriteLine($"Debug logs disabled");
+            this.WriteLine($"Debug logs disabled");
 #endif 
         }
 
@@ -58,18 +58,18 @@ namespace Mirage.Weaver
         {
             var fullMsg = $"[WeaverDiagnostics] {msg}";
             Console.WriteLine(fullMsg);
-            if (writeToFile)
+            if (this.writeToFile)
             {
-                writer.WriteLine(fullMsg);
+                this.writer.WriteLine(fullMsg);
             }
         }
 
         public long End()
         {
-            WriteLine($"Weave Finished: {ElapsedMilliseconds}ms - {name}");
-            stopwatch?.Stop();
-            writer?.Close();
-            return ElapsedMilliseconds;
+            this.WriteLine($"Weave Finished: {this.ElapsedMilliseconds}ms - {this.name}");
+            this.stopwatch?.Stop();
+            this.writer?.Close();
+            return this.ElapsedMilliseconds;
         }
 
         public SampleScope Sample(string label)
@@ -86,13 +86,13 @@ namespace Mirage.Weaver
             public SampleScope(WeaverDiagnosticsTimer timer, string label)
             {
                 this.timer = timer;
-                start = timer.ElapsedMilliseconds;
+                this.start = timer.ElapsedMilliseconds;
                 this.label = label;
             }
 
             public void Dispose()
             {
-                timer.WriteLine($"{label}: {timer.ElapsedMilliseconds - start}ms - {timer.name}");
+                this.timer.WriteLine($"{this.label}: {this.timer.ElapsedMilliseconds - this.start}ms - {this.timer.name}");
             }
         }
     }

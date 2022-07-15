@@ -13,6 +13,6 @@ namespace Mirage.Experimental
         [Header("Target")]
         public Transform target;
 
-        protected override Transform TargetTransform => target;
+        protected override Transform TargetTransform => this.target;
     }
 }

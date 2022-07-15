@@ -49,77 +49,77 @@ namespace Mirage
         /// Returns true if this object is active on an active server.
         /// <para>This is only true if the object has been spawned. This is different from NetworkServer.active, which is true if the server itself is active rather than this object being active.</para>
         /// </summary>
-        public bool IsServer => Identity.IsServer;
+        public bool IsServer => this.Identity.IsServer;
 
         /// <summary>
         /// Returns true if running as a client and this object was spawned by a server.
         /// </summary>
-        public bool IsClient => Identity.IsClient;
+        public bool IsClient => this.Identity.IsClient;
 
         /// <summary>
         /// Returns true if we're on host mode.
         /// </summary>
-        public bool IsLocalClient => Identity.IsLocalClient;
+        public bool IsLocalClient => this.Identity.IsLocalClient;
 
         /// <summary>
         /// This returns true if this object is the one that represents the player on the local machine.
         /// <para>In multiplayer games, there are multiple instances of the Player object. The client needs to know which one is for "themselves" so that only that player processes input and potentially has a camera attached. The IsLocalPlayer function will return true only for the player instance that belongs to the player on the local machine, so it can be used to filter out input for non-local players.</para>
         /// </summary>
-        public bool IsLocalPlayer => Identity.IsLocalPlayer;
+        public bool IsLocalPlayer => this.Identity.IsLocalPlayer;
 
         /// <summary>
         /// True if this object only exists on the server
         /// </summary>
-        public bool IsServerOnly => IsServer && !IsClient;
+        public bool IsServerOnly => this.IsServer && !this.IsClient;
 
         /// <summary>
         /// True if this object exists on a client that is not also acting as a server
         /// </summary>
-        public bool IsClientOnly => IsClient && !IsServer;
+        public bool IsClientOnly => this.IsClient && !this.IsServer;
 
         /// <summary>
         /// This returns true if this object is the authoritative version of the object in the distributed network application.
         /// <para>The <see cref="NetworkIdentity.HasAuthority">NetworkIdentity.hasAuthority</see> value on the NetworkIdentity determines how authority is determined. For most objects, authority is held by the server. For objects with <see cref="NetworkIdentity.HasAuthority">NetworkIdentity.hasAuthority</see> set, authority is held by the client of that player.</para>
         /// </summary>
-        public bool HasAuthority => Identity.HasAuthority;
+        public bool HasAuthority => this.Identity.HasAuthority;
 
         /// <summary>
         /// The unique network Id of this object.
         /// <para>This is assigned at runtime by the network server and will be unique for all objects for that network session.</para>
         /// </summary>
-        public uint NetId => Identity.NetId;
+        public uint NetId => this.Identity.NetId;
 
         /// <summary>
         /// The <see cref="NetworkServer">NetworkClient</see> associated to this object.
         /// </summary>
-        public INetworkServer Server => Identity.Server;
+        public INetworkServer Server => this.Identity.Server;
 
         /// <summary>
         /// Quick Reference to the NetworkIdentities ServerObjectManager. Present only for server/host instances.
         /// </summary>
-        public ServerObjectManager ServerObjectManager => Identity.ServerObjectManager;
+        public ServerObjectManager ServerObjectManager => this.Identity.ServerObjectManager;
 
         /// <summary>
         /// The <see cref="NetworkClient">NetworkClient</see> associated to this object.
         /// </summary>
-        public INetworkClient Client => Identity.Client;
+        public INetworkClient Client => this.Identity.Client;
 
         /// <summary>
         /// Quick Reference to the NetworkIdentities ClientObjectManager. Present only for instances instances.
         /// </summary>
-        public ClientObjectManager ClientObjectManager => Identity.ClientObjectManager;
+        public ClientObjectManager ClientObjectManager => this.Identity.ClientObjectManager;
 
         /// <summary>
         /// The <see cref="NetworkPlayer"/> associated with this <see cref="NetworkIdentity" /> This is only valid for player objects on the server.
         /// </summary>
-        public INetworkPlayer Owner => Identity.Owner;
+        public INetworkPlayer Owner => this.Identity.Owner;
 
-        public NetworkWorld World => Identity.World;
+        public NetworkWorld World => this.Identity.World;
 
         /// <summary>
         /// Returns the appropriate NetworkTime instance based on if this NetworkBehaviour is running as a Server or Client.
         /// </summary>
-        public NetworkTime NetworkTime => World.Time;
+        public NetworkTime NetworkTime => this.World.Time;
 
         protected internal ulong SyncVarDirtyBits { get; private set; }
 
@@ -127,15 +127,15 @@ namespace Mirage
 
         protected internal bool GetSyncVarHookGuard(ulong dirtyBit)
         {
-            return (syncVarHookGuard & dirtyBit) != 0UL;
+            return (this.syncVarHookGuard & dirtyBit) != 0UL;
         }
 
         protected internal void SetSyncVarHookGuard(ulong dirtyBit, bool value)
         {
             if (value)
-                syncVarHookGuard |= dirtyBit;
+                this.syncVarHookGuard |= dirtyBit;
             else
-                syncVarHookGuard &= ~dirtyBit;
+                this.syncVarHookGuard &= ~dirtyBit;
         }
 
         /// <summary>
@@ -173,17 +173,17 @@ namespace Mirage
                 // in this specific case,  we want to know if we have set it before
                 // so we can compare if the reference is null
                 // instead of calling unity's MonoBehaviour == operator
-                if (_identity is null)
+                if (this._identity is null)
                 {
-                    _identity = TryFindIdentity();
+                    this._identity = this.TryFindIdentity();
 
                     // do this 2nd check inside first if so that we are not checking == twice on unity Object
-                    if (_identity is null)
+                    if (this._identity is null)
                     {
-                        throw new InvalidOperationException($"Could not find NetworkIdentity for {name}.");
+                        throw new InvalidOperationException($"Could not find NetworkIdentity for {this.name}.");
                     }
                 }
-                return _identity;
+                return this._identity;
             }
         }
 
@@ -196,16 +196,16 @@ namespace Mirage
         {
             get
             {
-                if (componentIndex.HasValue)
-                    return componentIndex.Value;
+                if (this.componentIndex.HasValue)
+                    return this.componentIndex.Value;
 
                 // note: FindIndex causes allocations, we search manually instead
-                for (var i = 0; i < Identity.NetworkBehaviours.Length; i++)
+                for (var i = 0; i < this.Identity.NetworkBehaviours.Length; i++)
                 {
-                    var component = Identity.NetworkBehaviours[i];
+                    var component = this.Identity.NetworkBehaviours[i];
                     if (component == this)
                     {
-                        componentIndex = i;
+                        this.componentIndex = i;
                         return i;
                     }
                 }
@@ -227,7 +227,7 @@ namespace Mirage
 #if UNITY_2021_2_OR_NEWER
             var identity = GetComponentInParent<NetworkIdentity>(true);
 #elif UNITY_2020_1_OR_NEWER
-            var identity = gameObject.GetComponentInParent<NetworkIdentity>(true);
+            var identity = this.gameObject.GetComponentInParent<NetworkIdentity>(true);
 #else
             // TODO: remove this bit once Unity drops support for 2019 LTS
             GetComponentsInParent<NetworkIdentity>(true, networkIdentityGetComponentCacheList);
@@ -244,15 +244,15 @@ namespace Mirage
         // We collect all of them and we synchronize them with OnSerialize/OnDeserialize
         protected internal void InitSyncObject(ISyncObject syncObject)
         {
-            syncObjects.Add(syncObject);
-            syncObject.OnChange += SyncObject_OnChange;
+            this.syncObjects.Add(syncObject);
+            syncObject.OnChange += this.SyncObject_OnChange;
         }
 
         private void SyncObject_OnChange()
         {
-            if (IsServer)
+            if (this.IsServer)
             {
-                Server.SyncVarSender.AddDirtyObject(Identity);
+                this.Server.SyncVarSender.AddDirtyObject(this.Identity);
             }
         }
 
@@ -273,9 +273,9 @@ namespace Mirage
         /// <param name="dirtyBit">Bit mask to set.</param>
         public void SetDirtyBit(ulong dirtyBit)
         {
-            SyncVarDirtyBits |= dirtyBit;
-            if (IsServer)
-                Server.SyncVarSender.AddDirtyObject(Identity);
+            this.SyncVarDirtyBits |= dirtyBit;
+            if (this.IsServer)
+                this.Server.SyncVarSender.AddDirtyObject(this.Identity);
         }
 
         /// <summary>
@@ -284,16 +284,16 @@ namespace Mirage
         /// </summary>
         public void ClearAllDirtyBits()
         {
-            lastSyncTime = Time.time;
-            SyncVarDirtyBits = 0L;
+            this.lastSyncTime = Time.time;
+            this.SyncVarDirtyBits = 0L;
 
             // flush all unsynchronized changes in syncobjects
             // note: don't use List.ForEach here, this is a hot path
             //   List.ForEach: 432b/frame
             //   for: 231b/frame
-            for (var i = 0; i < syncObjects.Count; ++i)
+            for (var i = 0; i < this.syncObjects.Count; ++i)
             {
-                syncObjects[i].Flush();
+                this.syncObjects[i].Flush();
             }
         }
 
@@ -302,9 +302,9 @@ namespace Mirage
             // note: don't use Linq here. 1200 networked objects:
             //   Linq: 187KB GC/frame;, 2.66ms time
             //   for: 8KB GC/frame; 1.28ms time
-            for (var i = 0; i < syncObjects.Count; ++i)
+            for (var i = 0; i < this.syncObjects.Count; ++i)
             {
-                if (syncObjects[i].IsDirty)
+                if (this.syncObjects[i].IsDirty)
                 {
                     return true;
                 }
@@ -314,9 +314,9 @@ namespace Mirage
 
         public bool IsDirty()
         {
-            if (Time.time - lastSyncTime >= syncInterval)
+            if (Time.time - this.lastSyncTime >= this.syncInterval)
             {
-                return SyncVarDirtyBits != 0L || AnySyncObjectDirty();
+                return this.SyncVarDirtyBits != 0L || this.AnySyncObjectDirty();
             }
             return false;
         }
@@ -326,7 +326,7 @@ namespace Mirage
         // right away because of syncInterval
         public bool StillDirty()
         {
-            return SyncVarDirtyBits != 0L || AnySyncObjectDirty();
+            return this.SyncVarDirtyBits != 0L || this.AnySyncObjectDirty();
         }
 
         /// <summary>
@@ -347,14 +347,14 @@ namespace Mirage
             // otherwise write dirtyBits+dirty SyncVars
             if (initialState)
             {
-                objectWritten = SerializeObjectsAll(writer);
+                objectWritten = this.SerializeObjectsAll(writer);
             }
             else
             {
-                objectWritten = SerializeObjectsDelta(writer);
+                objectWritten = this.SerializeObjectsDelta(writer);
             }
 
-            var syncVarWritten = SerializeSyncVars(writer, initialState);
+            var syncVarWritten = this.SerializeSyncVars(writer, initialState);
 
             return objectWritten || syncVarWritten;
         }
@@ -369,14 +369,14 @@ namespace Mirage
         {
             if (initialState)
             {
-                DeSerializeObjectsAll(reader);
+                this.DeSerializeObjectsAll(reader);
             }
             else
             {
-                DeSerializeObjectsDelta(reader);
+                this.DeSerializeObjectsDelta(reader);
             }
 
-            DeserializeSyncVars(reader, initialState);
+            this.DeserializeSyncVars(reader, initialState);
         }
 
         // Don't rename. Weaver uses this exact function name.
@@ -408,9 +408,9 @@ namespace Mirage
         internal ulong DirtyObjectBits()
         {
             ulong dirtyObjects = 0;
-            for (var i = 0; i < syncObjects.Count; i++)
+            for (var i = 0; i < this.syncObjects.Count; i++)
             {
-                var syncObject = syncObjects[i];
+                var syncObject = this.syncObjects[i];
                 if (syncObject.IsDirty)
                 {
                     dirtyObjects |= 1UL << i;
@@ -422,9 +422,9 @@ namespace Mirage
         public bool SerializeObjectsAll(NetworkWriter writer)
         {
             var dirty = false;
-            for (var i = 0; i < syncObjects.Count; i++)
+            for (var i = 0; i < this.syncObjects.Count; i++)
             {
-                var syncObject = syncObjects[i];
+                var syncObject = this.syncObjects[i];
                 syncObject.OnSerializeAll(writer);
                 dirty = true;
             }
@@ -435,11 +435,11 @@ namespace Mirage
         {
             var dirty = false;
             // write the mask
-            writer.WritePackedUInt64(DirtyObjectBits());
+            writer.WritePackedUInt64(this.DirtyObjectBits());
             // serializable objects, such as synclists
-            for (var i = 0; i < syncObjects.Count; i++)
+            for (var i = 0; i < this.syncObjects.Count; i++)
             {
-                var syncObject = syncObjects[i];
+                var syncObject = this.syncObjects[i];
                 if (syncObject.IsDirty)
                 {
                     syncObject.OnSerializeDelta(writer);
@@ -451,9 +451,9 @@ namespace Mirage
 
         internal void DeSerializeObjectsAll(NetworkReader reader)
         {
-            for (var i = 0; i < syncObjects.Count; i++)
+            for (var i = 0; i < this.syncObjects.Count; i++)
             {
-                var syncObject = syncObjects[i];
+                var syncObject = this.syncObjects[i];
                 syncObject.OnDeserializeAll(reader);
             }
         }
@@ -461,9 +461,9 @@ namespace Mirage
         internal void DeSerializeObjectsDelta(NetworkReader reader)
         {
             var dirty = reader.ReadPackedUInt64();
-            for (var i = 0; i < syncObjects.Count; i++)
+            for (var i = 0; i < this.syncObjects.Count; i++)
             {
-                var syncObject = syncObjects[i];
+                var syncObject = this.syncObjects[i];
                 if ((dirty & (1UL << i)) != 0)
                 {
                     syncObject.OnDeserializeDelta(reader);
@@ -473,7 +473,7 @@ namespace Mirage
 
         internal void ResetSyncObjects()
         {
-            foreach (var syncObject in syncObjects)
+            foreach (var syncObject in this.syncObjects)
             {
                 syncObject.Reset();
             }
@@ -488,7 +488,7 @@ namespace Mirage
 
         public NetworkBehaviour()
         {
-            remoteCallCollection = new RemoteCallCollection(this);
+            this.remoteCallCollection = new RemoteCallCollection(this);
         }
         #endregion
     }

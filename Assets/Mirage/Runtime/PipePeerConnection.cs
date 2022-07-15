@@ -54,7 +54,7 @@ namespace Mirage
 
         public override string ToString()
         {
-            return name;
+            return this.name;
         }
 
         IEndPoint IConnection.EndPoint => new PipeEndPoint();
@@ -64,66 +64,66 @@ namespace Mirage
 
         void IConnection.Disconnect()
         {
-            if (State == ConnectionState.Disconnected)
+            if (this.State == ConnectionState.Disconnected)
                 return;
 
-            State = ConnectionState.Disconnected;
-            OnDisconnect?.Invoke();
+            this.State = ConnectionState.Disconnected;
+            this.OnDisconnect?.Invoke();
 
             // tell other connection to also disconnect
-            otherConnection.Disconnect();
+            this.otherConnection.Disconnect();
         }
 
         public INotifyToken SendNotify(byte[] packet, int offset, int length)
         {
-            if (State == ConnectionState.Disconnected)
+            if (this.State == ConnectionState.Disconnected)
                 return default;
 
-            receive(packet, offset, length);
+            this.receive(packet, offset, length);
 
             return new PipeNotifyToken();
         }
-        public INotifyToken SendNotify(ArraySegment<byte> packet) => SendNotify(packet.Array, packet.Offset, packet.Count);
-        public INotifyToken SendNotify(byte[] packet) => SendNotify(packet, 0, packet.Length);
+        public INotifyToken SendNotify(ArraySegment<byte> packet) => this.SendNotify(packet.Array, packet.Offset, packet.Count);
+        public INotifyToken SendNotify(byte[] packet) => this.SendNotify(packet, 0, packet.Length);
 
         public void SendNotify(byte[] packet, int offset, int length, INotifyCallBack callBacks)
         {
-            if (State == ConnectionState.Disconnected)
+            if (this.State == ConnectionState.Disconnected)
                 return;
 
-            receive(packet, offset, length);
+            this.receive(packet, offset, length);
 
             callBacks.OnDelivered();
         }
-        public void SendNotify(ArraySegment<byte> packet, INotifyCallBack callBacks) => SendNotify(packet.Array, packet.Offset, packet.Count, callBacks);
-        public void SendNotify(byte[] packet, INotifyCallBack callBacks) => SendNotify(packet, 0, packet.Length, callBacks);
+        public void SendNotify(ArraySegment<byte> packet, INotifyCallBack callBacks) => this.SendNotify(packet.Array, packet.Offset, packet.Count, callBacks);
+        public void SendNotify(byte[] packet, INotifyCallBack callBacks) => this.SendNotify(packet, 0, packet.Length, callBacks);
 
 
         public void SendReliable(byte[] message, int offset, int length)
         {
-            if (State == ConnectionState.Disconnected)
+            if (this.State == ConnectionState.Disconnected)
                 return;
 
-            receive(message, offset, length);
+            this.receive(message, offset, length);
         }
-        public void SendReliable(ArraySegment<byte> packet) => SendReliable(packet.Array, packet.Offset, packet.Count);
-        public void SendReliable(byte[] packet) => SendReliable(packet, 0, packet.Length);
+        public void SendReliable(ArraySegment<byte> packet) => this.SendReliable(packet.Array, packet.Offset, packet.Count);
+        public void SendReliable(byte[] packet) => this.SendReliable(packet, 0, packet.Length);
 
 
         public void SendUnreliable(byte[] packet, int offset, int length)
         {
-            if (State == ConnectionState.Disconnected)
+            if (this.State == ConnectionState.Disconnected)
                 return;
 
-            receive(packet, offset, length);
+            this.receive(packet, offset, length);
         }
-        public void SendUnreliable(ArraySegment<byte> packet) => SendUnreliable(packet.Array, packet.Offset, packet.Count);
-        public void SendUnreliable(byte[] packet) => SendUnreliable(packet, 0, packet.Length);
+        public void SendUnreliable(ArraySegment<byte> packet) => this.SendUnreliable(packet.Array, packet.Offset, packet.Count);
+        public void SendUnreliable(byte[] packet) => this.SendUnreliable(packet, 0, packet.Length);
 
         private void receive(byte[] packet, int offset, int length)
         {
-            logger.Assert(State == ConnectionState.Connected);
-            otherHandler.ReceiveMessage(otherConnection, new ArraySegment<byte>(packet, offset, length));
+            logger.Assert(this.State == ConnectionState.Connected);
+            this.otherHandler.ReceiveMessage(this.otherConnection, new ArraySegment<byte>(packet, offset, length));
         }
 
         public class PipeEndPoint : IEndPoint

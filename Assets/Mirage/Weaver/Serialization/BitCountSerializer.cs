@@ -18,14 +18,14 @@ namespace Mirage.Weaver.Serialization
             this.bitCount = bitCount;
             this.typeConverter = typeConverter;
             this.useZigZag = useZigZag;
-            minValue = null;
+            this.minValue = null;
         }
 
         public BitCountSerializer(int bitCount, OpCode? typeConverter, int? minValue)
         {
             this.bitCount = bitCount;
             this.typeConverter = typeConverter;
-            useZigZag = false;
+            this.useZigZag = false;
             this.minValue = minValue;
         }
 
@@ -35,7 +35,7 @@ namespace Mirage.Weaver.Serialization
         /// <returns></returns>
         internal BitCountSerializer CopyWithZigZag()
         {
-            return new BitCountSerializer(bitCount, typeConverter, true);
+            return new BitCountSerializer(this.bitCount, this.typeConverter, true);
         }
 
         public override void AppendWriteField(ModuleDefinition module, ILProcessor worker, ParameterDefinition writerParameter, ParameterDefinition typeParameter, FieldReference fieldReference)
@@ -46,17 +46,17 @@ namespace Mirage.Weaver.Serialization
             worker.Append(LoadParamOrArg0(worker, typeParameter));
             worker.Append(worker.Create(OpCodes.Ldfld, fieldReference));
 
-            if (useZigZag)
+            if (this.useZigZag)
             {
-                WriteZigZag(module, worker, fieldReference.FieldType);
+                this.WriteZigZag(module, worker, fieldReference.FieldType);
             }
-            if (minValue.HasValue)
+            if (this.minValue.HasValue)
             {
-                WriteSubtractMinValue(worker);
+                this.WriteSubtractMinValue(worker);
             }
 
             worker.Append(worker.Create(OpCodes.Conv_U8));
-            worker.Append(worker.Create(OpCodes.Ldc_I4, bitCount));
+            worker.Append(worker.Create(OpCodes.Ldc_I4, this.bitCount));
             worker.Append(worker.Create(OpCodes.Call, writeWithBitCount));
         }
 
@@ -68,17 +68,17 @@ namespace Mirage.Weaver.Serialization
             worker.Append(worker.Create(OpCodes.Ldloc, writer));
             worker.Append(worker.Create(OpCodes.Ldarg, valueParameter));
 
-            if (useZigZag)
+            if (this.useZigZag)
             {
-                WriteZigZag(module, worker, valueParameter.ParameterType);
+                this.WriteZigZag(module, worker, valueParameter.ParameterType);
             }
-            if (minValue.HasValue)
+            if (this.minValue.HasValue)
             {
-                WriteSubtractMinValue(worker);
+                this.WriteSubtractMinValue(worker);
             }
 
             worker.Append(worker.Create(OpCodes.Conv_U8));
-            worker.Append(worker.Create(OpCodes.Ldc_I4, bitCount));
+            worker.Append(worker.Create(OpCodes.Ldc_I4, this.bitCount));
             worker.Append(worker.Create(OpCodes.Call, writeWithBitCount));
         }
 
@@ -94,7 +94,7 @@ namespace Mirage.Weaver.Serialization
 
         private void WriteSubtractMinValue(ILProcessor worker)
         {
-            worker.Append(worker.Create(OpCodes.Ldc_I4, minValue.Value));
+            worker.Append(worker.Create(OpCodes.Ldc_I4, this.minValue.Value));
             worker.Append(worker.Create(OpCodes.Sub));
         }
 
@@ -105,23 +105,23 @@ namespace Mirage.Weaver.Serialization
             // add `reader` to stack
             worker.Append(worker.Create(OpCodes.Ldarg, readerParameter));
             // add `bitCount` to stack
-            worker.Append(worker.Create(OpCodes.Ldc_I4, bitCount));
+            worker.Append(worker.Create(OpCodes.Ldc_I4, this.bitCount));
             // call `reader.read(bitCount)` function
             worker.Append(worker.Create(OpCodes.Call, readWithBitCount));
 
             // convert result to correct size if needed
-            if (typeConverter.HasValue)
+            if (this.typeConverter.HasValue)
             {
-                worker.Append(worker.Create(typeConverter.Value));
+                worker.Append(worker.Create(this.typeConverter.Value));
             }
 
-            if (useZigZag)
+            if (this.useZigZag)
             {
-                ReadZigZag(module, worker, fieldType);
+                this.ReadZigZag(module, worker, fieldType);
             }
-            if (minValue.HasValue)
+            if (this.minValue.HasValue)
             {
-                ReadAddMinValue(worker);
+                this.ReadAddMinValue(worker);
             }
         }
 
@@ -137,7 +137,7 @@ namespace Mirage.Weaver.Serialization
 
         private void ReadAddMinValue(ILProcessor worker)
         {
-            worker.Append(worker.Create(OpCodes.Ldc_I4, minValue.Value));
+            worker.Append(worker.Create(OpCodes.Ldc_I4, this.minValue.Value));
             worker.Append(worker.Create(OpCodes.Add));
         }
     }

@@ -12,16 +12,16 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         [SetUp]
         public void Setup()
         {
-            max = 100;
-            precsion = 1 / 1000f;
-            packer = new FloatPacker(max, precsion, false);
+            this.max = 100;
+            this.precsion = 1 / 1000f;
+            this.packer = new FloatPacker(this.max, this.precsion, false);
         }
 
         [Test]
         public void ClampsToZero()
         {
-            packer.Pack(writer, -4.5f);
-            var outValue = packer.Unpack(GetReader());
+            this.packer.Pack(this.writer, -4.5f);
+            var outValue = this.packer.Unpack(this.GetReader());
 
             Assert.That(outValue, Is.Zero);
         }
@@ -30,10 +30,10 @@ namespace Mirage.Tests.Runtime.Serialization.Packers
         public void CanWriteNearMax()
         {
             const float value = 99.5f;
-            packer.Pack(writer, value);
-            var outValue = packer.Unpack(GetReader());
+            this.packer.Pack(this.writer, value);
+            var outValue = this.packer.Unpack(this.GetReader());
 
-            Assert.That(outValue, Is.EqualTo(value).Within(precsion));
+            Assert.That(outValue, Is.EqualTo(value).Within(this.precsion));
         }
     }
 }

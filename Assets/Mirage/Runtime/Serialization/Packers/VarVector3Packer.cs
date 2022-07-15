@@ -37,24 +37,24 @@ namespace Mirage.Serialization
 
         public VarVector3Packer(Vector3 precision, int blocksize)
         {
-            x = new VarFloatPacker(precision.x, blocksize);
-            y = new VarFloatPacker(precision.y, blocksize);
-            z = new VarFloatPacker(precision.z, blocksize);
+            this.x = new VarFloatPacker(precision.x, blocksize);
+            this.y = new VarFloatPacker(precision.y, blocksize);
+            this.z = new VarFloatPacker(precision.z, blocksize);
         }
 
         public void Pack(NetworkWriter writer, Vector3 position)
         {
-            x.Pack(writer, position.x);
-            y.Pack(writer, position.y);
-            z.Pack(writer, position.z);
+            this.x.Pack(writer, position.x);
+            this.y.Pack(writer, position.y);
+            this.z.Pack(writer, position.z);
         }
 
         public Vector3 Unpack(NetworkReader reader)
         {
             Vector3 value = default;
-            value.x = x.Unpack(reader);
-            value.y = y.Unpack(reader);
-            value.z = z.Unpack(reader);
+            value.x = this.x.Unpack(reader);
+            value.y = this.y.Unpack(reader);
+            value.z = this.z.Unpack(reader);
             return value;
         }
     }

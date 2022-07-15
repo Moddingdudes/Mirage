@@ -35,20 +35,20 @@ namespace Mirage.Tests.Runtime.SyncVarWithBaseClass
             var expected = 0ul;
 
             behaviour.i0 = 1;
-            SetDirtyBit(ref expected, 0);
+            this.SetDirtyBit(ref expected, 0);
             Assert.That(behaviour.SyncVarDirtyBits, Is.EqualTo(expected));
 
 
             behaviour.i3 = 1;
-            SetDirtyBit(ref expected, 3);
+            this.SetDirtyBit(ref expected, 3);
             Assert.That(behaviour.SyncVarDirtyBits, Is.EqualTo(expected));
 
             behaviour.i6 = 1;
-            SetDirtyBit(ref expected, 6);
+            this.SetDirtyBit(ref expected, 6);
             Assert.That(behaviour.SyncVarDirtyBits, Is.EqualTo(expected));
 
             behaviour.i8 = 1;
-            SetDirtyBit(ref expected, 8);
+            this.SetDirtyBit(ref expected, 8);
             Assert.That(behaviour.SyncVarDirtyBits, Is.EqualTo(expected));
         }
 

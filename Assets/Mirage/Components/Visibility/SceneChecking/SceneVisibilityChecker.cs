@@ -25,7 +25,7 @@ namespace Mirage
                 return false;
             }
 
-            var thisScene = gameObject.scene;
+            var thisScene = this.gameObject.scene;
             var visible = playerScene == thisScene;
             if (logger.LogEnabled()) logger.Log($"SceneChecker: {player} can see '{this}': {visible}");
             return visible;
@@ -33,9 +33,9 @@ namespace Mirage
 
         public override void OnRebuildObservers(HashSet<INetworkPlayer> observers, bool initialize)
         {
-            foreach (var player in Server.Players)
+            foreach (var player in this.Server.Players)
             {
-                if (OnCheckObserver(player))
+                if (this.OnCheckObserver(player))
                 {
                     observers.Add(player);
                 }
@@ -48,21 +48,21 @@ namespace Mirage
         /// <param name="scene"></param>
         public void MoveToScene(Scene scene)
         {
-            var owner = Identity.Owner;
+            var owner = this.Identity.Owner;
 
             // remove player from other clients
-            removeObservers(Identity);
+            this.removeObservers(this.Identity);
 
             // remove other objects from player
             if (owner != null)
                 owner.RemoveAllVisibleObjects();
 
             // move player to new scene
-            SceneManager.MoveGameObjectToScene(Identity.gameObject, scene);
+            SceneManager.MoveGameObjectToScene(this.Identity.gameObject, scene);
 
             // spawn new objects for player
             if (owner != null)
-                ServerObjectManager.SpawnVisibleObjects(Identity.Owner);
+                this.ServerObjectManager.SpawnVisibleObjects(this.Identity.Owner);
         }
 
         private void removeObservers(NetworkIdentity identity)

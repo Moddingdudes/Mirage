@@ -25,16 +25,16 @@ namespace Mirage.SocketLayer
 
         public void OnDelivered()
         {
-            if (notified) throw new InvalidOperationException("this token as already been notified");
-            notified = true;
+            if (this.notified) throw new InvalidOperationException("this token as already been notified");
+            this.notified = true;
 
             Delivered?.Invoke();
         }
 
         public void OnLost()
         {
-            if (notified) throw new InvalidOperationException("this token as already been notified");
-            notified = true;
+            if (this.notified) throw new InvalidOperationException("this token as already been notified");
+            this.notified = true;
 
             Lost?.Invoke();
         }

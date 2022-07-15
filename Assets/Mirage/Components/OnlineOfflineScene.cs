@@ -25,28 +25,28 @@ namespace Mirage
         // Start is called before the first frame update
         private void Start()
         {
-            if (string.IsNullOrEmpty(OnlineScene))
+            if (string.IsNullOrEmpty(this.OnlineScene))
                 throw new MissingReferenceException("OnlineScene missing. Please assign to OnlineOfflineScene component.");
 
-            if (string.IsNullOrEmpty(OfflineScene))
+            if (string.IsNullOrEmpty(this.OfflineScene))
                 throw new MissingReferenceException("OfflineScene missing. Please assign to OnlineOfflineScene component.");
 
-            if (Server != null)
+            if (this.Server != null)
             {
-                Server.Started.AddListener(OnServerStarted);
-                Server.Stopped.AddListener(OnServerStopped);
+                this.Server.Started.AddListener(this.OnServerStarted);
+                this.Server.Stopped.AddListener(this.OnServerStopped);
             }
         }
 
         private void OnServerStarted()
         {
-            NetworkSceneManager.ServerLoadSceneNormal(OnlineScene);
+            this.NetworkSceneManager.ServerLoadSceneNormal(this.OnlineScene);
         }
 
         private void OnServerStopped()
         {
             Debug.Log("OnlineOfflineScene.OnServerStopped");
-            NetworkSceneManager.ServerLoadSceneNormal(OfflineScene);
+            this.NetworkSceneManager.ServerLoadSceneNormal(this.OfflineScene);
         }
     }
 }

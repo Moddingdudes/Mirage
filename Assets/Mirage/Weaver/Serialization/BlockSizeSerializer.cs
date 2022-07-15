@@ -25,7 +25,7 @@ namespace Mirage.Weaver.Serialization
             worker.Append(LoadParamOrArg0(worker, typeParameter));
             worker.Append(worker.Create(OpCodes.Ldfld, fieldReference));
             worker.Append(worker.Create(OpCodes.Conv_U8));
-            worker.Append(worker.Create(OpCodes.Ldc_I4, blockSize));
+            worker.Append(worker.Create(OpCodes.Ldc_I4, this.blockSize));
             worker.Append(worker.Create(OpCodes.Call, writeWithBlockSize));
         }
 
@@ -36,7 +36,7 @@ namespace Mirage.Weaver.Serialization
             worker.Append(worker.Create(OpCodes.Ldloc, writer));
             worker.Append(worker.Create(OpCodes.Ldarg, valueParameter));
             worker.Append(worker.Create(OpCodes.Conv_U8));
-            worker.Append(worker.Create(OpCodes.Ldc_I4, blockSize));
+            worker.Append(worker.Create(OpCodes.Ldc_I4, this.blockSize));
             worker.Append(worker.Create(OpCodes.Call, writeWithBlockSize));
         }
 
@@ -45,13 +45,13 @@ namespace Mirage.Weaver.Serialization
             var writeWithBlockSize = module.ImportReference(() => VarIntBlocksPacker.Unpack(default, default));
 
             worker.Append(worker.Create(OpCodes.Ldarg, readerParameter));
-            worker.Append(worker.Create(OpCodes.Ldc_I4, blockSize));
+            worker.Append(worker.Create(OpCodes.Ldc_I4, this.blockSize));
             worker.Append(worker.Create(OpCodes.Call, writeWithBlockSize));
 
             // convert result to correct size if needed
-            if (typeConverter.HasValue)
+            if (this.typeConverter.HasValue)
             {
-                worker.Append(worker.Create(typeConverter.Value));
+                worker.Append(worker.Create(this.typeConverter.Value));
             }
         }
     }

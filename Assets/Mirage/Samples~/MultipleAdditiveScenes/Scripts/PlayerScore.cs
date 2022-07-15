@@ -20,11 +20,11 @@ namespace Mirage.Examples.MultipleAdditiveScenes
 
         private void OnGUI()
         {
-            if (!IsLocalPlayer && clientMatchIndex < 0)
-                clientMatchIndex = Client.Player.Identity.GetComponent<PlayerScore>().matchIndex;
+            if (!this.IsLocalPlayer && this.clientMatchIndex < 0)
+                this.clientMatchIndex = this.Client.Player.Identity.GetComponent<PlayerScore>().matchIndex;
 
-            if (IsLocalPlayer || matchIndex == clientMatchIndex)
-                GUI.Box(new Rect(10f + (scoreIndex * 110), 10f, 100f, 25f), $"P{playerNumber}: {score}");
+            if (this.IsLocalPlayer || this.matchIndex == this.clientMatchIndex)
+                GUI.Box(new Rect(10f + (this.scoreIndex * 110), 10f, 100f, 25f), $"P{this.playerNumber}: {this.score}");
         }
     }
 }

@@ -60,56 +60,56 @@ namespace Mirage.Serialization
             // force medium to also be 62 or less so we can use 1 write call (2 bits to say its medium + 62 value bits
             if (mediumBits > 62) throw new ArgumentException("Medium bits must be 62 or less", nameof(mediumBits));
 
-            smallBitCount = smallBits;
-            mediumBitsCount = mediumBits;
-            largeBitsCount = largeBits;
+            this.smallBitCount = smallBits;
+            this.mediumBitsCount = mediumBits;
+            this.largeBitsCount = largeBits;
 
             // mask is also max value for n bits
-            smallValue = BitMask.Mask(smallBits);
-            mediumValue = BitMask.Mask(mediumBits);
-            largeValue = BitMask.Mask(largeBits);
+            this.smallValue = BitMask.Mask(smallBits);
+            this.mediumValue = BitMask.Mask(mediumBits);
+            this.largeValue = BitMask.Mask(largeBits);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PackUlong(NetworkWriter writer, ulong value)
         {
-            pack(writer, value, 64);
+            this.pack(writer, value, 64);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PackUint(NetworkWriter writer, uint value)
         {
-            pack(writer, value, 32);
+            this.pack(writer, value, 32);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PackUshort(NetworkWriter writer, ushort value)
         {
-            pack(writer, value, 16);
+            this.pack(writer, value, 16);
         }
 
         private void pack(NetworkWriter writer, ulong value, int maxBits)
         {
-            if (value <= smallValue)
+            if (value <= this.smallValue)
             {
                 // start with b0 to say small, then value
-                writer.Write(value << 1, smallBitCount + 1);
+                writer.Write(value << 1, this.smallBitCount + 1);
             }
-            else if (value <= mediumValue)
+            else if (value <= this.mediumValue)
             {
                 // start with b01 to say medium, then value
-                writer.Write(value << 2 | 0b01, mediumBitsCount + 2);
+                writer.Write(value << 2 | 0b01, this.mediumBitsCount + 2);
             }
-            else if (value <= largeValue)
+            else if (value <= this.largeValue)
             {
                 // start with b11 to say large, then value
                 // use 2 write calls here because bitCount could be 64
                 writer.Write(0b11, 2);
-                writer.Write(value, Math.Min(maxBits, largeBitsCount));
+                writer.Write(value, Math.Min(maxBits, this.largeBitsCount));
             }
             else
             {
-                if (throwIfOverLarge)
+                if (this.throwIfOverLarge)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, $"Value is over max of {largeValue}");
+                    throw new ArgumentOutOfRangeException(nameof(value), value, $"Value is over max of {this.largeValue}");
                 }
                 else
                 {
@@ -117,7 +117,7 @@ namespace Mirage.Serialization
                     // we dont want to write value here because it will be masked and lose some high bits
                     // need 2 write calls here because max is 64+2 bits
                     writer.Write(0b11, 2);
-                    writer.Write(ulong.MaxValue, Math.Min(maxBits, largeBitsCount));
+                    writer.Write(ulong.MaxValue, Math.Min(maxBits, this.largeBitsCount));
                 }
             }
         }
@@ -125,34 +125,34 @@ namespace Mirage.Serialization
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ulong UnpackUlong(NetworkReader reader)
         {
-            return unpack(reader, 64);
+            return this.unpack(reader, 64);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint UnpackUint(NetworkReader reader)
         {
-            return (uint)unpack(reader, 32);
+            return (uint)this.unpack(reader, 32);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ushort UnpackUshort(NetworkReader reader)
         {
-            return (ushort)unpack(reader, 16);
+            return (ushort)this.unpack(reader, 16);
         }
 
         private ulong unpack(NetworkReader reader, int maxBits)
         {
             if (!reader.ReadBoolean())
             {
-                return reader.Read(smallBitCount);
+                return reader.Read(this.smallBitCount);
             }
             else
             {
                 if (!reader.ReadBoolean())
                 {
-                    return reader.Read(mediumBitsCount);
+                    return reader.Read(this.mediumBitsCount);
                 }
                 else
                 {
-                    return reader.Read(Math.Min(largeBitsCount, maxBits));
+                    return reader.Read(Math.Min(this.largeBitsCount, maxBits));
                 }
             }
         }

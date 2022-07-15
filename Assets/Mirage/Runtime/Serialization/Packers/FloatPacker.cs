@@ -64,27 +64,27 @@ namespace Mirage.Serialization
             if (bitCount < 1) throw new ArgumentException("Bit count is too low, bit count should be between 1 and 30", nameof(bitCount));
             if (bitCount > 30) throw new ArgumentException("Bit count is too high, bit count should be between 1 and 30", nameof(bitCount));
 
-            mask = (1u << bitCount) - 1u;
+            this.mask = (1u << bitCount) - 1u;
 
             if (signed)
             {
-                midPoint = (1u << (bitCount - 1)) - 1u;
-                toNegative = (int)(mask + 1u);
+                this.midPoint = (1u << (bitCount - 1)) - 1u;
+                this.toNegative = (int)(this.mask + 1u);
 
-                positiveMax = max;
-                negativeMax = -max;
+                this.positiveMax = max;
+                this.negativeMax = -max;
             }
             else // unsigned
             {
-                midPoint = (1u << (bitCount)) - 1u;
-                toNegative = 0;
+                this.midPoint = (1u << (bitCount)) - 1u;
+                this.toNegative = 0;
 
-                positiveMax = max;
-                negativeMax = 0;
+                this.positiveMax = max;
+                this.negativeMax = 0;
             }
 
-            multiplier_pack = midPoint / max;
-            multiplier_unpack = 1 / multiplier_pack;
+            this.multiplier_pack = this.midPoint / max;
+            this.multiplier_unpack = 1 / this.multiplier_pack;
         }
 
 
@@ -97,9 +97,9 @@ namespace Mirage.Serialization
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint Pack(float value)
         {
-            if (value >= positiveMax) value = positiveMax;
-            if (value <= negativeMax) value = negativeMax;
-            return PackNoClamp(value);
+            if (value >= this.positiveMax) value = this.positiveMax;
+            if (value <= this.negativeMax) value = this.negativeMax;
+            return this.PackNoClamp(value);
         }
 
         /// <summary>
@@ -111,9 +111,9 @@ namespace Mirage.Serialization
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Pack(NetworkWriter writer, float value)
         {
-            if (value >= positiveMax) value = positiveMax;
-            if (value <= negativeMax) value = negativeMax;
-            PackNoClamp(writer, value);
+            if (value >= this.positiveMax) value = this.positiveMax;
+            if (value <= this.negativeMax) value = this.negativeMax;
+            this.PackNoClamp(writer, value);
         }
 
         /// <summary>
@@ -127,14 +127,14 @@ namespace Mirage.Serialization
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint PackNoClamp(float value)
         {
-            return (uint)Mathf.RoundToInt(value * multiplier_pack) & mask;
+            return (uint)Mathf.RoundToInt(value * this.multiplier_pack) & this.mask;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PackNoClamp(NetworkWriter writer, float value)
         {
             // dont need to mask value here because the Write function will mask it
-            writer.Write((uint)Mathf.RoundToInt(value * multiplier_pack), bitCount);
+            writer.Write((uint)Mathf.RoundToInt(value * this.multiplier_pack), this.bitCount);
         }
 
 
@@ -170,11 +170,11 @@ namespace Mirage.Serialization
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Unpack(uint value)
         {
-            if (value <= midPoint) // positive
+            if (value <= this.midPoint) // positive
             {
                 // 0 -> 511
                 // 0 -> (max)
-                return value * multiplier_unpack;
+                return value * this.multiplier_unpack;
             }
             else // negative
             {
@@ -184,7 +184,7 @@ namespace Mirage.Serialization
 
                 // doing `value - max*2` cause:
                 // -512 -> -1
-                return ((int)value - toNegative) * multiplier_unpack;
+                return ((int)value - this.toNegative) * this.multiplier_unpack;
             }
         }
 
@@ -196,7 +196,7 @@ namespace Mirage.Serialization
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Unpack(NetworkReader reader)
         {
-            return Unpack((uint)reader.Read(bitCount));
+            return this.Unpack((uint)reader.Read(this.bitCount));
         }
     }
 }

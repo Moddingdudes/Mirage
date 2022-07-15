@@ -14,7 +14,7 @@ namespace Mirage.Examples.Additive
         [Server(error = false)]
         private void Start()
         {
-            networkAnimator = GetComponent<NetworkAnimator>();
+            this.networkAnimator = this.GetComponent<NetworkAnimator>();
         }
 
         [Range(0, 1)]
@@ -22,11 +22,11 @@ namespace Mirage.Examples.Additive
 
         private void Update()
         {
-            if (IsServer && Identity.observers.Count > 0)
-                ShootNearestPlayer();
+            if (this.IsServer && this.Identity.observers.Count > 0)
+                this.ShootNearestPlayer();
 
-            if (IsClient)
-                transform.rotation = Quaternion.Slerp(transform.rotation, rotation, turnSpeed);
+            if (this.IsClient)
+                this.transform.rotation = Quaternion.Slerp(this.transform.rotation, this.rotation, this.turnSpeed);
         }
 
         [Server]
@@ -35,10 +35,10 @@ namespace Mirage.Examples.Additive
             GameObject target = null;
             var distance = 100f;
 
-            foreach (var networkConnection in Identity.observers)
+            foreach (var networkConnection in this.Identity.observers)
             {
                 var tempTarget = networkConnection.Identity.gameObject;
-                var tempDistance = Vector3.Distance(tempTarget.transform.position, transform.position);
+                var tempDistance = Vector3.Distance(tempTarget.transform.position, this.transform.position);
 
                 if (target == null || distance > tempDistance)
                 {
@@ -49,9 +49,9 @@ namespace Mirage.Examples.Additive
 
             if (target != null)
             {
-                transform.LookAt(target.transform.position + Vector3.down);
-                rotation = transform.rotation;
-                networkAnimator.SetTrigger("Fire");
+                this.transform.LookAt(target.transform.position + Vector3.down);
+                this.rotation = this.transform.rotation;
+                this.networkAnimator.SetTrigger("Fire");
             }
         }
     }

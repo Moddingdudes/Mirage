@@ -47,37 +47,37 @@ namespace Mirage.EditorScripts.Logging
         public LogLevelsGUI(LogSettingsSO settings)
         {
             this.settings = settings;
-            checker = new LogSettingChecker(settings);
+            this.checker = new LogSettingChecker(settings);
         }
 
         public void Draw()
         {
-            checker.Refresh();
+            this.checker.Refresh();
 
-            guiChanged = false;
+            this.guiChanged = false;
 
             EditorGUI.BeginChangeCheck();
 
             using (new LogGUIScope())
             {
                 EditorGUILayout.HelpBox("You may need to run your game a few times for this list to properly populate!", MessageType.Info);
-                DrawAllLevelDropdown();
+                this.DrawAllLevelDropdown();
 
                 EditorGUILayout.Space();
 
-                foreach (var group in settings.LogLevels.GroupBy(x => x.Namespace).OrderBy(x => x.Key))
+                foreach (var group in this.settings.LogLevels.GroupBy(x => x.Namespace).OrderBy(x => x.Key))
                 {
-                    DrawGroup(group);
+                    this.DrawGroup(group);
                 }
 
                 EditorGUILayout.Space();
-                DrawDeleteAllButton();
-                DrawFindAllButton();
+                this.DrawDeleteAllButton();
+                this.DrawFindAllButton();
             }
 
-            if (guiChanged)
+            if (this.guiChanged)
             {
-                ApplyAndSaveLevels();
+                this.ApplyAndSaveLevels();
             }
         }
 
@@ -85,11 +85,11 @@ namespace Mirage.EditorScripts.Logging
         {
             using (var scope = new EditorGUI.ChangeCheckScope())
             {
-                var allLogType = GetGroupLevel(settings.LogLevels);
+                var allLogType = this.GetGroupLevel(this.settings.LogLevels);
                 allLogType = (LogType)EditorGUILayout.EnumPopup("Set All", allLogType);
                 if (scope.changed)
                 {
-                    SetGroupLevel(settings.LogLevels, allLogType);
+                    this.SetGroupLevel(this.settings.LogLevels, allLogType);
                 }
             }
         }
@@ -97,13 +97,13 @@ namespace Mirage.EditorScripts.Logging
         private void DrawGroup(IGrouping<string, LogSettingsSO.LoggerSettings> group)
         {
             var NameSpace = string.IsNullOrEmpty(group.Key) ? "< no namespace >" : group.Key;
-            if (!folderOutState.ContainsKey(NameSpace))
-                folderOutState[NameSpace] = false;
+            if (!this.folderOutState.ContainsKey(NameSpace))
+                this.folderOutState[NameSpace] = false;
 
-            folderOutState[NameSpace] = EditorGUILayout.Foldout(folderOutState[NameSpace], NameSpace, toggleOnLabelClick: true, EditorStyles.foldoutHeader);
+            this.folderOutState[NameSpace] = EditorGUILayout.Foldout(this.folderOutState[NameSpace], NameSpace, toggleOnLabelClick: true, EditorStyles.foldoutHeader);
 
 
-            if (folderOutState[NameSpace])
+            if (this.folderOutState[NameSpace])
             {
                 EditorGUI.indentLevel++;
                 foreach (var loggerType in group.OrderBy(x => x.Name))
@@ -115,7 +115,7 @@ namespace Mirage.EditorScripts.Logging
                         if (scope.changed)
                         {
                             loggerType.logLevel = level;
-                            guiChanged = true;
+                            this.guiChanged = true;
                         }
                     }
                 }
@@ -131,9 +131,9 @@ namespace Mirage.EditorScripts.Logging
             GUILayout.Label("NOTES: when clearing it might require assembly to be reloaded before the 'find all' button will find everything");
             if (GUILayout.Button("Clear All levels"))
             {
-                settings.LogLevels.Clear();
+                this.settings.LogLevels.Clear();
                 LogFactory.loggers.Clear();
-                guiChanged = true;
+                this.guiChanged = true;
             }
         }
 
@@ -179,21 +179,21 @@ namespace Mirage.EditorScripts.Logging
                 }
 
                 // refresh so settings list has new items from Factory
-                checker.Refresh();
-                guiChanged = true;
+                this.checker.Refresh();
+                this.guiChanged = true;
             }
         }
 
         private void ApplyAndSaveLevels()
         {
-            foreach (var logSetting in settings.LogLevels)
+            foreach (var logSetting in this.settings.LogLevels)
             {
                 var logger = LogFactory.GetLogger(logSetting.FullName);
                 logger.filterLogType = logSetting.logLevel;
             }
 
             // todo save outside of editor
-            EditorUtility.SetDirty(settings);
+            EditorUtility.SetDirty(this.settings);
         }
 
         private LogType GetGroupLevel(IEnumerable<LogSettingsSO.LoggerSettings> group)
@@ -237,7 +237,7 @@ namespace Mirage.EditorScripts.Logging
             {
                 GUILayout.BeginVertical();
 
-                labelWidth = EditorGUIUtility.labelWidth;
+                this.labelWidth = EditorGUIUtility.labelWidth;
                 if (EditorGUIUtility.currentViewWidth > 550)
                 {
                     EditorGUIUtility.labelWidth = 250;
@@ -253,7 +253,7 @@ namespace Mirage.EditorScripts.Logging
                 GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
                 GUILayout.EndVertical();
-                EditorGUIUtility.labelWidth = labelWidth;
+                EditorGUIUtility.labelWidth = this.labelWidth;
             }
         }
     }

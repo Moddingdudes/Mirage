@@ -42,8 +42,8 @@ namespace Mirage.Tests.Runtime.ClientServer.RpcTests
         {
             const int num = 32;
             var sub = Substitute.For<Action<int>>();
-            serverComponent.serverRpcCalled += sub;
-            clientComponent.MyRpc(num, default(INetworkPlayer));
+            this.serverComponent.serverRpcCalled += sub;
+            this.clientComponent.MyRpc(num, default(INetworkPlayer));
 
             yield return null;
             yield return null;
@@ -56,8 +56,8 @@ namespace Mirage.Tests.Runtime.ClientServer.RpcTests
         {
             const int num = 32;
             var sub = Substitute.For<Action<int>>();
-            serverComponent.serverRpcOptionCalled += sub;
-            clientComponent.MyRpc(num, true, default(INetworkPlayer));
+            this.serverComponent.serverRpcOptionCalled += sub;
+            this.clientComponent.MyRpc(num, true, default(INetworkPlayer));
 
             yield return null;
             yield return null;
@@ -70,8 +70,8 @@ namespace Mirage.Tests.Runtime.ClientServer.RpcTests
         {
             const int num = 32;
             var sub = Substitute.For<Action<int>>();
-            clientComponent.clientRpcCalled += sub;
-            serverComponent.MyRpc(num);
+            this.clientComponent.clientRpcCalled += sub;
+            this.serverComponent.MyRpc(num);
 
             yield return null;
             yield return null;
@@ -84,8 +84,8 @@ namespace Mirage.Tests.Runtime.ClientServer.RpcTests
         {
             const int num = 32;
             var sub = Substitute.For<Action<int>>();
-            clientComponent.clientRpcOptionCalled += sub;
-            serverComponent.MyRpc(num, true);
+            this.clientComponent.clientRpcOptionCalled += sub;
+            this.serverComponent.MyRpc(num, true);
 
             yield return null;
             yield return null;

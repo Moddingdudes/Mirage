@@ -13,7 +13,7 @@ namespace Mirage.Weaver
 
         public PostProcessorReflectionImporter(ModuleDefinition module) : base(module)
         {
-            _correctCorlib = module.AssemblyReferences.FirstOrDefault(a => a.Name == "mscorlib" || a.Name == "netstandard" || a.Name == SystemPrivateCoreLib);
+            this._correctCorlib = module.AssemblyReferences.FirstOrDefault(a => a.Name == "mscorlib" || a.Name == "netstandard" || a.Name == SystemPrivateCoreLib);
         }
 
         /// <summary>
@@ -23,12 +23,12 @@ namespace Mirage.Weaver
         /// <returns></returns>
         public override AssemblyNameReference ImportReference(AssemblyName name)
         {
-            if (_correctCorlib != null && name.Name == SystemPrivateCoreLib)
+            if (this._correctCorlib != null && name.Name == SystemPrivateCoreLib)
             {
-                return _correctCorlib;
+                return this._correctCorlib;
             }
 
-            if (TryImportFast(name, out var reference))
+            if (this.TryImportFast(name, out var reference))
             {
                 return reference;
             }
@@ -50,7 +50,7 @@ namespace Mirage.Weaver
             // https://github.com/jbevain/cecil/blob/0.10/Mono.Cecil/Import.cs#L335
             var fullName = name.FullName;
 
-            var references = module.AssemblyReferences;
+            var references = this.module.AssemblyReferences;
             for (var i = 0; i < references.Count; i++)
             {
                 var reference = references[i];

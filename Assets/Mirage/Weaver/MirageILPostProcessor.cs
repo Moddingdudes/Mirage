@@ -14,7 +14,7 @@ namespace Mirage.Weaver
 
         public override ILPostProcessResult Process(ICompiledAssembly compiledAssembly)
         {
-            if (!WillProcess(compiledAssembly))
+            if (!this.WillProcess(compiledAssembly))
                 return null;
 
             var logger = new WeaverLogger();

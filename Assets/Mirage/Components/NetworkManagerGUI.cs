@@ -13,15 +13,15 @@ namespace Mirage
 
         private void OnGUI()
         {
-            GUIUtility.ScaleAroundPivot(Vector2.one * Scale, GetPivotFromAnchor(GUIAnchor));
+            GUIUtility.ScaleAroundPivot(Vector2.one * this.Scale, GetPivotFromAnchor(this.GUIAnchor));
 
-            if (!NetworkManager.Server.Active && !NetworkManager.Client.Active)
+            if (!this.NetworkManager.Server.Active && !this.NetworkManager.Client.Active)
             {
-                StartButtons(GetRectFromAnchor(GUIAnchor, 71));
+                this.StartButtons(GetRectFromAnchor(this.GUIAnchor, 71));
             }
             else
             {
-                StatusLabels(GetRectFromAnchor(GUIAnchor, 100));
+                this.StatusLabels(GetRectFromAnchor(this.GUIAnchor, 100));
             }
         }
 
@@ -37,7 +37,7 @@ namespace Mirage
             {
                 if (GUILayout.Button("Host (Server + Client)"))
                 {
-                    ClickHost();
+                    this.ClickHost();
                 }
             }
 
@@ -45,9 +45,9 @@ namespace Mirage
 
             if (GUILayout.Button("Client"))
             {
-                ClickClient();
+                this.ClickClient();
             }
-            NetworkAddress = GUILayout.TextField(NetworkAddress);
+            this.NetworkAddress = GUILayout.TextField(this.NetworkAddress);
 
             GUILayout.EndHorizontal();
 
@@ -59,7 +59,7 @@ namespace Mirage
             {
                 if (GUILayout.Button("Server Only"))
                 {
-                    ClickServerOnly();
+                    this.ClickServerOnly();
                 }
             }
 
@@ -70,38 +70,38 @@ namespace Mirage
         {
             GUILayout.BeginArea(position);
 
-            if (NetworkManager.Server.Active)
+            if (this.NetworkManager.Server.Active)
             {
                 GUILayout.Label("Server: active");
-                GUILayout.Label($"Socket: {NetworkManager.Server.SocketFactory.GetType().Name}");
+                GUILayout.Label($"Socket: {this.NetworkManager.Server.SocketFactory.GetType().Name}");
 
-                if (NetworkManager.Client.IsConnected)
+                if (this.NetworkManager.Client.IsConnected)
                 {
                     if (GUILayout.Button("Stop Host"))
                     {
-                        NetworkManager.Server.Stop();
+                        this.NetworkManager.Server.Stop();
                     }
                 }
                 else
                 {
                     if (GUILayout.Button("Stop Server"))
                     {
-                        NetworkManager.Server.Stop();
+                        this.NetworkManager.Server.Stop();
                     }
                 }
             }
-            if (NetworkManager.Client.IsConnected)
+            if (this.NetworkManager.Client.IsConnected)
             {
-                GUILayout.Label($"Client: address={NetworkAddress}");
+                GUILayout.Label($"Client: address={this.NetworkAddress}");
 
                 if (GUILayout.Button("Stop Client"))
                 {
-                    NetworkManager.Client.Disconnect();
+                    this.NetworkManager.Client.Disconnect();
                 }
             }
-            else if (NetworkManager.Client.Active)
+            else if (this.NetworkManager.Client.Active)
             {
-                GUILayout.Label($"Connecting to {NetworkAddress}...");
+                GUILayout.Label($"Connecting to {this.NetworkAddress}...");
                 //TODO: Implement cancel button when it's possible.
             }
 
@@ -164,17 +164,17 @@ namespace Mirage
 
         private void ClickHost()
         {
-            NetworkManager.Server.StartServer(NetworkManager.Client);
+            this.NetworkManager.Server.StartServer(this.NetworkManager.Client);
         }
 
         private void ClickServerOnly()
         {
-            NetworkManager.Server.StartServer();
+            this.NetworkManager.Server.StartServer();
         }
 
         private void ClickClient()
         {
-            NetworkManager.Client.Connect(NetworkAddress);
+            this.NetworkManager.Client.Connect(this.NetworkAddress);
         }
     }
 }

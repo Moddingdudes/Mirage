@@ -13,11 +13,11 @@ namespace Mirage.Sockets.Udp
 
         public void Bind(IEndPoint endPoint)
         {
-            Endpoint = (EndPointWrapper)endPoint;
+            this.Endpoint = (EndPointWrapper)endPoint;
 
-            socket = CreateSocket(Endpoint.inner);
-            socket.DualMode = true;
-            socket.Bind(Endpoint.inner);
+            this.socket = CreateSocket(this.Endpoint.inner);
+            this.socket.DualMode = true;
+            this.socket.Bind(this.Endpoint.inner);
         }
 
         private static Socket CreateSocket(EndPoint endPoint)
@@ -67,15 +67,15 @@ namespace Mirage.Sockets.Udp
 
         public void Connect(IEndPoint endPoint)
         {
-            Endpoint = (EndPointWrapper)endPoint;
+            this.Endpoint = (EndPointWrapper)endPoint;
 
-            socket = CreateSocket(Endpoint.inner);
+            this.socket = CreateSocket(this.Endpoint.inner);
         }
 
         public void Close()
         {
-            socket.Close();
-            socket.Dispose();
+            this.socket.Close();
+            this.socket.Dispose();
         }
 
         /// <summary>
@@ -84,20 +84,20 @@ namespace Mirage.Sockets.Udp
         /// <returns>true if data to read</returns>
         public bool Poll()
         {
-            return socket.Poll(0, SelectMode.SelectRead);
+            return this.socket.Poll(0, SelectMode.SelectRead);
         }
 
         public int Receive(byte[] buffer, out IEndPoint endPoint)
         {
-            var c = socket.ReceiveFrom(buffer, ref Endpoint.inner);
-            endPoint = Endpoint;
+            var c = this.socket.ReceiveFrom(buffer, ref this.Endpoint.inner);
+            endPoint = this.Endpoint;
             return c;
         }
 
         public void Send(IEndPoint endPoint, byte[] packet, int length)
         {
             var netEndPoint = ((EndPointWrapper)endPoint).inner;
-            socket.SendTo(packet, length, SocketFlags.None, netEndPoint);
+            this.socket.SendTo(packet, length, SocketFlags.None, netEndPoint);
         }
     }
 }

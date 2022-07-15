@@ -8,55 +8,55 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void SyncDictionary()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncDictionaryGenericAbstractInheritance()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncDictionaryGenericInheritance()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncDictionaryInheritance()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncDictionaryStructKey()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncDictionaryStructItem()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncDictionaryErrorForGenericStructKey()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncDictionaryErrorForGenericStructItem()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
 
         [Test]
         public void SyncDictionaryErrorWhenUsingGenericInNetworkBehaviour()
         {
-            IsSuccess();
+            this.IsSuccess();
         }
     }
 }

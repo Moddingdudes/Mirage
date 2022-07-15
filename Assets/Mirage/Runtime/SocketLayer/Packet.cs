@@ -13,7 +13,7 @@ namespace Mirage.SocketLayer
 
         public Packet(ByteBuffer data, int length)
         {
-            buffer = data ?? throw new ArgumentNullException(nameof(data));
+            this.buffer = data ?? throw new ArgumentNullException(nameof(data));
             this.length = length;
         }
 
@@ -21,7 +21,7 @@ namespace Mirage.SocketLayer
         {
             const int MinPacketSize = 1;
 
-            if (length < MinPacketSize)
+            if (this.length < MinPacketSize)
                 return false;
 
             // Min size of message given to Mirage
@@ -31,22 +31,22 @@ namespace Mirage.SocketLayer
             const int MIN_COMMAND_SIZE = 2;
             const int MIN_UNRELIABLE_SIZE = 1 + MIN_MESSAGE_SIZE;
 
-            switch (type)
+            switch (this.type)
             {
                 case PacketType.Command:
-                    return length >= MIN_COMMAND_SIZE;
+                    return this.length >= MIN_COMMAND_SIZE;
 
                 case PacketType.Unreliable:
-                    return length >= MIN_UNRELIABLE_SIZE;
+                    return this.length >= MIN_UNRELIABLE_SIZE;
 
                 case PacketType.Notify:
-                    return length >= AckSystem.NOTIFY_HEADER_SIZE + MIN_MESSAGE_SIZE;
+                    return this.length >= AckSystem.NOTIFY_HEADER_SIZE + MIN_MESSAGE_SIZE;
                 case PacketType.Reliable:
-                    return length >= AckSystem.MIN_RELIABLE_HEADER_SIZE + MIN_MESSAGE_SIZE;
+                    return this.length >= AckSystem.MIN_RELIABLE_HEADER_SIZE + MIN_MESSAGE_SIZE;
                 case PacketType.ReliableFragment:
-                    return length >= AckSystem.MIN_RELIABLE_FRAGMENT_HEADER_SIZE + 1;
+                    return this.length >= AckSystem.MIN_RELIABLE_FRAGMENT_HEADER_SIZE + 1;
                 case PacketType.Ack:
-                    return length >= AckSystem.ACK_HEADER_SIZE;
+                    return this.length >= AckSystem.ACK_HEADER_SIZE;
 
                 default:
                 case PacketType.KeepAlive:
@@ -54,7 +54,7 @@ namespace Mirage.SocketLayer
             }
         }
 
-        public PacketType type => (PacketType)buffer.array[0];
-        public Commands command => (Commands)buffer.array[1];
+        public PacketType type => (PacketType)this.buffer.array[0];
+        public Commands command => (Commands)this.buffer.array[1];
     }
 }

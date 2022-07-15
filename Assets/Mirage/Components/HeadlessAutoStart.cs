@@ -21,9 +21,9 @@ namespace Mirage
             // headless mode? then start the server
             // can't do this in Awake because Awake is for initialization.
             // some transports might not be ready until Start.
-            if (Server && SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null && startOnHeadless)
+            if (this.Server && SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null && this.startOnHeadless)
             {
-                Server.StartServer();
+                this.Server.StartServer();
             }
         }
     }

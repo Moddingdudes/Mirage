@@ -45,13 +45,13 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var sub = Substitute.For<Action<int, INetworkPlayer>>();
-            serverComponent.serverCalled += sub;
-            clientComponent.MyRpc2(num, default);
+            this.serverComponent.serverCalled += sub;
+            this.clientComponent.MyRpc2(num, default);
 
             yield return null;
             yield return null;
 
-            sub.Received(1).Invoke(num, serverPlayer);
+            sub.Received(1).Invoke(num, this.serverPlayer);
         }
 
         [UnityTest]
@@ -59,8 +59,8 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var sub = Substitute.For<Action<int>>();
-            clientComponent.clientCalled += sub;
-            serverComponent.MyRpc(num);
+            this.clientComponent.clientCalled += sub;
+            this.serverComponent.MyRpc(num);
 
             yield return null;
             yield return null;
@@ -82,13 +82,13 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var sub = Substitute.For<Action<MyClass, INetworkPlayer>>();
-            serverComponent.serverCalled += sub;
-            clientComponent.MyRpc2(new MyClass { Value = num }, default);
+            this.serverComponent.serverCalled += sub;
+            this.clientComponent.MyRpc2(new MyClass { Value = num }, default);
 
             yield return null;
             yield return null;
 
-            sub.Received(1).Invoke(Arg.Is<MyClass>(x => x.Value == num), serverPlayer);
+            sub.Received(1).Invoke(Arg.Is<MyClass>(x => x.Value == num), this.serverPlayer);
         }
 
         [UnityTest]
@@ -96,8 +96,8 @@ namespace Mirage.Tests.Runtime.ClientServer.Generics
         {
             const int num = 32;
             var sub = Substitute.For<Action<MyClass>>();
-            clientComponent.clientCalled += sub;
-            serverComponent.MyRpc(new MyClass { Value = num });
+            this.clientComponent.clientCalled += sub;
+            this.serverComponent.MyRpc(new MyClass { Value = num });
 
             yield return null;
             yield return null;

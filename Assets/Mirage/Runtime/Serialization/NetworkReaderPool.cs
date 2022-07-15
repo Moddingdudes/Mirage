@@ -99,10 +99,10 @@ namespace Mirage.Serialization
         /// </summary>
         public void Release()
         {
-            Dispose(true);
+            this.Dispose(true);
         }
 
-        void IDisposable.Dispose() => Dispose(true);
+        void IDisposable.Dispose() => this.Dispose(true);
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -111,7 +111,7 @@ namespace Mirage.Serialization
             // => dont put it back for finalize
             if (disposing)
             {
-                pool.Put(this);
+                this.pool.Put(this);
             }
         }
     }

@@ -29,7 +29,7 @@ namespace Mirage
 
         // Is this a client with authority over this transform?
         // This component could be on the player object or any object that has been assigned authority to this client.
-        private bool IsClientWithAuthority => HasAuthority && ClientAuthority;
+        private bool IsClientWithAuthority => this.HasAuthority && this.ClientAuthority;
 
         // Sensitivity is added for VR where human players tend to have micro movements so this can quiet down
         // the network traffic.  Additionally, rigidbody drift should send less traffic, e.g very slow sliding / rolling.
@@ -83,7 +83,7 @@ namespace Mirage
         public override bool OnSerialize(NetworkWriter writer, bool initialState)
         {
             // use local position/rotation/scale for VR support
-            SerializeIntoWriter(writer, TargetComponent.localPosition, TargetComponent.localRotation, TargetComponent.localScale);
+            SerializeIntoWriter(writer, this.TargetComponent.localPosition, this.TargetComponent.localRotation, this.TargetComponent.localScale);
             return true;
         }
 
@@ -118,20 +118,20 @@ namespace Mirage
 
             // movement speed: based on how far it moved since last time
             // has to be calculated before 'start' is overwritten
-            temp.MovementSpeed = EstimateMovementSpeed(goal, temp, TargetComponent, syncInterval);
+            temp.MovementSpeed = EstimateMovementSpeed(this.goal, temp, this.TargetComponent, this.syncInterval);
 
             // reassign start wisely
             // -> first ever data point? then make something up for previous one
             //    so that we can start interpolation without waiting for next.
-            if (start == null)
+            if (this.start == null)
             {
-                start = new DataPoint
+                this.start = new DataPoint
                 {
-                    TimeStamp = Time.time - syncInterval,
+                    TimeStamp = Time.time - this.syncInterval,
                     // local position/rotation for VR support
-                    LocalPosition = TargetComponent.localPosition,
-                    LocalRotation = TargetComponent.localRotation,
-                    LocalScale = TargetComponent.localScale,
+                    LocalPosition = this.TargetComponent.localPosition,
+                    LocalRotation = this.TargetComponent.localRotation,
+                    LocalScale = this.TargetComponent.localScale,
                     MovementSpeed = temp.MovementSpeed
                 };
             }
@@ -166,32 +166,32 @@ namespace Mirage
             //
             else
             {
-                var oldDistance = Vector3.Distance(start.LocalPosition, goal.LocalPosition);
-                var newDistance = Vector3.Distance(goal.LocalPosition, temp.LocalPosition);
+                var oldDistance = Vector3.Distance(this.start.LocalPosition, this.goal.LocalPosition);
+                var newDistance = Vector3.Distance(this.goal.LocalPosition, temp.LocalPosition);
 
-                start = goal;
+                this.start = this.goal;
 
                 // teleport / lag / obstacle detection: only continue at current
                 // position if we aren't too far away
                 //
                 // local position/rotation for VR support
                 //
-                if (Vector3.Distance(TargetComponent.localPosition, start.LocalPosition) < oldDistance + newDistance)
+                if (Vector3.Distance(this.TargetComponent.localPosition, this.start.LocalPosition) < oldDistance + newDistance)
                 {
-                    start.LocalPosition = TargetComponent.localPosition;
-                    start.LocalRotation = TargetComponent.localRotation;
-                    start.LocalScale = TargetComponent.localScale;
+                    this.start.LocalPosition = this.TargetComponent.localPosition;
+                    this.start.LocalRotation = this.TargetComponent.localRotation;
+                    this.start.LocalScale = this.TargetComponent.localScale;
                 }
             }
 
             // set new destination in any case. new data is best data.
-            goal = temp;
+            this.goal = temp;
         }
 
         public override void OnDeserialize(NetworkReader reader, bool initialState)
         {
             // deserialize
-            DeserializeFromReader(reader);
+            this.DeserializeFromReader(reader);
         }
 
         // local authority client sends sync message to server for broadcasting
@@ -199,20 +199,20 @@ namespace Mirage
         private void CmdClientToServerSync(byte[] payload)
         {
             // Ignore messages from client if not in client authority mode
-            if (!ClientAuthority)
+            if (!this.ClientAuthority)
                 return;
 
             // deserialize payload
-            using (var networkReader = NetworkReaderPool.GetReader(payload, Server.World))
-                DeserializeFromReader(networkReader);
+            using (var networkReader = NetworkReaderPool.GetReader(payload, this.Server.World))
+                this.DeserializeFromReader(networkReader);
 
             // server-only mode does no interpolation to save computations,
             // but let's set the position directly
-            if (IsServer && !IsClient)
-                ApplyPositionRotationScale(goal.LocalPosition, goal.LocalRotation, goal.LocalScale);
+            if (this.IsServer && !this.IsClient)
+                this.ApplyPositionRotationScale(this.goal.LocalPosition, this.goal.LocalRotation, this.goal.LocalScale);
 
             // set dirty so that OnSerialize broadcasts it
-            SetDirtyBit(1UL);
+            this.SetDirtyBit(1UL);
         }
 
         // where are we in the timeline between start and goal? [0,1]
@@ -278,8 +278,8 @@ namespace Mirage
         private bool NeedsTeleport()
         {
             // calculate time between the two data points
-            var startTime = start != null ? start.TimeStamp : Time.time - syncInterval;
-            var goalTime = goal != null ? goal.TimeStamp : Time.time;
+            var startTime = this.start != null ? this.start.TimeStamp : Time.time - this.syncInterval;
+            var goalTime = this.goal != null ? this.goal.TimeStamp : Time.time;
             var difference = goalTime - startTime;
             var timeSinceGoalReceived = Time.time - goalTime;
             return timeSinceGoalReceived > difference * 5;
@@ -290,9 +290,9 @@ namespace Mirage
         {
             // moved or rotated or scaled?
             // local position/rotation/scale for VR support
-            var moved = Vector3.Distance(lastPosition, TargetComponent.localPosition) > LocalPositionSensitivity;
-            var scaled = Vector3.Distance(lastScale, TargetComponent.localScale) > LocalScaleSensitivity;
-            var rotated = Quaternion.Angle(lastRotation, TargetComponent.localRotation) > LocalRotationSensitivity;
+            var moved = Vector3.Distance(this.lastPosition, this.TargetComponent.localPosition) > this.LocalPositionSensitivity;
+            var scaled = Vector3.Distance(this.lastScale, this.TargetComponent.localScale) > this.LocalScaleSensitivity;
+            var rotated = Quaternion.Angle(this.lastRotation, this.TargetComponent.localRotation) > this.LocalRotationSensitivity;
 
             // save last for next frame to compare
             // (only if change was detected. otherwise slow moving objects might
@@ -302,9 +302,9 @@ namespace Mirage
             if (change)
             {
                 // local position/rotation for VR support
-                lastPosition = TargetComponent.localPosition;
-                lastRotation = TargetComponent.localRotation;
-                lastScale = TargetComponent.localScale;
+                this.lastPosition = this.TargetComponent.localPosition;
+                this.lastRotation = this.TargetComponent.localRotation;
+                this.lastScale = this.TargetComponent.localScale;
             }
             return change;
         }
@@ -313,23 +313,23 @@ namespace Mirage
         private void ApplyPositionRotationScale(Vector3 position, Quaternion rotation, Vector3 scale)
         {
             // local position/rotation for VR support
-            TargetComponent.localPosition = position;
-            TargetComponent.localRotation = rotation;
-            TargetComponent.localScale = scale;
+            this.TargetComponent.localPosition = position;
+            this.TargetComponent.localRotation = rotation;
+            this.TargetComponent.localScale = scale;
         }
 
         private void Update()
         {
             // if server then always sync to others.
-            if (IsServer)
+            if (this.IsServer)
             {
-                UpdateServer();
+                this.UpdateServer();
             }
 
             // no 'else if' since host mode would be both
-            if (IsClient)
+            if (this.IsClient)
             {
-                UpdateClient();
+                this.UpdateClient();
             }
         }
 
@@ -337,7 +337,7 @@ namespace Mirage
         {
             // just use OnSerialize via SetDirtyBit only sync when position
             // changed. set dirty bits 0 or 1
-            SetDirtyBit(HasEitherMovedRotatedScaled() ? 1UL : 0UL);
+            this.SetDirtyBit(this.HasEitherMovedRotatedScaled() ? 1UL : 0UL);
         }
 
         private void UpdateClient()
@@ -345,44 +345,44 @@ namespace Mirage
             // send to server if we have local authority (and aren't the server)
             // -> only if connectionToServer has been initialized yet too
             // check only each 'syncInterval'
-            if (!IsServer && IsClientWithAuthority && Time.time - lastClientSendTime >= syncInterval)
+            if (!this.IsServer && this.IsClientWithAuthority && Time.time - this.lastClientSendTime >= this.syncInterval)
             {
-                if (HasEitherMovedRotatedScaled())
+                if (this.HasEitherMovedRotatedScaled())
                 {
                     // serialize
                     // local position/rotation for VR support
                     using (var writer = NetworkWriterPool.GetWriter())
                     {
-                        SerializeIntoWriter(writer, TargetComponent.localPosition, TargetComponent.localRotation, TargetComponent.localScale);
+                        SerializeIntoWriter(writer, this.TargetComponent.localPosition, this.TargetComponent.localRotation, this.TargetComponent.localScale);
 
                         // send to server
-                        CmdClientToServerSync(writer.ToArray());
+                        this.CmdClientToServerSync(writer.ToArray());
                     }
                 }
-                lastClientSendTime = Time.time;
+                this.lastClientSendTime = Time.time;
             }
 
             // apply interpolation on client for all players
             // unless this client has authority over the object. could be
             // himself or another object that he was assigned authority over
-            if (!IsClientWithAuthority && goal != null)
+            if (!this.IsClientWithAuthority && this.goal != null)
             {
                 // teleport or interpolate
-                if (NeedsTeleport())
+                if (this.NeedsTeleport())
                 {
                     // local position/rotation for VR support
-                    ApplyPositionRotationScale(goal.LocalPosition, goal.LocalRotation, goal.LocalScale);
+                    this.ApplyPositionRotationScale(this.goal.LocalPosition, this.goal.LocalRotation, this.goal.LocalScale);
 
                     // reset data points so we don't keep interpolating
-                    start = null;
-                    goal = null;
+                    this.start = null;
+                    this.goal = null;
                 }
                 else
                 {
                     // local position/rotation for VR support
-                    ApplyPositionRotationScale(InterpolatePosition(start, goal, TargetComponent.localPosition),
-                                                InterpolateRotation(start, goal, TargetComponent.localRotation),
-                                                InterpolateScale(start, goal, TargetComponent.localScale));
+                    this.ApplyPositionRotationScale(InterpolatePosition(this.start, this.goal, this.TargetComponent.localPosition),
+                                                InterpolateRotation(this.start, this.goal, this.TargetComponent.localRotation),
+                                                InterpolateScale(this.start, this.goal, this.TargetComponent.localScale));
                 }
             }
         }
@@ -417,11 +417,11 @@ namespace Mirage
         private void OnDrawGizmos()
         {
             // draw start and goal points
-            if (start != null) DrawDataPointGizmo(start, Color.gray);
-            if (goal != null) DrawDataPointGizmo(goal, Color.white);
+            if (this.start != null) DrawDataPointGizmo(this.start, Color.gray);
+            if (this.goal != null) DrawDataPointGizmo(this.goal, Color.white);
 
             // draw line between them
-            if (start != null && goal != null) DrawLineBetweenDataPoints(start, goal, Color.cyan);
+            if (this.start != null && this.goal != null) DrawLineBetweenDataPoints(this.start, this.goal, Color.cyan);
         }
     }
 }

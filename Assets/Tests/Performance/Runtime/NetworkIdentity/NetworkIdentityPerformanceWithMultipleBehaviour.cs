@@ -18,29 +18,29 @@ namespace Mirage.Tests.Performance
         [SetUp]
         public void SetUp()
         {
-            gameObject = new GameObject();
-            identity = gameObject.AddComponent<NetworkIdentity>();
-            identity.Owner = Substitute.For<INetworkPlayer>();
-            identity.observers.Add(identity.Owner);
-            health = new Health[healthCount];
+            this.gameObject = new GameObject();
+            this.identity = this.gameObject.AddComponent<NetworkIdentity>();
+            this.identity.Owner = Substitute.For<INetworkPlayer>();
+            this.identity.observers.Add(this.identity.Owner);
+            this.health = new Health[healthCount];
             for (var i = 0; i < healthCount; i++)
             {
-                health[i] = gameObject.AddComponent<Health>();
-                health[i].syncMode = SyncMode.Owner;
-                health[i].syncInterval = 0f;
+                this.health[i] = this.gameObject.AddComponent<Health>();
+                this.health[i].syncMode = SyncMode.Owner;
+                this.health[i].syncInterval = 0f;
             }
         }
         [TearDown]
         public void TearDown()
         {
-            UnityEngine.Object.DestroyImmediate(gameObject);
+            UnityEngine.Object.DestroyImmediate(this.gameObject);
         }
 
         [Test]
         [Performance]
         public void ServerUpdateIsDirty()
         {
-            Measure.Method(RunServerUpdateIsDirty)
+            Measure.Method(this.RunServerUpdateIsDirty)
                 .WarmupCount(10)
                 .MeasurementCount(100)
                 .Run();
@@ -52,9 +52,9 @@ namespace Mirage.Tests.Performance
             {
                 for (var i = 0; i < healthCount; i++)
                 {
-                    health[i].SetDirtyBit(1UL);
+                    this.health[i].SetDirtyBit(1UL);
                 }
-                identity.UpdateVars();
+                this.identity.UpdateVars();
             }
         }
 
@@ -62,7 +62,7 @@ namespace Mirage.Tests.Performance
         [Performance]
         public void ServerUpdateNotDirty()
         {
-            Measure.Method(RunServerUpdateNotDirty)
+            Measure.Method(this.RunServerUpdateNotDirty)
                 .WarmupCount(10)
                 .MeasurementCount(100)
                 .Run();
@@ -72,7 +72,7 @@ namespace Mirage.Tests.Performance
         {
             for (var j = 0; j < 1000; j++)
             {
-                identity.UpdateVars();
+                this.identity.UpdateVars();
             }
         }
     }

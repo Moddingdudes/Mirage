@@ -19,7 +19,7 @@ namespace Mirage.Examples.Additive
         [Server]
         private void OnTriggerEnter(Collider other)
         {
-            if (logger.LogEnabled()) logger.LogFormat(LogType.Log, "Loading {0}", subScene);
+            if (logger.LogEnabled()) logger.LogFormat(LogType.Log, "Loading {0}", this.subScene);
 
             var networkIdentity = other.gameObject.GetComponent<NetworkIdentity>();
             networkIdentity.Owner.Send(new SceneMessage { MainActivateScene = subScene, SceneOperation = SceneOperation.LoadAdditive });
@@ -28,7 +28,7 @@ namespace Mirage.Examples.Additive
         [Server]
         private void OnTriggerExit(Collider other)
         {
-            if (logger.LogEnabled()) logger.LogFormat(LogType.Log, "Unloading {0}", subScene);
+            if (logger.LogEnabled()) logger.LogFormat(LogType.Log, "Unloading {0}", this.subScene);
 
             var networkIdentity = other.gameObject.GetComponent<NetworkIdentity>();
             networkIdentity.Owner.Send(new SceneMessage { MainActivateScene = subScene, SceneOperation = SceneOperation.UnloadAdditive });

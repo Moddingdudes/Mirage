@@ -14,30 +14,30 @@ namespace Mirage.Examples.MultipleAdditiveScenes
 
         private void OnValidate()
         {
-            if (characterController == null)
-                characterController = GetComponent<CharacterController>();
-            if (capsuleCollider == null)
-                capsuleCollider = GetComponent<CapsuleCollider>();
+            if (this.characterController == null)
+                this.characterController = this.GetComponent<CharacterController>();
+            if (this.capsuleCollider == null)
+                this.capsuleCollider = this.GetComponent<CapsuleCollider>();
         }
 
         private void Start()
         {
-            capsuleCollider.enabled = IsServer;
+            this.capsuleCollider.enabled = this.IsServer;
         }
 
         public void OnStartLocalPlayer()
         {
-            characterController.enabled = true;
+            this.characterController.enabled = true;
 
             Camera.main.orthographic = false;
-            Camera.main.transform.SetParent(transform);
+            Camera.main.transform.SetParent(this.transform);
             Camera.main.transform.localPosition = new Vector3(0f, 3f, -8f);
             Camera.main.transform.localEulerAngles = new Vector3(10f, 0f, 0f);
         }
 
         private void OnDisable()
         {
-            if (IsLocalPlayer && Camera.main != null)
+            if (this.IsLocalPlayer && Camera.main != null)
             {
                 Camera.main.orthographic = true;
                 Camera.main.transform.SetParent(null);
@@ -63,55 +63,55 @@ namespace Mirage.Examples.MultipleAdditiveScenes
 
         private void Update()
         {
-            if (!IsLocalPlayer || !characterController.enabled)
+            if (!this.IsLocalPlayer || !this.characterController.enabled)
                 return;
 
-            horizontal = Input.GetAxis("Horizontal");
-            vertical = Input.GetAxis("Vertical");
+            this.horizontal = Input.GetAxis("Horizontal");
+            this.vertical = Input.GetAxis("Vertical");
 
             // Q and E cancel each other out, reducing the turn to zero
             if (Input.GetKey(KeyCode.Q))
-                turn = Mathf.MoveTowards(turn, -maxTurnSpeed, turnSensitivity);
+                this.turn = Mathf.MoveTowards(this.turn, -this.maxTurnSpeed, this.turnSensitivity);
             if (Input.GetKey(KeyCode.E))
-                turn = Mathf.MoveTowards(turn, maxTurnSpeed, turnSensitivity);
+                this.turn = Mathf.MoveTowards(this.turn, this.maxTurnSpeed, this.turnSensitivity);
             if (Input.GetKey(KeyCode.Q) && Input.GetKey(KeyCode.E))
-                turn = Mathf.MoveTowards(turn, 0, turnSensitivity);
+                this.turn = Mathf.MoveTowards(this.turn, 0, this.turnSensitivity);
             if (!Input.GetKey(KeyCode.Q) && !Input.GetKey(KeyCode.E))
-                turn = Mathf.MoveTowards(turn, 0, turnSensitivity);
+                this.turn = Mathf.MoveTowards(this.turn, 0, this.turnSensitivity);
 
-            if (isGrounded)
-                isFalling = false;
+            if (this.isGrounded)
+                this.isFalling = false;
 
-            if ((isGrounded || !isFalling) && jumpSpeed < 1f && Input.GetKey(KeyCode.Space))
+            if ((this.isGrounded || !this.isFalling) && this.jumpSpeed < 1f && Input.GetKey(KeyCode.Space))
             {
-                jumpSpeed = Mathf.Lerp(jumpSpeed, 1f, 0.5f);
+                this.jumpSpeed = Mathf.Lerp(this.jumpSpeed, 1f, 0.5f);
             }
-            else if (!isGrounded)
+            else if (!this.isGrounded)
             {
-                isFalling = true;
-                jumpSpeed = 0;
+                this.isFalling = true;
+                this.jumpSpeed = 0;
             }
         }
 
         private void FixedUpdate()
         {
-            if (!IsLocalPlayer || characterController == null)
+            if (!this.IsLocalPlayer || this.characterController == null)
                 return;
 
-            transform.Rotate(0f, turn * Time.fixedDeltaTime, 0f);
+            this.transform.Rotate(0f, this.turn * Time.fixedDeltaTime, 0f);
 
-            var direction = new Vector3(horizontal, jumpSpeed, vertical);
+            var direction = new Vector3(this.horizontal, this.jumpSpeed, this.vertical);
             direction = Vector3.ClampMagnitude(direction, 1f);
-            direction = transform.TransformDirection(direction);
-            direction *= moveSpeed;
+            direction = this.transform.TransformDirection(direction);
+            direction *= this.moveSpeed;
 
-            if (jumpSpeed > 0)
-                characterController.Move(direction * Time.fixedDeltaTime);
+            if (this.jumpSpeed > 0)
+                this.characterController.Move(direction * Time.fixedDeltaTime);
             else
-                characterController.SimpleMove(direction);
+                this.characterController.SimpleMove(direction);
 
-            isGrounded = characterController.isGrounded;
-            velocity = characterController.velocity;
+            this.isGrounded = this.characterController.isGrounded;
+            this.velocity = this.characterController.velocity;
         }
     }
 }

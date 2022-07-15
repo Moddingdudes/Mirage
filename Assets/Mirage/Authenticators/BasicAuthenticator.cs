@@ -58,7 +58,7 @@ namespace Mirage.Authenticators
             // register messsage for Auth when server starts
             // this will ensure the handlers are ready when client connects (even in host mode)
 
-            server.MessageHandler.RegisterHandler<AuthRequestMessage>(OnAuthRequestMessage);
+            server.MessageHandler.RegisterHandler<AuthRequestMessage>(this.OnAuthRequestMessage);
         }
 
         public override void ServerAuthenticate(INetworkPlayer player)
@@ -71,7 +71,7 @@ namespace Mirage.Authenticators
             if (logger.LogEnabled()) logger.LogFormat(LogType.Log, "Authentication Request: {0} {1}", msg.serverCode);
 
             // check if client send the same code as the one stored in the server
-            if (msg.serverCode == serverCode)
+            if (msg.serverCode == this.serverCode)
             {
                 // create and send msg to client so it knows to proceed
                 player.Send(new AuthResponseMessage
@@ -80,7 +80,7 @@ namespace Mirage.Authenticators
                     message = "Success"
                 });
 
-                ServerAccept(player);
+                this.ServerAccept(player);
             }
             else
             {
@@ -91,12 +91,12 @@ namespace Mirage.Authenticators
                     message = "Invalid code"
                 };
 
-                ServerReject(player);
+                this.ServerReject(player);
 
                 player.Send(authResponseMessage);
 
                 // disconnect the client after 1 second so that response message gets delivered
-                StartCoroutine(DelayedDisconnect(player, 1));
+                this.StartCoroutine(this.DelayedDisconnect(player, 1));
             }
         }
 
@@ -115,7 +115,7 @@ namespace Mirage.Authenticators
             // register messsage for Auth when client starts
             // this will ensure the handlers are ready when client connects (even in host mode)
 
-            client.MessageHandler.RegisterHandler<AuthResponseMessage>(OnAuthResponseMessage);
+            client.MessageHandler.RegisterHandler<AuthResponseMessage>(this.OnAuthResponseMessage);
         }
 
         public override void ClientAuthenticate(INetworkPlayer player)
@@ -133,12 +133,12 @@ namespace Mirage.Authenticators
             if (msg.success)
             {
                 if (logger.LogEnabled()) logger.LogFormat(LogType.Log, "Authentication Success: {0}", msg.message);
-                ClientAccept(player);
+                this.ClientAccept(player);
             }
             else
             {
                 logger.LogFormat(LogType.Error, "Authentication Fail: {0}", msg.message);
-                ClientReject(player);
+                this.ClientReject(player);
             }
         }
 

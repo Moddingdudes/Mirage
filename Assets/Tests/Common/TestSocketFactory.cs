@@ -28,16 +28,16 @@ namespace Mirage.Tests
         /// </summary>
         private void AddThisSocket()
         {
-            if (allSockets.TryGetValue(endPoint, out var value))
+            if (allSockets.TryGetValue(this.endPoint, out var value))
             {
                 if (value != this)
                 {
-                    throw new Exception($"endpoint [{endPoint}] already exist in socket dictionary with different value");
+                    throw new Exception($"endpoint [{this.endPoint}] already exist in socket dictionary with different value");
                 }
             }
             else
             {
-                allSockets[endPoint] = this;
+                allSockets[this.endPoint] = this;
             }
         }
 
@@ -57,27 +57,27 @@ namespace Mirage.Tests
 
         void ISocket.Bind(IEndPoint endPoint)
         {
-            AddThisSocket();
+            this.AddThisSocket();
         }
 
         void ISocket.Connect(IEndPoint endPoint)
         {
-            AddThisSocket();
+            this.AddThisSocket();
         }
 
         void ISocket.Close()
         {
-            allSockets.Remove(endPoint);
+            allSockets.Remove(this.endPoint);
         }
 
         bool ISocket.Poll()
         {
-            return received.Count > 0;
+            return this.received.Count > 0;
         }
 
         int ISocket.Receive(byte[] buffer, out IEndPoint endPoint)
         {
-            var next = received.Dequeue();
+            var next = this.received.Dequeue();
             endPoint = next.endPoint;
             var length = next.length;
 
@@ -87,7 +87,7 @@ namespace Mirage.Tests
 
         void ISocket.Send(IEndPoint remoteEndPoint, byte[] packet, int length)
         {
-            AddThisSocket();
+            this.AddThisSocket();
 
             if (!allSockets.TryGetValue(remoteEndPoint, out var other))
             {
@@ -97,7 +97,7 @@ namespace Mirage.Tests
 
             // create copy because data is from buffer
             var clone = packet.Take(length).ToArray();
-            Sent.Add(new Packet
+            this.Sent.Add(new Packet
             {
                 endPoint = remoteEndPoint,
                 data = clone,
@@ -142,18 +142,18 @@ namespace Mirage.Tests
         public override int MaxPacketSize => 1300;
         public override ISocket CreateClientSocket()
         {
-            return new TestSocket($"Client {clientNameIndex++}");
+            return new TestSocket($"Client {this.clientNameIndex++}");
         }
 
         public override ISocket CreateServerSocket()
         {
-            if (TestSocket.EndpointInUse(serverEndpoint))
+            if (TestSocket.EndpointInUse(this.serverEndpoint))
             {
                 throw new InvalidOperationException("TestSocketFactory can only create 1 server, see comment");
                 // Clients use Server endpoint to connect, so a 2nd server can't be started from the same TestSocketFactory
                 // if multiple server are needed then it would require multiple instances of TestSocketFactory
             }
-            return new TestSocket($"Server {serverNameIndex++}", serverEndpoint);
+            return new TestSocket($"Server {this.serverNameIndex++}", this.serverEndpoint);
         }
 
         public override IEndPoint GetBindEndPoint()
@@ -163,7 +163,7 @@ namespace Mirage.Tests
 
         public override IEndPoint GetConnectEndPoint(string address = null, ushort? port = null)
         {
-            return serverEndpoint;
+            return this.serverEndpoint;
         }
     }
 }

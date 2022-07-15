@@ -16,32 +16,32 @@ namespace Mirage.Tests.Runtime.Host
         [Test]
         public void IsServerOnly()
         {
-            Assert.That(component.IsServerOnly, Is.False);
+            Assert.That(this.component.IsServerOnly, Is.False);
         }
 
         [Test]
         public void IsServer()
         {
-            Assert.That(component.IsServer, Is.True);
+            Assert.That(this.component.IsServer, Is.True);
         }
 
         [Test]
         public void IsClient()
         {
-            Assert.That(component.IsClient, Is.True);
+            Assert.That(this.component.IsClient, Is.True);
         }
 
         [Test]
         public void IsClientOnly()
         {
-            Assert.That(component.IsClientOnly, Is.False);
+            Assert.That(this.component.IsClientOnly, Is.False);
         }
 
         [Test]
         public void PlayerHasAuthorityByDefault()
         {
             // no authority by default
-            Assert.That(component.HasAuthority, Is.True);
+            Assert.That(this.component.HasAuthority, Is.True);
         }
 
         #endregion
@@ -52,10 +52,10 @@ namespace Mirage.Tests.Runtime.Host
 
             public void OnStartServer()
             {
-                Assert.That(IsClient, Is.True);
-                Assert.That(IsLocalPlayer, Is.False);
-                Assert.That(IsServer, Is.True);
-                called = true;
+                Assert.That(this.IsClient, Is.True);
+                Assert.That(this.IsLocalPlayer, Is.False);
+                Assert.That(this.IsServer, Is.True);
+                this.called = true;
             }
         };
 
@@ -69,7 +69,7 @@ namespace Mirage.Tests.Runtime.Host
             netIdentity.OnStartServer.AddListener(comp.OnStartServer);
 
             Assert.That(comp.called, Is.False);
-            serverObjectManager.Spawn(gameObject);
+            this.serverObjectManager.Spawn(gameObject);
 
             Assert.That(comp.called, Is.True);
 
@@ -84,9 +84,9 @@ namespace Mirage.Tests.Runtime.Host
             gameObject2.AddComponent<NetworkIdentity>();
             var behaviour2 = gameObject2.AddComponent<SampleBehavior>();
 
-            serverObjectManager.Spawn(gameObject2);
+            this.serverObjectManager.Spawn(gameObject2);
 
-            client.Update();
+            this.client.Update();
 
             // no authority by default
             Assert.That(behaviour2.HasAuthority, Is.False);
@@ -95,15 +95,15 @@ namespace Mirage.Tests.Runtime.Host
         [Test]
         public void HasIdentitysNetId()
         {
-            identity.NetId = 42;
-            Assert.That(component.NetId, Is.EqualTo(42));
+            this.identity.NetId = 42;
+            Assert.That(this.component.NetId, Is.EqualTo(42));
         }
 
         [Test]
         public void HasIdentitysOwner()
         {
-            (_, identity.Owner) = PipedConnections(ClientMessageHandler, ServerMessageHandler);
-            Assert.That(component.Owner, Is.EqualTo(identity.Owner));
+            (_, this.identity.Owner) = PipedConnections(this.ClientMessageHandler, this.ServerMessageHandler);
+            Assert.That(this.component.Owner, Is.EqualTo(this.identity.Owner));
         }
 
         [Test]
@@ -137,15 +137,15 @@ namespace Mirage.Tests.Runtime.Host
                 var bit = 1ul << i;
 
                 // should be false by default
-                Assert.That(GetSyncVarHookGuard(bit), Is.False);
+                Assert.That(this.GetSyncVarHookGuard(bit), Is.False);
 
                 // set true
-                SetSyncVarHookGuard(bit, true);
-                Assert.That(GetSyncVarHookGuard(bit), Is.True);
+                this.SetSyncVarHookGuard(bit, true);
+                Assert.That(this.GetSyncVarHookGuard(bit), Is.True);
 
                 // set false again
-                SetSyncVarHookGuard(bit, false);
-                Assert.That(GetSyncVarHookGuard(bit), Is.False);
+                this.SetSyncVarHookGuard(bit, false);
+                Assert.That(this.GetSyncVarHookGuard(bit), Is.False);
             }
         }
     }
@@ -157,9 +157,9 @@ namespace Mirage.Tests.Runtime.Host
         public void InitSyncObject()
         {
             ISyncObject syncObject = new SyncList<bool>();
-            InitSyncObject(syncObject);
-            Assert.That(syncObjects.Count, Is.EqualTo(1));
-            Assert.That(syncObjects[0], Is.EqualTo(syncObject));
+            this.InitSyncObject(syncObject);
+            Assert.That(this.syncObjects.Count, Is.EqualTo(1));
+            Assert.That(this.syncObjects[0], Is.EqualTo(syncObject));
         }
     }
 }

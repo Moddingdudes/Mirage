@@ -23,117 +23,117 @@ namespace Mirage.Tests
         [SetUp]
         public void Setup()
         {
-            go = new GameObject();
-            client = go.AddComponent<NetworkClient>();
-            server = go.AddComponent<NetworkServer>();
-            spawner = go.AddComponent<CharacterSpawner>();
-            sceneManager = go.AddComponent<NetworkSceneManager>();
-            serverObjectManager = go.AddComponent<ServerObjectManager>();
-            clientObjectManager = go.AddComponent<ClientObjectManager>();
-            spawner.SceneManager = sceneManager;
-            sceneManager.Client = client;
-            sceneManager.Server = server;
-            serverObjectManager.Server = server;
-            clientObjectManager.Client = client;
-            clientObjectManager.NetworkSceneManager = sceneManager;
-            spawner.Client = client;
-            spawner.Server = server;
-            spawner.ServerObjectManager = serverObjectManager;
-            spawner.ClientObjectManager = clientObjectManager;
+            this.go = new GameObject();
+            this.client = this.go.AddComponent<NetworkClient>();
+            this.server = this.go.AddComponent<NetworkServer>();
+            this.spawner = this.go.AddComponent<CharacterSpawner>();
+            this.sceneManager = this.go.AddComponent<NetworkSceneManager>();
+            this.serverObjectManager = this.go.AddComponent<ServerObjectManager>();
+            this.clientObjectManager = this.go.AddComponent<ClientObjectManager>();
+            this.spawner.SceneManager = this.sceneManager;
+            this.sceneManager.Client = this.client;
+            this.sceneManager.Server = this.server;
+            this.serverObjectManager.Server = this.server;
+            this.clientObjectManager.Client = this.client;
+            this.clientObjectManager.NetworkSceneManager = this.sceneManager;
+            this.spawner.Client = this.client;
+            this.spawner.Server = this.server;
+            this.spawner.ServerObjectManager = this.serverObjectManager;
+            this.spawner.ClientObjectManager = this.clientObjectManager;
 
-            playerPrefab = new GameObject();
-            var playerId = playerPrefab.AddComponent<NetworkIdentity>();
+            this.playerPrefab = new GameObject();
+            var playerId = this.playerPrefab.AddComponent<NetworkIdentity>();
 
-            spawner.PlayerPrefab = playerId;
+            this.spawner.PlayerPrefab = playerId;
 
-            pos1 = new GameObject().transform;
-            pos2 = new GameObject().transform;
-            spawner.startPositions.Add(pos1);
-            spawner.startPositions.Add(pos2);
+            this.pos1 = new GameObject().transform;
+            this.pos2 = new GameObject().transform;
+            this.spawner.startPositions.Add(this.pos1);
+            this.spawner.startPositions.Add(this.pos2);
         }
 
         [TearDown]
         public void TearDown()
         {
-            Object.DestroyImmediate(go);
-            Object.DestroyImmediate(playerPrefab);
+            Object.DestroyImmediate(this.go);
+            Object.DestroyImmediate(this.playerPrefab);
 
-            Object.DestroyImmediate(pos1.gameObject);
-            Object.DestroyImmediate(pos2.gameObject);
+            Object.DestroyImmediate(this.pos1.gameObject);
+            Object.DestroyImmediate(this.pos2.gameObject);
         }
 
         [Test]
         public void StartExceptionTest()
         {
-            spawner.PlayerPrefab = null;
+            this.spawner.PlayerPrefab = null;
             Assert.Throws<InvalidOperationException>(() =>
             {
-                spawner.Awake();
+                this.spawner.Awake();
             });
         }
 
         [Test]
         public void StartExceptionMissingServerObjectManagerTest()
         {
-            spawner.ServerObjectManager = null;
+            this.spawner.ServerObjectManager = null;
             Assert.Throws<InvalidOperationException>(() =>
             {
-                spawner.Awake();
+                this.spawner.Awake();
             });
         }
 
         [Test]
         public void AutoConfigureClient()
         {
-            spawner.Awake();
-            Assert.That(spawner.Client, Is.SameAs(client));
+            this.spawner.Awake();
+            Assert.That(this.spawner.Client, Is.SameAs(this.client));
         }
 
         [Test]
         public void AutoConfigureServer()
         {
-            spawner.Awake();
-            Assert.That(spawner.Server, Is.SameAs(server));
+            this.spawner.Awake();
+            Assert.That(this.spawner.Server, Is.SameAs(this.server));
         }
 
         [Test]
         public void GetStartPositionRoundRobinTest()
         {
-            spawner.Awake();
+            this.spawner.Awake();
 
-            spawner.playerSpawnMethod = CharacterSpawner.PlayerSpawnMethod.RoundRobin;
-            Assert.That(spawner.GetStartPosition(), Is.SameAs(pos1.transform));
-            Assert.That(spawner.GetStartPosition(), Is.SameAs(pos2.transform));
-            Assert.That(spawner.GetStartPosition(), Is.SameAs(pos1.transform));
-            Assert.That(spawner.GetStartPosition(), Is.SameAs(pos2.transform));
+            this.spawner.playerSpawnMethod = CharacterSpawner.PlayerSpawnMethod.RoundRobin;
+            Assert.That(this.spawner.GetStartPosition(), Is.SameAs(this.pos1.transform));
+            Assert.That(this.spawner.GetStartPosition(), Is.SameAs(this.pos2.transform));
+            Assert.That(this.spawner.GetStartPosition(), Is.SameAs(this.pos1.transform));
+            Assert.That(this.spawner.GetStartPosition(), Is.SameAs(this.pos2.transform));
         }
 
         [Test]
         public void GetStartPositionRandomTest()
         {
-            spawner.Awake();
+            this.spawner.Awake();
 
-            spawner.playerSpawnMethod = CharacterSpawner.PlayerSpawnMethod.Random;
-            Assert.That(spawner.GetStartPosition(), Is.SameAs(pos1.transform) | Is.SameAs(pos2.transform));
+            this.spawner.playerSpawnMethod = CharacterSpawner.PlayerSpawnMethod.Random;
+            Assert.That(this.spawner.GetStartPosition(), Is.SameAs(this.pos1.transform) | Is.SameAs(this.pos2.transform));
         }
 
         [Test]
         public void GetStartPositionNullTest()
         {
-            spawner.Awake();
+            this.spawner.Awake();
 
-            spawner.startPositions.Clear();
-            Assert.That(spawner.GetStartPosition(), Is.SameAs(null));
+            this.spawner.startPositions.Clear();
+            Assert.That(this.spawner.GetStartPosition(), Is.SameAs(null));
         }
 
         [Test]
         public void MissingClientObjectSpawnerExceptionTest()
         {
-            spawner.ClientObjectManager = null;
+            this.spawner.ClientObjectManager = null;
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                spawner.OnClientConnected(null);
+                this.spawner.OnClientConnected(null);
             });
         }
     }

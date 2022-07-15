@@ -129,56 +129,56 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator SendNetworkIdentity() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<NetworkIdentity>>();
-            clientComponent.onSendNetworkIdentityCalled += callback;
+            this.clientComponent.onSendNetworkIdentityCalled += callback;
 
-            serverComponent.SendNetworkIdentity(serverIdentity);
+            this.serverComponent.SendNetworkIdentity(this.serverIdentity);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(clientIdentity);
+            callback.Received().Invoke(this.clientIdentity);
         });
 
         [UnityTest]
         public IEnumerator SendNetworkBehavior() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<NetworkBehaviour>>();
-            clientComponent.onSendNetworkBehaviourCalled += callback;
+            this.clientComponent.onSendNetworkBehaviourCalled += callback;
 
-            serverComponent.SendNetworkBehaviour(serverComponent);
+            this.serverComponent.SendNetworkBehaviour(this.serverComponent);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(clientComponent);
+            callback.Received().Invoke(this.clientComponent);
         });
 
         [UnityTest]
         public IEnumerator SendNetworkBehaviorChild() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<GenericBehaviourWithRpcDeeperImplement>>();
-            clientComponent.onSendNetworkBehaviourDerivedCalled += callback;
+            this.clientComponent.onSendNetworkBehaviourDerivedCalled += callback;
 
-            serverComponent.SendNetworkBehaviourDerived(serverComponent);
+            this.serverComponent.SendNetworkBehaviourDerived(this.serverComponent);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(clientComponent);
+            callback.Received().Invoke(this.clientComponent);
         });
 
         [UnityTest]
         public IEnumerator SendGameObject() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<GameObject>>();
-            clientComponent.onSendGameObjectCalled += callback;
+            this.clientComponent.onSendGameObjectCalled += callback;
 
-            serverComponent.SendGameObject(serverPlayerGO);
+            this.serverComponent.SendGameObject(this.serverPlayerGO);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(clientPlayerGO);
+            callback.Received().Invoke(this.clientPlayerGO);
         });
 
         [Test]
         public void SendInvalidGO()
         {
             var callback = Substitute.For<Action<GameObject>>();
-            clientComponent.onSendGameObjectCalled += callback;
+            this.clientComponent.onSendGameObjectCalled += callback;
 
             // this object does not have a NI, so this should error out
             Assert.Throws<InvalidOperationException>(() =>
             {
-                serverComponent.SendGameObject(serverGo);
+                this.serverComponent.SendGameObject(this.serverGo);
             });
         }
 
@@ -186,9 +186,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator SendNullNetworkIdentity() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<NetworkIdentity>>();
-            clientComponent.onSendNetworkIdentityCalled += callback;
+            this.clientComponent.onSendNetworkIdentityCalled += callback;
 
-            serverComponent.SendNetworkIdentity(null);
+            this.serverComponent.SendNetworkIdentity(null);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
             callback.Received().Invoke(null);
         });
@@ -197,9 +197,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator SendNullNetworkBehavior() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<NetworkBehaviour>>();
-            clientComponent.onSendNetworkBehaviourCalled += callback;
+            this.clientComponent.onSendNetworkBehaviourCalled += callback;
 
-            serverComponent.SendNetworkBehaviour(null);
+            this.serverComponent.SendNetworkBehaviour(null);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
             callback.Received().Invoke(null);
         });
@@ -208,9 +208,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator SendNullNetworkBehaviorChild() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<GenericBehaviourWithRpcDeeperImplement>>();
-            clientComponent.onSendNetworkBehaviourDerivedCalled += callback;
+            this.clientComponent.onSendNetworkBehaviourDerivedCalled += callback;
 
-            serverComponent.SendNetworkBehaviourDerived(null);
+            this.serverComponent.SendNetworkBehaviourDerived(null);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
             callback.Received().Invoke(null);
         });
@@ -219,9 +219,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator SendNullGameObject() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<GameObject>>();
-            clientComponent.onSendGameObjectCalled += callback;
+            this.clientComponent.onSendGameObjectCalled += callback;
 
-            serverComponent.SendGameObject(null);
+            this.serverComponent.SendGameObject(null);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
             callback.Received().Invoke(null);
         });
@@ -230,56 +230,56 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator SendNetworkIdentityToServer() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<NetworkIdentity>>();
-            serverComponent.onSendNetworkIdentityCalled += callback;
+            this.serverComponent.onSendNetworkIdentityCalled += callback;
 
-            clientComponent.SendNetworkIdentityToServer(clientIdentity);
+            this.clientComponent.SendNetworkIdentityToServer(this.clientIdentity);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(serverIdentity);
+            callback.Received().Invoke(this.serverIdentity);
         });
 
         [UnityTest]
         public IEnumerator SendNetworkBehaviorToServer() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<NetworkBehaviour>>();
-            serverComponent.onSendNetworkBehaviourCalled += callback;
+            this.serverComponent.onSendNetworkBehaviourCalled += callback;
 
-            clientComponent.SendNetworkBehaviourToServer(clientComponent);
+            this.clientComponent.SendNetworkBehaviourToServer(this.clientComponent);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(serverComponent);
+            callback.Received().Invoke(this.serverComponent);
         });
 
         [UnityTest]
         public IEnumerator SendNetworkBehaviorChildToServer() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<GenericBehaviourWithRpcDeeperImplement>>();
-            serverComponent.onSendNetworkBehaviourDerivedCalled += callback;
+            this.serverComponent.onSendNetworkBehaviourDerivedCalled += callback;
 
-            clientComponent.SendNetworkBehaviourDerivedToServer(clientComponent);
+            this.clientComponent.SendNetworkBehaviourDerivedToServer(this.clientComponent);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(serverComponent);
+            callback.Received().Invoke(this.serverComponent);
         });
 
         [UnityTest]
         public IEnumerator SendGameObjectToServer() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<GameObject>>();
-            serverComponent.onSendGameObjectCalled += callback;
+            this.serverComponent.onSendGameObjectCalled += callback;
 
-            clientComponent.SendGameObjectToServer(clientPlayerGO);
+            this.clientComponent.SendGameObjectToServer(this.clientPlayerGO);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(serverPlayerGO);
+            callback.Received().Invoke(this.serverPlayerGO);
         });
 
         [Test]
         public void SendInvalidGOToServer()
         {
             var callback = Substitute.For<Action<GameObject>>();
-            serverComponent.onSendGameObjectCalled += callback;
+            this.serverComponent.onSendGameObjectCalled += callback;
 
             // this object does not have a NI, so this should error out
             Assert.Throws<InvalidOperationException>(() =>
             {
-                clientComponent.SendGameObjectToServer(clientGo);
+                this.clientComponent.SendGameObjectToServer(this.clientGo);
             });
         }
 
@@ -287,56 +287,56 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator SendDeeperNetworkIdentity() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<NetworkIdentity>>();
-            clientComponent.onSendDeeperNetworkIdentityCalled += callback;
+            this.clientComponent.onSendDeeperNetworkIdentityCalled += callback;
 
-            serverComponent.SendDeeperNetworkIdentity(serverIdentity);
+            this.serverComponent.SendDeeperNetworkIdentity(this.serverIdentity);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(clientIdentity);
+            callback.Received().Invoke(this.clientIdentity);
         });
 
         [UnityTest]
         public IEnumerator SendDeeperNetworkBehavior() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<NetworkBehaviour>>();
-            clientComponent.onSendDeeperNetworkBehaviourCalled += callback;
+            this.clientComponent.onSendDeeperNetworkBehaviourCalled += callback;
 
-            serverComponent.SendDeeperNetworkBehaviour(serverComponent);
+            this.serverComponent.SendDeeperNetworkBehaviour(this.serverComponent);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(clientComponent);
+            callback.Received().Invoke(this.clientComponent);
         });
 
         [UnityTest]
         public IEnumerator SendDeeperNetworkBehaviorChild() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<GenericBehaviourWithRpcDeeperImplement>>();
-            clientComponent.onSendDeeperNetworkBehaviourDerivedCalled += callback;
+            this.clientComponent.onSendDeeperNetworkBehaviourDerivedCalled += callback;
 
-            serverComponent.SendDeeperNetworkBehaviourDerived(serverComponent);
+            this.serverComponent.SendDeeperNetworkBehaviourDerived(this.serverComponent);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(clientComponent);
+            callback.Received().Invoke(this.clientComponent);
         });
 
         [UnityTest]
         public IEnumerator SendDeeperGameObject() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<GameObject>>();
-            clientComponent.onSendDeeperGameObjectCalled += callback;
+            this.clientComponent.onSendDeeperGameObjectCalled += callback;
 
-            serverComponent.SendDeeperGameObject(serverPlayerGO);
+            this.serverComponent.SendDeeperGameObject(this.serverPlayerGO);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(clientPlayerGO);
+            callback.Received().Invoke(this.clientPlayerGO);
         });
 
         [Test]
         public void SendDeeperInvalidGO()
         {
             var callback = Substitute.For<Action<GameObject>>();
-            clientComponent.onSendDeeperGameObjectCalled += callback;
+            this.clientComponent.onSendDeeperGameObjectCalled += callback;
 
             // this object does not have a NI, so this should error out
             Assert.Throws<InvalidOperationException>(() =>
             {
-                serverComponent.SendDeeperGameObject(serverGo);
+                this.serverComponent.SendDeeperGameObject(this.serverGo);
             });
         }
 
@@ -344,9 +344,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator SendDeeperNullNetworkIdentity() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<NetworkIdentity>>();
-            clientComponent.onSendDeeperNetworkIdentityCalled += callback;
+            this.clientComponent.onSendDeeperNetworkIdentityCalled += callback;
 
-            serverComponent.SendDeeperNetworkIdentity(null);
+            this.serverComponent.SendDeeperNetworkIdentity(null);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
             callback.Received().Invoke(null);
         });
@@ -355,9 +355,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator SendDeeperNullNetworkBehavior() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<NetworkBehaviour>>();
-            clientComponent.onSendDeeperNetworkBehaviourCalled += callback;
+            this.clientComponent.onSendDeeperNetworkBehaviourCalled += callback;
 
-            serverComponent.SendDeeperNetworkBehaviour(null);
+            this.serverComponent.SendDeeperNetworkBehaviour(null);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
             callback.Received().Invoke(null);
         });
@@ -366,9 +366,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator SendDeeperNullNetworkBehaviorChild() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<GenericBehaviourWithRpcDeeperImplement>>();
-            clientComponent.onSendDeeperNetworkBehaviourDerivedCalled += callback;
+            this.clientComponent.onSendDeeperNetworkBehaviourDerivedCalled += callback;
 
-            serverComponent.SendDeeperNetworkBehaviourDerived(null);
+            this.serverComponent.SendDeeperNetworkBehaviourDerived(null);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
             callback.Received().Invoke(null);
         });
@@ -377,9 +377,9 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator SendDeeperNullGameObject() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<GameObject>>();
-            clientComponent.onSendDeeperGameObjectCalled += callback;
+            this.clientComponent.onSendDeeperGameObjectCalled += callback;
 
-            serverComponent.SendDeeperGameObject(null);
+            this.serverComponent.SendDeeperGameObject(null);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
             callback.Received().Invoke(null);
         });
@@ -388,56 +388,56 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator SendDeeperNetworkIdentityToServer() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<NetworkIdentity>>();
-            serverComponent.onSendDeeperNetworkIdentityCalled += callback;
+            this.serverComponent.onSendDeeperNetworkIdentityCalled += callback;
 
-            clientComponent.SendDeeperNetworkIdentityToServer(clientIdentity);
+            this.clientComponent.SendDeeperNetworkIdentityToServer(this.clientIdentity);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any());
-            callback.Received().Invoke(serverIdentity);
+            callback.Received().Invoke(this.serverIdentity);
         });
 
         [UnityTest]
         public IEnumerator SendDeeperNetworkBehaviorToServer() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<NetworkBehaviour>>();
-            serverComponent.onSendDeeperNetworkBehaviourCalled += callback;
+            this.serverComponent.onSendDeeperNetworkBehaviourCalled += callback;
 
-            clientComponent.SendDeeperNetworkBehaviourToServer(clientComponent);
+            this.clientComponent.SendDeeperNetworkBehaviourToServer(this.clientComponent);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2));
-            callback.Received().Invoke(serverComponent);
+            callback.Received().Invoke(this.serverComponent);
         });
 
         [UnityTest]
         public IEnumerator SendDeeperNetworkBehaviorChildToServer() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<GenericBehaviourWithRpcDeeperImplement>>();
-            serverComponent.onSendDeeperNetworkBehaviourDerivedCalled += callback;
+            this.serverComponent.onSendDeeperNetworkBehaviourDerivedCalled += callback;
 
-            clientComponent.SendDeeperNetworkBehaviourDerivedToServer(clientComponent);
+            this.clientComponent.SendDeeperNetworkBehaviourDerivedToServer(this.clientComponent);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(serverComponent);
+            callback.Received().Invoke(this.serverComponent);
         });
 
         [UnityTest]
         public IEnumerator SendDeeperGameObjectToServer() => UniTask.ToCoroutine(async () =>
         {
             var callback = Substitute.For<Action<GameObject>>();
-            serverComponent.onSendDeeperGameObjectCalled += callback;
+            this.serverComponent.onSendDeeperGameObjectCalled += callback;
 
-            clientComponent.SendDeeperGameObjectToServer(clientPlayerGO);
+            this.clientComponent.SendDeeperGameObjectToServer(this.clientPlayerGO);
             await UniTask.WaitUntil(() => callback.ReceivedCalls().Any()).Timeout(TimeSpan.FromSeconds(2)); ;
-            callback.Received().Invoke(serverPlayerGO);
+            callback.Received().Invoke(this.serverPlayerGO);
         });
 
         [Test]
         public void SendDeeperInvalidGOToServer()
         {
             var callback = Substitute.For<Action<GameObject>>();
-            serverComponent.onSendDeeperGameObjectCalled += callback;
+            this.serverComponent.onSendDeeperGameObjectCalled += callback;
 
             // this object does not have a NI, so this should error out
             Assert.Throws<InvalidOperationException>(() =>
             {
-                clientComponent.SendDeeperGameObjectToServer(clientGo);
+                this.clientComponent.SendDeeperGameObjectToServer(this.clientGo);
             });
         }
     }

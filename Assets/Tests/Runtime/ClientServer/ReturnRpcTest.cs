@@ -13,7 +13,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         [ServerRpc]
         public UniTask<int> GetResult()
         {
-            return UniTask.FromResult(rpcResult);
+            return UniTask.FromResult(this.rpcResult);
         }
     }
     public class ReturnRpcComponent_float : NetworkBehaviour
@@ -23,7 +23,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         [ServerRpc]
         public UniTask<float> GetResult()
         {
-            return UniTask.FromResult(rpcResult);
+            return UniTask.FromResult(this.rpcResult);
         }
     }
     public class ReturnRpcComponent_struct : NetworkBehaviour
@@ -33,7 +33,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         [ServerRpc]
         public UniTask<Vector3> GetResult()
         {
-            return UniTask.FromResult(rpcResult);
+            return UniTask.FromResult(this.rpcResult);
         }
     }
     public class ReturnRpcComponent_Identity : NetworkBehaviour
@@ -43,7 +43,7 @@ namespace Mirage.Tests.Runtime.ClientServer
         [ServerRpc]
         public UniTask<NetworkIdentity> GetResult()
         {
-            return UniTask.FromResult(rpcResult);
+            return UniTask.FromResult(this.rpcResult);
         }
     }
 
@@ -54,8 +54,8 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator ServerRpcReturn() => UniTask.ToCoroutine(async () =>
         {
             var random = Random.Range(1, 100);
-            serverComponent.rpcResult = random;
-            var result = await clientComponent.GetResult();
+            this.serverComponent.rpcResult = random;
+            var result = await this.clientComponent.GetResult();
             Assert.That(result, Is.EqualTo(random));
         });
     }
@@ -65,8 +65,8 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator ServerRpcReturn() => UniTask.ToCoroutine(async () =>
         {
             var random = (Random.value - .5f) * 200;
-            serverComponent.rpcResult = random;
-            var result = await clientComponent.GetResult();
+            this.serverComponent.rpcResult = random;
+            var result = await this.clientComponent.GetResult();
             Assert.That(result, Is.EqualTo(random));
         });
     }
@@ -76,8 +76,8 @@ namespace Mirage.Tests.Runtime.ClientServer
         public IEnumerator ServerRpcReturn() => UniTask.ToCoroutine(async () =>
         {
             var random = Random.insideUnitSphere;
-            serverComponent.rpcResult = random;
-            var result = await clientComponent.GetResult();
+            this.serverComponent.rpcResult = random;
+            var result = await this.clientComponent.GetResult();
             Assert.That(result, Is.EqualTo(random));
         });
     }
@@ -86,10 +86,10 @@ namespace Mirage.Tests.Runtime.ClientServer
         [UnityTest]
         public IEnumerator ServerRpcReturn() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.rpcResult = serverIdentity;
-            var result = await clientComponent.GetResult();
+            this.serverComponent.rpcResult = this.serverIdentity;
+            var result = await this.clientComponent.GetResult();
             // server returning its version of Identity should cause client to get reference to clients version
-            Assert.That(result, Is.EqualTo(clientIdentity));
+            Assert.That(result, Is.EqualTo(this.clientIdentity));
         });
     }
 }

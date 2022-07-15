@@ -19,19 +19,19 @@ namespace Mirage.EditorScripts.Logging
         public override void OnGUI(string searchContext)
         {
             // look for existing settings first
-            if (settings == null)
+            if (this.settings == null)
             {
-                settings = EditorLogSettingsLoader.FindLogSettings();
+                this.settings = EditorLogSettingsLoader.FindLogSettings();
             }
 
             // then draw field
-            settings = (LogSettingsSO)EditorGUILayout.ObjectField("Settings", settings, typeof(LogSettingsSO), false);
+            this.settings = (LogSettingsSO)EditorGUILayout.ObjectField("Settings", this.settings, typeof(LogSettingsSO), false);
 
             // then draw rest of ui
-            if (settings == null)
-                settings = LogLevelsGUI.DrawCreateNewButton();
+            if (this.settings == null)
+                this.settings = LogLevelsGUI.DrawCreateNewButton();
             else
-                LogLevelsGUI.DrawSettings(settings);
+                LogLevelsGUI.DrawSettings(this.settings);
         }
     }
 }

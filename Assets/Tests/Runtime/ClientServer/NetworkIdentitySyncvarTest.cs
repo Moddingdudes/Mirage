@@ -12,7 +12,7 @@ namespace Mirage.Tests.Runtime.ClientServer
 
         public void OnTargetChange(NetworkIdentity _, NetworkIdentity networkIdentity)
         {
-            Assert.That(networkIdentity, Is.SameAs(target));
+            Assert.That(networkIdentity, Is.SameAs(this.target));
         }
     }
 
@@ -23,17 +23,17 @@ namespace Mirage.Tests.Runtime.ClientServer
         {
             // out of the box, target should be null in the client
 
-            Assert.That(clientComponent.target, Is.Null);
+            Assert.That(this.clientComponent.target, Is.Null);
         }
 
         [UnityTest]
         public IEnumerator ChangeTarget() => UniTask.ToCoroutine(async () =>
         {
-            serverComponent.target = serverIdentity;
+            this.serverComponent.target = this.serverIdentity;
 
-            await UniTask.WaitUntil(() => clientComponent.target != null);
+            await UniTask.WaitUntil(() => this.clientComponent.target != null);
 
-            Assert.That(clientComponent.target, Is.SameAs(clientIdentity));
+            Assert.That(this.clientComponent.target, Is.SameAs(this.clientIdentity));
         });
 
         [Test]
@@ -48,33 +48,33 @@ namespace Mirage.Tests.Runtime.ClientServer
 
             var networkIdentitySyncvar = new NetworkIdentitySyncvar
             {
-                objectLocator = client.World,
-                netId = serverIdentity.NetId,
+                objectLocator = this.client.World,
+                netId = this.serverIdentity.NetId,
                 identity = null,
             };
 
-            Assert.That(networkIdentitySyncvar.Value, Is.SameAs(clientIdentity));
+            Assert.That(networkIdentitySyncvar.Value, Is.SameAs(this.clientIdentity));
         }
 
         [UnityTest]
         public IEnumerator SpawnWithTarget() => UniTask.ToCoroutine(async () =>
         {
             // create an object, set the target and spawn it
-            var newObject = UnityEngine.Object.Instantiate(playerPrefab);
+            var newObject = UnityEngine.Object.Instantiate(this.playerPrefab);
             var newBehavior = newObject.GetComponent<SampleBehaviorWithNI>();
-            newBehavior.target = serverIdentity;
-            serverObjectManager.Spawn(newObject);
+            newBehavior.target = this.serverIdentity;
+            this.serverObjectManager.Spawn(newObject);
 
             // wait until the client spawns it
             var newObjectId = newBehavior.NetId;
-            var newClientObject = await AsyncUtil.WaitUntilSpawn(client.World, newObjectId);
+            var newClientObject = await AsyncUtil.WaitUntilSpawn(this.client.World, newObjectId);
 
             // check if the target was set correctly in the client
             var newClientBehavior = newClientObject.GetComponent<SampleBehaviorWithNI>();
-            Assert.That(newClientBehavior.target, Is.SameAs(clientIdentity));
+            Assert.That(newClientBehavior.target, Is.SameAs(this.clientIdentity));
 
             // cleanup
-            serverObjectManager.Destroy(newObject);
+            this.serverObjectManager.Destroy(newObject);
         });
     }
 }

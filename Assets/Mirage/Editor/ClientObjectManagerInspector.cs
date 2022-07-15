@@ -14,9 +14,9 @@ namespace Mirage
 
             if (GUILayout.Button("Register All Prefabs"))
             {
-                Undo.RecordObject(target, "Register prefabs for spawn");
-                PrefabUtility.RecordPrefabInstancePropertyModifications(target);
-                RegisterPrefabs((ClientObjectManager)target);
+                Undo.RecordObject(this.target, "Register prefabs for spawn");
+                PrefabUtility.RecordPrefabInstancePropertyModifications(this.target);
+                this.RegisterPrefabs((ClientObjectManager)this.target);
             }
         }
 

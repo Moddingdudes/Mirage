@@ -12,8 +12,8 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void NetworkBehaviourServer()
         {
-            IsSuccess();
-            CheckAddedCode(
+            this.IsSuccess();
+            this.CheckAddedCode(
                 (NetworkBehaviour nb) => nb.IsServer,
                 "ClientServerAttributeTests.NetworkBehaviourServer.NetworkBehaviourServer", "ServerOnlyMethod");
 
@@ -22,15 +22,15 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void NetworkBehaviourServerOnAwake()
         {
-            HasError("ServerAttribute will not work on the Awake method.",
+            this.HasError("ServerAttribute will not work on the Awake method.",
                 "System.Void ClientServerAttributeTests.NetworkBehaviourServer.NetworkBehaviourServerOnAwake::Awake()");
         }
 
         [Test]
         public void NetworkBehaviourServerOnAwakeWithParameters()
         {
-            IsSuccess();
-            CheckAddedCode(
+            this.IsSuccess();
+            this.CheckAddedCode(
                 (NetworkBehaviour nb) => nb.IsServer,
                 "ClientServerAttributeTests.NetworkBehaviourServer.NetworkBehaviourServerOnAwakeWithParameters", "Awake");
 
@@ -39,8 +39,8 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void NetworkBehaviourClient()
         {
-            IsSuccess();
-            CheckAddedCode(
+            this.IsSuccess();
+            this.CheckAddedCode(
                 (NetworkBehaviour nb) => nb.IsClient,
                 "ClientServerAttributeTests.NetworkBehaviourClient.NetworkBehaviourClient", "ClientOnlyMethod");
         }
@@ -48,15 +48,15 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void NetworkBehaviourClientOnAwake()
         {
-            HasError("ClientAttribute will not work on the Awake method.",
+            this.HasError("ClientAttribute will not work on the Awake method.",
                 "System.Void ClientServerAttributeTests.NetworkBehaviourClient.NetworkBehaviourClientOnAwake::Awake()");
         }
 
         [Test]
         public void NetworkBehaviourClientOnAwakeWithParameters()
         {
-            IsSuccess();
-            CheckAddedCode(
+            this.IsSuccess();
+            this.CheckAddedCode(
                 (NetworkBehaviour nb) => nb.IsClient,
                 "ClientServerAttributeTests.NetworkBehaviourClient.NetworkBehaviourClientOnAwakeWithParameters", "Awake");
         }
@@ -64,8 +64,8 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void NetworkBehaviourHasAuthority()
         {
-            IsSuccess();
-            CheckAddedCode(
+            this.IsSuccess();
+            this.CheckAddedCode(
                 (NetworkBehaviour nb) => nb.HasAuthority,
                 "ClientServerAttributeTests.NetworkBehaviourHasAuthority.NetworkBehaviourHasAuthority", "HasAuthorityMethod");
         }
@@ -73,15 +73,15 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void NetworkBehaviourHasAuthorityOnAwake()
         {
-            HasError("HasAuthorityAttribute will not work on the Awake method.",
+            this.HasError("HasAuthorityAttribute will not work on the Awake method.",
                 "System.Void ClientServerAttributeTests.NetworkBehaviourHasAuthority.NetworkBehaviourHasAuthorityOnAwake::Awake()");
         }
 
         [Test]
         public void NetworkBehaviourHasAuthorityOnAwakeWithParameters()
         {
-            IsSuccess();
-            CheckAddedCode(
+            this.IsSuccess();
+            this.CheckAddedCode(
                 (NetworkBehaviour nb) => nb.HasAuthority,
                 "ClientServerAttributeTests.NetworkBehaviourHasAuthority.NetworkBehaviourHasAuthorityOnAwakeWithParameters", "Awake");
         }
@@ -89,8 +89,8 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void NetworkBehaviourLocalPlayer()
         {
-            IsSuccess();
-            CheckAddedCode(
+            this.IsSuccess();
+            this.CheckAddedCode(
                 (NetworkBehaviour nb) => nb.IsLocalPlayer,
                 "ClientServerAttributeTests.NetworkBehaviourLocalPlayer.NetworkBehaviourLocalPlayer", "LocalPlayerMethod");
         }
@@ -98,15 +98,15 @@ namespace Mirage.Tests.Weaver
         [Test]
         public void NetworkBehaviourLocalPlayerOnAwake()
         {
-            HasError("LocalPlayerAttribute will not work on the Awake method.",
+            this.HasError("LocalPlayerAttribute will not work on the Awake method.",
                 "System.Void ClientServerAttributeTests.NetworkBehaviourLocalPlayer.NetworkBehaviourLocalPlayerOnAwake::Awake()");
         }
 
         [Test]
         public void NetworkBehaviourLocalPlayerOnAwakeWithParameters()
         {
-            IsSuccess();
-            CheckAddedCode(
+            this.IsSuccess();
+            this.CheckAddedCode(
                 (NetworkBehaviour nb) => nb.IsLocalPlayer,
                 "ClientServerAttributeTests.NetworkBehaviourLocalPlayer.NetworkBehaviourLocalPlayerOnAwakeWithParameters", "Awake");
         }
@@ -118,14 +118,14 @@ namespace Mirage.Tests.Weaver
         /// <param name="methodName"></param>
         private void CheckAddedCode(Expression<Func<NetworkBehaviour, bool>> pred, string className, string methodName)
         {
-            var type = assembly.MainModule.GetType(className);
+            var type = this.assembly.MainModule.GetType(className);
             var method = type.Methods.First(m => m.Name == methodName);
             var body = method.Body;
 
             var top = body.Instructions[0];
             Assert.That(top.OpCode, Is.EqualTo(OpCodes.Ldarg_0));
 
-            var methodRef = assembly.MainModule.ImportReference(pred);
+            var methodRef = this.assembly.MainModule.ImportReference(pred);
 
             var call = body.Instructions[1];
 

@@ -33,31 +33,31 @@ namespace Mirage.Serialization
 
         public Vector2Packer(float xMax, float yMax, int xBitCount, int yBitCount)
         {
-            xPacker = new FloatPacker(xMax, xBitCount);
-            yPacker = new FloatPacker(yMax, yBitCount);
+            this.xPacker = new FloatPacker(xMax, xBitCount);
+            this.yPacker = new FloatPacker(yMax, yBitCount);
         }
         public Vector2Packer(float xMax, float yMax, float xPrecision, float yPrecision)
         {
-            xPacker = new FloatPacker(xMax, xPrecision);
-            yPacker = new FloatPacker(yMax, yPrecision);
+            this.xPacker = new FloatPacker(xMax, xPrecision);
+            this.yPacker = new FloatPacker(yMax, yPrecision);
         }
         public Vector2Packer(Vector2 max, Vector2 precision)
         {
-            xPacker = new FloatPacker(max.x, precision.x);
-            yPacker = new FloatPacker(max.y, precision.y);
+            this.xPacker = new FloatPacker(max.x, precision.x);
+            this.yPacker = new FloatPacker(max.y, precision.y);
         }
 
         public void Pack(NetworkWriter writer, Vector2 value)
         {
-            xPacker.Pack(writer, value.x);
-            yPacker.Pack(writer, value.y);
+            this.xPacker.Pack(writer, value.x);
+            this.yPacker.Pack(writer, value.y);
         }
 
         public Vector2 Unpack(NetworkReader reader)
         {
             Vector2 value = default;
-            value.x = xPacker.Unpack(reader);
-            value.y = yPacker.Unpack(reader);
+            value.x = this.xPacker.Unpack(reader);
+            value.y = this.yPacker.Unpack(reader);
             return value;
         }
     }

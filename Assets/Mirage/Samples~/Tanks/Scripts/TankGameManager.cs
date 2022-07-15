@@ -24,86 +24,86 @@ namespace Mirage.Examples.Tanks
 
         private void Update()
         {
-            if (NetworkManager.IsNetworkActive)
+            if (this.NetworkManager.IsNetworkActive)
             {
-                GameReadyCheck();
-                GameOverCheck();
+                this.GameReadyCheck();
+                this.GameOverCheck();
 
-                if (NetworkManager.Client.Active)
+                if (this.NetworkManager.Client.Active)
                 {
-                    if (LocalPlayer == null)
+                    if (this.LocalPlayer == null)
                     {
-                        FindLocalTank();
+                        this.FindLocalTank();
                     }
                     else
                     {
-                        ShowReadyMenu();
-                        UpdateStats();
+                        this.ShowReadyMenu();
+                        this.UpdateStats();
                     }
                 }
             }
             else
             {
                 //Cleanup state once network goes offline
-                IsGameReady = false;
-                LocalPlayer = null;
-                players.Clear();
+                this.IsGameReady = false;
+                this.LocalPlayer = null;
+                this.players.Clear();
             }
         }
 
         private void ShowReadyMenu()
         {
-            if (NetworkManager.Client.Active)
+            if (this.NetworkManager.Client.Active)
             {
 
-                if (LocalPlayer.isReady)
+                if (this.LocalPlayer.isReady)
                     return;
 
-                StartPanel.SetActive(true);
+                this.StartPanel.SetActive(true);
             }
         }
 
         private void GameReadyCheck()
         {
-            if (!IsGameReady)
+            if (!this.IsGameReady)
             {
                 //Look for connections that are not in the player list
-                CheckPlayersNotInList();
+                this.CheckPlayersNotInList();
 
                 //If minimum connections has been check if they are all ready
-                if (players.Count >= MinimumPlayersForGame && GetAllReadyState())
+                if (this.players.Count >= this.MinimumPlayersForGame && this.GetAllReadyState())
                 {
-                    IsGameReady = true;
-                    AllowTankMovement();
+                    this.IsGameReady = true;
+                    this.AllowTankMovement();
 
                     //Update Local GUI:
-                    StartPanel.SetActive(false);
-                    HealthTextLabel.SetActive(true);
-                    ScoreTextLabel.SetActive(true);
+                    this.StartPanel.SetActive(false);
+                    this.HealthTextLabel.SetActive(true);
+                    this.ScoreTextLabel.SetActive(true);
                 }
             }
         }
 
         private void CheckPlayersNotInList()
         {
-            var world = NetworkManager.Server.Active ? NetworkManager.Server.World : NetworkManager.Client.World;
+            var world = this.NetworkManager.Server.Active ? this.NetworkManager.Server.World : this.NetworkManager.Client.World;
             foreach (var identity in world.SpawnedIdentities)
             {
                 var comp = identity.GetComponent<Tank>();
-                if (comp != null && !players.Contains(comp))
+                if (comp != null && !this.players.Contains(comp))
                 {
                     //Add if new
-                    players.Add(comp);
+                    this.players.Add(comp);
                 }
             }
         }
 
         private bool GetAllReadyState()
         {
-            if (!LocalPlayer || !LocalPlayer.isReady) return false;
+            if (!this.LocalPlayer || !this.LocalPlayer.isReady) return false;
 
             var AllReady = true;
-            foreach (var tank in players)
+            foreach (var tank in this.players)
             {
                 if (!tank.isReady)
                 {
@@ -115,32 +115,32 @@ namespace Mirage.Examples.Tanks
 
         private void GameOverCheck()
         {
-            if (!IsGameReady)
+            if (!this.IsGameReady)
                 return;
 
             //Cant win a game you play by yourself. But you can still use this example for testing network/movement
-            if (players.Count == 1)
+            if (this.players.Count == 1)
                 return;
 
-            if (GetAlivePlayerCount() == 1)
+            if (this.GetAlivePlayerCount() == 1)
             {
-                IsGameOver = true;
-                GameOverPanel.SetActive(true);
-                DisallowTankMovement();
+                this.IsGameOver = true;
+                this.GameOverPanel.SetActive(true);
+                this.DisallowTankMovement();
             }
         }
 
         private int GetAlivePlayerCount()
         {
             var alivePlayerCount = 0;
-            foreach (var tank in players)
+            foreach (var tank in this.players)
             {
                 if (!tank.IsDead)
                 {
                     alivePlayerCount++;
 
                     //If there is only 1 player left alive this will end up being their name
-                    WinnerNameText.text = tank.playerName;
+                    this.WinnerNameText.text = tank.playerName;
                 }
             }
             return alivePlayerCount;
@@ -148,30 +148,30 @@ namespace Mirage.Examples.Tanks
 
         private void FindLocalTank()
         {
-            var player = NetworkManager.Client.Player;
+            var player = this.NetworkManager.Client.Player;
 
             // Check to see if the player object is loaded in yet
             if (!player.HasCharacter)
                 return;
 
-            LocalPlayer = player.Identity.GetComponent<Tank>();
+            this.LocalPlayer = player.Identity.GetComponent<Tank>();
         }
 
         private void UpdateStats()
         {
-            HealthText.text = LocalPlayer.health.ToString();
-            ScoreText.text = LocalPlayer.score.ToString();
+            this.HealthText.text = this.LocalPlayer.health.ToString();
+            this.ScoreText.text = this.LocalPlayer.score.ToString();
         }
 
         public void ReadyButtonHandler()
         {
-            LocalPlayer.SendReadyToServer(PlayerNameText.text);
+            this.LocalPlayer.SendReadyToServer(this.PlayerNameText.text);
         }
 
         //All players are ready and game has started. Allow players to move.
         private void AllowTankMovement()
         {
-            foreach (var tank in players)
+            foreach (var tank in this.players)
             {
                 tank.allowMovement = true;
             }
@@ -180,7 +180,7 @@ namespace Mirage.Examples.Tanks
         //Game is over. Prevent movement
         private void DisallowTankMovement()
         {
-            foreach (var tank in players)
+            foreach (var tank in this.players)
             {
                 tank.allowMovement = false;
             }

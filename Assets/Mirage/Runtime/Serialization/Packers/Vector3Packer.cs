@@ -34,36 +34,36 @@ namespace Mirage.Serialization
 
         public Vector3Packer(float xMax, float yMax, float zMax, int xBitCount, int yBitCount, int zBitCount)
         {
-            xPacker = new FloatPacker(xMax, xBitCount);
-            yPacker = new FloatPacker(yMax, yBitCount);
-            zPacker = new FloatPacker(zMax, zBitCount);
+            this.xPacker = new FloatPacker(xMax, xBitCount);
+            this.yPacker = new FloatPacker(yMax, yBitCount);
+            this.zPacker = new FloatPacker(zMax, zBitCount);
         }
         public Vector3Packer(float xMax, float yMax, float zMax, float xPrecision, float yPrecision, float zPrecision)
         {
-            xPacker = new FloatPacker(xMax, xPrecision);
-            yPacker = new FloatPacker(yMax, yPrecision);
-            zPacker = new FloatPacker(zMax, zPrecision);
+            this.xPacker = new FloatPacker(xMax, xPrecision);
+            this.yPacker = new FloatPacker(yMax, yPrecision);
+            this.zPacker = new FloatPacker(zMax, zPrecision);
         }
         public Vector3Packer(Vector3 max, Vector3 precision)
         {
-            xPacker = new FloatPacker(max.x, precision.x);
-            yPacker = new FloatPacker(max.y, precision.y);
-            zPacker = new FloatPacker(max.z, precision.z);
+            this.xPacker = new FloatPacker(max.x, precision.x);
+            this.yPacker = new FloatPacker(max.y, precision.y);
+            this.zPacker = new FloatPacker(max.z, precision.z);
         }
 
         public void Pack(NetworkWriter writer, Vector3 value)
         {
-            xPacker.Pack(writer, value.x);
-            yPacker.Pack(writer, value.y);
-            zPacker.Pack(writer, value.z);
+            this.xPacker.Pack(writer, value.x);
+            this.yPacker.Pack(writer, value.y);
+            this.zPacker.Pack(writer, value.z);
         }
 
         public Vector3 Unpack(NetworkReader reader)
         {
             Vector3 value = default;
-            value.x = xPacker.Unpack(reader);
-            value.y = yPacker.Unpack(reader);
-            value.z = zPacker.Unpack(reader);
+            value.x = this.xPacker.Unpack(reader);
+            value.y = this.yPacker.Unpack(reader);
+            value.z = this.zPacker.Unpack(reader);
             return value;
         }
     }
